@@ -1,6 +1,6 @@
 {
  "kind": "discovery#restDescription",
- "etag": "\"u_zXkMELIlX4ktyNbM2XKD4vK8E/H9njRTyUMH_-Ln0UZ_FI_y7ypGA\"",
+ "etag": "\"u_zXkMELIlX4ktyNbM2XKD4vK8E/l4P-gAamnar-1xlX4fatboK24r8\"",
  "discoveryVersion": "v1",
  "id": "registration:v1",
  "name": "registration",
@@ -117,6 +117,18 @@
      "type": "string"
     }
    }
+  },
+  "RegistrationResponse": {
+   "id": "RegistrationResponse",
+   "type": "object",
+   "properties": {
+    "isSuccess": {
+     "type": "boolean"
+    },
+    "success": {
+     "type": "boolean"
+    }
+   }
   }
  },
  "methods": {
@@ -149,6 +161,9 @@
    "request": {
     "$ref": "RegistrationRequest",
     "parameterName": "resource"
+   },
+   "response": {
+    "$ref": "RegistrationResponse"
    },
    "scopes": [
     "https://www.googleapis.com/auth/userinfo.email"

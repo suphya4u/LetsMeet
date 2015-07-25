@@ -13,8 +13,8 @@
         <servlet-class>com.google.api.server.spi.SystemServiceServlet</servlet-class>
         <init-param>
             <param-name>services</param-name>
-            <param-value>com.letsmeet.server.RegistrationEndpoint,
-                com.letsmeet.server.MessagingEndpoint
+            <param-value>com.letsmeet.server.apis.RegistrationEndpoint,
+                com.letsmeet.server.apis.MessagingEndpoint
             </param-value>
         </init-param>
     </servlet>
