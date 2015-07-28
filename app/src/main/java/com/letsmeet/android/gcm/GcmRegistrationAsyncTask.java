@@ -7,6 +7,7 @@ import android.os.AsyncTask;
 import android.widget.Toast;
 
 import com.google.android.gms.gcm.GoogleCloudMessaging;
+import com.google.android.gms.iid.InstanceID;
 import com.google.api.client.extensions.android.http.AndroidHttp;
 import com.google.api.client.extensions.android.json.AndroidJsonFactory;
 import com.google.api.client.googleapis.services.AbstractGoogleClientRequest;
@@ -21,7 +22,6 @@ import java.util.logging.Logger;
 
 public class GcmRegistrationAsyncTask extends AsyncTask<Void, Void, String> {
   private static Registration regService = null;
-  private GoogleCloudMessaging gcm;
   private Context context;
   private String name;
   private String phone;
@@ -64,11 +64,10 @@ public class GcmRegistrationAsyncTask extends AsyncTask<Void, Void, String> {
 
     String msg;
     try {
-      if (gcm == null) {
-        gcm = GoogleCloudMessaging.getInstance(context);
-      }
-      String regId = gcm.register(SENDER_ID);
-      msg = "Device registered, registration ID=" + regId;
+      InstanceID instanceID = InstanceID.getInstance(context);
+      String token = instanceID.getToken(SENDER_ID,
+          GoogleCloudMessaging.INSTANCE_ID_SCOPE, null);
+      msg = "Device registered, registration ID=" + token;
 
       // You should send the registration ID to your server over HTTP,
       // so it can use GCM/HTTP or CCS to send messages to your app.
@@ -77,7 +76,7 @@ public class GcmRegistrationAsyncTask extends AsyncTask<Void, Void, String> {
       RegistrationRequest request = new RegistrationRequest()
           .setName(name)
           .setPhoneNumber(phone)
-          .setRegId(regId);
+          .setRegId(token);
       regService.register(request).execute();
 
     } catch (IOException ex) {

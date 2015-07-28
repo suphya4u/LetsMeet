@@ -9,7 +9,8 @@
     <EditText
         android:id="@+id/registration_name"
         android:hint="@string/registration_name_input"
-        android:inputType="text"
+        android:inputType="textCapWords"
+
         android:layout_width="fill_parent"
         android:layout_height="wrap_content" />
     <EditText
