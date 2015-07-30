@@ -1,6 +1,6 @@
 {
  "kind": "discovery#restDescription",
- "etag": "\"u_zXkMELIlX4ktyNbM2XKD4vK8E/l4P-gAamnar-1xlX4fatboK24r8\"",
+ "etag": "\"u_zXkMELIlX4ktyNbM2XKD4vK8E/tMxzr8TmOfqhM7eP9pUvRFR_jWQ\"",
  "discoveryVersion": "v1",
  "id": "registration:v1",
  "name": "registration",
@@ -88,6 +88,20 @@
     }
    }
   },
+  "GeoPt": {
+   "id": "GeoPt",
+   "type": "object",
+   "properties": {
+    "latitude": {
+     "type": "number",
+     "format": "float"
+    },
+    "longitude": {
+     "type": "number",
+     "format": "float"
+    }
+   }
+  },
   "RegistrationRecord": {
    "id": "RegistrationRecord",
    "type": "object",
@@ -100,6 +114,9 @@
     },
     "regId": {
      "type": "string"
+    },
+    "userLocation": {
+     "$ref": "GeoPt"
     }
    }
   },
