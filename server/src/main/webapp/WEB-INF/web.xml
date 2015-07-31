@@ -14,7 +14,8 @@
         <init-param>
             <param-name>services</param-name>
             <param-value>com.letsmeet.server.apis.RegistrationEndpoint,
-                com.letsmeet.server.apis.MessagingEndpoint
+                com.letsmeet.server.apis.MessagingEndpoint,
+                com.letsmeet.server.apis.EventService
             </param-value>
         </init-param>
     </servlet>

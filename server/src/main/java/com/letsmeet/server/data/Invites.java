@@ -1,10 +1,13 @@
 package com.letsmeet.server.data;
 
+import com.googlecode.objectify.annotation.Entity;
+import com.googlecode.objectify.annotation.Id;
 import com.googlecode.objectify.annotation.Index;
 
 /**
  * event-user mapping.
  */
+@Entity
 public class Invites {
 
   public enum Response {
@@ -14,6 +17,9 @@ public class Invites {
     NO_RESPONSE
   }
 
+  @Id
+  Long id;
+
   @Index
   private long eventId;
 
@@ -21,6 +27,15 @@ public class Invites {
   private long userId;
 
   private Response response;
+
+  // This is required for OfyService. It fails with no suitable constructor found if this does not exist.
+  public Invites() {}
+
+  public Invites(long eventId, long userId) {
+    this.eventId = eventId;
+    this.userId = userId;
+    this.response = Response.NO_RESPONSE;
+  }
 
   public long getEventId() {
     return eventId;
