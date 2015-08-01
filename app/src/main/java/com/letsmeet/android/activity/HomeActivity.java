@@ -2,6 +2,7 @@ package com.letsmeet.android.activity;
 
 import java.util.Locale;
 
+import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBar;
 import android.support.v4.app.Fragment;
@@ -17,6 +18,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 import android.letsmeet.com.letsmeet.R;
 
@@ -50,7 +52,6 @@ public class HomeActivity extends AppCompatActivity {
     // Set up the ViewPager with the sections adapter.
     mViewPager = (ViewPager) findViewById(R.id.pager);
     mViewPager.setAdapter(mSectionsPagerAdapter);
-
   }
 
 
@@ -115,6 +116,9 @@ public class HomeActivity extends AppCompatActivity {
     }
   }
 
+
+  // TODO(suhas): Below is just a placeholder for one of the tab view. Create different class for
+  // each of fragment.
   /**
    * A placeholder fragment containing a simple view.
    */
@@ -143,7 +147,13 @@ public class HomeActivity extends AppCompatActivity {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-      View rootView = inflater.inflate(R.layout.fragment_home, container, false);
+      final View rootView = inflater.inflate(R.layout.fragment_home, container, false);
+      final Button button = (Button) rootView.findViewById(R.id.new_event_button);
+      button.setOnClickListener(new View.OnClickListener() {
+        public void onClick(View v) {
+          startActivity(new Intent(rootView.getContext(), CreateEventActivity.class));
+        }
+      });
       return rootView;
     }
   }

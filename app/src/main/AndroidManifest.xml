@@ -21,7 +21,7 @@
         <activity
             android:name="com.letsmeet.android.activity.RegisterActivity"
             android:label="@string/app_name"
-            android:noHistory="true">
+            android:noHistory="true" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -40,24 +40,28 @@
             </intent-filter>
         </receiver>
 
-        <service android:name="com.letsmeet.android.gcm.GcmMessageHandler"
+        <service
+            android:name="com.letsmeet.android.gcm.GcmMessageHandler"
             android:exported="false" >
             <intent-filter>
                 <action android:name="com.google.android.c2dm.intent.RECEIVE" />
             </intent-filter>
         </service>
-
         <service
             android:name="com.letsmeet.android.gcm.InstanceIDListener"
-            android:exported="false">
+            android:exported="false" >
             <intent-filter>
-                <action android:name="com.google.android.gms.iid.InstanceID"/>
+                <action android:name="com.google.android.gms.iid.InstanceID" />
             </intent-filter>
         </service>
 
         <activity
             android:name="com.letsmeet.android.activity.HomeActivity"
             android:label="@string/title_activity_home" >
+        </activity>
+        <activity
+            android:name="com.letsmeet.android.activity.CreateEventActivity"
+            android:label="@string/title_activity_create_event" >
         </activity>
     </application>
 

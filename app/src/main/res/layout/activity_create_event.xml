@@ -8,10 +8,24 @@
     android:orientation="vertical"
     tools:context="com.letsmeet.android.activity.HomeActivity$PlaceholderFragment">
 
-    <!-- TODO(suhas): Placeholder fragment. Remove this. -->
+    <EditText
+        android:id="@+id/create_event_name"
+        android:hint="@string/create_event_name"
+        android:inputType="textCapWords"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content" />
+    <EditText
+        android:id="@+id/create_event_notes"
+        android:hint="@string/registration_phone_input"
+        android:inputType="phone"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content" />
+
+    <!-- TODO(suhas): Add more fields -->
+
     <Button
-        android:id="@+id/new_event_button"
-        android:text="@string/new_event"
+        android:id="@+id/create_event_button"
+        android:text="@string/create_event"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"/>
 
