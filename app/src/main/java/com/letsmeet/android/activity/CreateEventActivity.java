@@ -1,5 +1,6 @@
 package com.letsmeet.android.activity;
 
+import android.os.AsyncTask;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -10,7 +11,11 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
+import com.letsmeet.android.apiclient.EventServiceClient;
 import com.letsmeet.android.gcm.GcmRegistrationAsyncTask;
+import com.letsmeet.server.eventService.model.CreateEventRequest;
+import com.letsmeet.server.eventService.model.CreateEventResponse;
+import com.letsmeet.server.eventService.model.EventDetails;
 
 public class CreateEventActivity extends AppCompatActivity {
 
@@ -26,7 +31,10 @@ public class CreateEventActivity extends AppCompatActivity {
         String name = nameEditText.getText().toString();
         String notes = notesEditText.getText().toString();
         // TODO(suhas): Validate input.
-        // Fire create event API.
+        EventDetails eventDetails = new EventDetails()
+            .setName(name)
+            .setNotes(notes);
+        createEvent(new CreateEventRequest().setEventDetails(eventDetails));
         finish();
       }
     });
@@ -53,5 +61,15 @@ public class CreateEventActivity extends AppCompatActivity {
     }
 
     return super.onOptionsItemSelected(item);
+  }
+
+
+  // TODO(suhas): This piece of code should be in the ApiClient.
+  private void createEvent(final CreateEventRequest request) {
+    new AsyncTask<CreateEventRequest, Void, CreateEventResponse>() {
+      @Override protected CreateEventResponse doInBackground(CreateEventRequest... params) {
+        return EventServiceClient.getInstance().createEvent(request);
+      }
+    }.execute(request);
   }
 }

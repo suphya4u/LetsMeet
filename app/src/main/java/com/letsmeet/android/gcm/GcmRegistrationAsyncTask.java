@@ -1,5 +1,6 @@
 package com.letsmeet.android.gcm;
 
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -13,8 +14,10 @@ import com.google.api.client.extensions.android.json.AndroidJsonFactory;
 import com.google.api.client.googleapis.services.AbstractGoogleClientRequest;
 import com.google.api.client.googleapis.services.GoogleClientRequestInitializer;
 import com.letsmeet.android.activity.HomeActivity;
+import com.letsmeet.android.storage.LocalStore;
 import com.letsmeet.server.registration.Registration;
 import com.letsmeet.server.registration.model.RegistrationRequest;
+import com.letsmeet.server.registration.model.RegistrationResponse;
 
 import java.io.IOException;
 import java.util.logging.Level;
@@ -77,7 +80,9 @@ public class GcmRegistrationAsyncTask extends AsyncTask<Void, Void, String> {
           .setName(name)
           .setPhoneNumber(phone)
           .setRegId(token);
-      regService.register(request).execute();
+      RegistrationResponse response = regService.register(request).execute();
+      LocalStore localStore = LocalStore.getInstance(context);
+      localStore.saveUserId(response.getUserId());
 
     } catch (IOException ex) {
       ex.printStackTrace();
@@ -91,8 +96,8 @@ public class GcmRegistrationAsyncTask extends AsyncTask<Void, Void, String> {
     pd.hide();
     Toast.makeText(context, msg, Toast.LENGTH_LONG).show();
     Logger.getLogger("REGISTRATION").log(Level.INFO, msg);
-    Intent intent = new Intent(context, HomeActivity.class); // Your list's Intent
-    intent.setFlags(intent.getFlags() | Intent.FLAG_ACTIVITY_NO_HISTORY); // Adds the FLAG_ACTIVITY_NO_HISTORY flag
-    context.startActivity(intent);
+
+    // TODO(suhas): May be hacky way. Figure out right way.
+        ((Activity) context).finish();
   }
 }

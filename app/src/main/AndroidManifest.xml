@@ -22,11 +22,6 @@
             android:name="com.letsmeet.android.activity.RegisterActivity"
             android:label="@string/app_name"
             android:noHistory="true" >
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
 
         <receiver
@@ -48,7 +43,7 @@
             </intent-filter>
         </service>
         <service
-            android:name="com.letsmeet.android.gcm.InstanceIDListener"
+            android:name="com.letsmeet.android.gcm.InstanceIdListener"
             android:exported="false" >
             <intent-filter>
                 <action android:name="com.google.android.gms.iid.InstanceID" />
@@ -58,6 +53,11 @@
         <activity
             android:name="com.letsmeet.android.activity.HomeActivity"
             android:label="@string/title_activity_home" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
         <activity
             android:name="com.letsmeet.android.activity.CreateEventActivity"

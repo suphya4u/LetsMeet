@@ -51,8 +51,8 @@ public class RegistrationEndpoint {
     record.setRegId(request.getRegId());
     record.setName(request.getName());
     record.setPhoneNumber(request.getPhoneNumber());
-    ofy().save().entity(record).now();
-    return new RegistrationResponse().setIsSuccess(true);
+    long userId = ofy().save().entity(record).now().getId();
+    return new RegistrationResponse().setIsSuccess(true).setUserId(userId);
   }
 
   /**

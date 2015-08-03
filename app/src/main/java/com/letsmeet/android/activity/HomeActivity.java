@@ -22,6 +22,8 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.letsmeet.com.letsmeet.R;
 
+import com.letsmeet.android.storage.LocalStore;
+
 public class HomeActivity extends AppCompatActivity {
 
   /**
@@ -42,8 +44,14 @@ public class HomeActivity extends AppCompatActivity {
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    setContentView(R.layout.activity_home);
 
+    if (!isRegistered()) {
+      Intent intent = new Intent(this, RegisterActivity.class); // Your list's Intent
+      // Add the FLAG_ACTIVITY_NO_HISTORY flag
+      intent.setFlags(intent.getFlags() | Intent.FLAG_ACTIVITY_NO_HISTORY);
+      startActivity(intent);
+    }
+    setContentView(R.layout.activity_home);
 
     // Create the adapter that will return a fragment for each of the three
     // primary sections of the activity.
@@ -53,7 +61,6 @@ public class HomeActivity extends AppCompatActivity {
     mViewPager = (ViewPager) findViewById(R.id.pager);
     mViewPager.setAdapter(mSectionsPagerAdapter);
   }
-
 
   @Override
   public boolean onCreateOptionsMenu(Menu menu) {
@@ -116,6 +123,10 @@ public class HomeActivity extends AppCompatActivity {
     }
   }
 
+  private boolean isRegistered() {
+    LocalStore localStore = LocalStore.getInstance(this);
+    return localStore.getUserId() != 0;
+  }
 
   // TODO(suhas): Below is just a placeholder for one of the tab view. Create different class for
   // each of fragment.

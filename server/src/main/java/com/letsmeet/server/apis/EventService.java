@@ -30,7 +30,7 @@ public class EventService {
 
   private static final Logger log = Logger.getLogger(EventService.class.getName());
 
-  @ApiMethod(name = "create")
+  @ApiMethod(name = "createEvent")
   public CreateEventResponse createEvent(CreateEventRequest request) {
     EventDetails eventDetails = request.getEventDetails();
     EventRecord event = new EventRecord()
