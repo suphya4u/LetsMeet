@@ -7,6 +7,8 @@ import com.google.api.client.googleapis.services.GoogleClientRequestInitializer;
 import com.letsmeet.server.eventService.EventService;
 import com.letsmeet.server.eventService.model.CreateEventRequest;
 import com.letsmeet.server.eventService.model.CreateEventResponse;
+import com.letsmeet.server.eventService.model.ListEventsForUserRequest;
+import com.letsmeet.server.eventService.model.ListEventsForUserResponse;
 
 import java.io.IOException;
 
@@ -31,6 +33,17 @@ public class EventServiceClient {
     try {
       EventService service = getService();
       return service.createEvent(request).execute();
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  public ListEventsForUserResponse listEvents(long userId) {
+    try {
+      EventService service = getService();
+      ListEventsForUserRequest request = new ListEventsForUserRequest()
+          .setUserId(userId);
+      return service.eventsForUser(request).execute();
     } catch (IOException e) {
       throw new RuntimeException(e);
     }

@@ -28,7 +28,7 @@ public class RegisterActivity extends AppCompatActivity {
         String name = nameEditText.getText().toString();
         String phone = phoneEditText.getText().toString();
         if (isInputValid(name, phone)) {
-          new GcmRegistrationAsyncTask(v.getContext(), name, phone).execute();
+          new GcmRegistrationAsyncTask(RegisterActivity.this, name, phone).execute();
         }
       }
     });

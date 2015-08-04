@@ -43,12 +43,16 @@ public class RegistrationEndpoint {
    */
   @ApiMethod(name = "register")
   public RegistrationResponse registerDevice(RegistrationRequest request) {
-    if (findRecord(request.getRegId()) != null) {
-      log.info("Device " + request.getRegId() + " already registered, skipping register");
-      return new RegistrationResponse().setIsSuccess(true);
+    // TODO(suhas): Check if the phone number already exists and maybe update same user record.
+    // Phone number can already exist if the user is invited by someone and we already have an user
+    // record for the invitation.
+    RegistrationRecord record = findRecord(request.getRegId());
+    if (record != null) {
+      log.info("Device " + request.getRegId() + " already registered, updating record");
+    } else {
+      record = new RegistrationRecord();
+      record.setRegId(request.getRegId());
     }
-    RegistrationRecord record = new RegistrationRecord();
-    record.setRegId(request.getRegId());
     record.setName(request.getName());
     record.setPhoneNumber(request.getPhoneNumber());
     long userId = ofy().save().entity(record).now().getId();

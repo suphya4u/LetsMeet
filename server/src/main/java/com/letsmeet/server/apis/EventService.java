@@ -53,14 +53,16 @@ public class EventService {
       // TODO(suhas): Sanitize phone numbers or match excluding country code.
       // Possible options to handle country code -
       // Assume phone number does not contain country code - assume owners country.
+
+      // TODO(suhas): Create new user for each of the phone number that do not exist yet.
     }
     ofy().save().entities(invitesList).now();
 
     return new CreateEventResponse().setEventId(eventId);
   }
 
-  @ApiMethod(name = "listEventsForUser")
-  public ListEventsForUserResponse listEventsForUser(ListEventsForUserRequest request) {
+  @ApiMethod(name = "eventsForUser")
+  public ListEventsForUserResponse eventsForUser(ListEventsForUserRequest request) {
     List<Invites> eventInvites = ofy().load().type(Invites.class)
         .filter("userId", request.getUserId()).list();
     ListEventsForUserResponse response = new ListEventsForUserResponse();

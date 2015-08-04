@@ -13,6 +13,7 @@ import android.widget.EditText;
 
 import com.letsmeet.android.apiclient.EventServiceClient;
 import com.letsmeet.android.gcm.GcmRegistrationAsyncTask;
+import com.letsmeet.android.storage.LocalStore;
 import com.letsmeet.server.eventService.model.CreateEventRequest;
 import com.letsmeet.server.eventService.model.CreateEventResponse;
 import com.letsmeet.server.eventService.model.EventDetails;
@@ -31,14 +32,16 @@ public class CreateEventActivity extends AppCompatActivity {
         String name = nameEditText.getText().toString();
         String notes = notesEditText.getText().toString();
         // TODO(suhas): Validate input.
+        LocalStore localStore = LocalStore.getInstance(CreateEventActivity.this);
+        long userId = localStore.getUserId();
         EventDetails eventDetails = new EventDetails()
             .setName(name)
-            .setNotes(notes);
+            .setNotes(notes)
+            .setOwnerId(userId);
         createEvent(new CreateEventRequest().setEventDetails(eventDetails));
         finish();
       }
     });
-
   }
 
   @Override

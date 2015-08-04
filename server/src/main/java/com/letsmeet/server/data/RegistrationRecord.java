@@ -28,6 +28,10 @@ public class RegistrationRecord {
   public RegistrationRecord() {
   }
 
+  public long getId() {
+    return id;
+  }
+
   public String getRegId() {
     return regId;
   }

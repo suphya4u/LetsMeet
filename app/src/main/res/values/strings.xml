@@ -6,7 +6,7 @@
     <string name="registration_name_input">Name</string>
     <string name="registration_phone_input">Phone</string>
     <string name="register_button">Register</string>
-    <string name="title_activity_home">HomeActivity</string>
+    <string name="title_activity_home">Lets Meet</string>
 
     <string name="title_section1">Section 1</string>
     <string name="title_section2">Section 2</string>
@@ -15,4 +15,6 @@
     <string name="create_event_name">Give some name to event</string>
     <string name="title_activity_create_event">CreateEventActivity</string>
     <string name="new_event">Create New Event</string>
+
+    <string name="create_event_notes">Notes / Details</string>
 </resources>

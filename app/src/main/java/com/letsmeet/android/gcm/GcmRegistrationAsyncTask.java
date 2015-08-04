@@ -14,6 +14,7 @@ import com.google.api.client.extensions.android.json.AndroidJsonFactory;
 import com.google.api.client.googleapis.services.AbstractGoogleClientRequest;
 import com.google.api.client.googleapis.services.GoogleClientRequestInitializer;
 import com.letsmeet.android.activity.HomeActivity;
+import com.letsmeet.android.activity.RegisterActivity;
 import com.letsmeet.android.storage.LocalStore;
 import com.letsmeet.server.registration.Registration;
 import com.letsmeet.server.registration.model.RegistrationRequest;
@@ -97,7 +98,8 @@ public class GcmRegistrationAsyncTask extends AsyncTask<Void, Void, String> {
     Toast.makeText(context, msg, Toast.LENGTH_LONG).show();
     Logger.getLogger("REGISTRATION").log(Level.INFO, msg);
 
-    // TODO(suhas): May be hacky way. Figure out right way.
-        ((Activity) context).finish();
+    Intent intent = new Intent(context, HomeActivity.class);
+    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+    context.startActivity(intent);
   }
 }
