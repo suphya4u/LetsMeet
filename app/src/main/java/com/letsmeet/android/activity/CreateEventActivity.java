@@ -8,9 +8,15 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.letsmeet.com.letsmeet.R;
 import android.view.View;
+import android.widget.Adapter;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
+import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ListAdapter;
 
+import com.letsmeet.android.activity.adapter.ContactCompletionAdapter;
 import com.letsmeet.android.apiclient.EventServiceClient;
 import com.letsmeet.android.gcm.GcmRegistrationAsyncTask;
 import com.letsmeet.android.storage.LocalStore;
@@ -25,6 +31,12 @@ public class CreateEventActivity extends AppCompatActivity {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_create_event);
     final Button button = (Button) findViewById(R.id.create_event_button);
+
+    AutoCompleteTextView contactAutoComplete =
+        (AutoCompleteTextView) findViewById(R.id.contact_autocomplete);
+    ContactCompletionAdapter contactAdapter = new ContactCompletionAdapter(this);
+    contactAutoComplete.setAdapter(contactAdapter);
+
     button.setOnClickListener(new View.OnClickListener() {
       public void onClick(View v) {
         EditText nameEditText = (EditText) findViewById(R.id.create_event_name);
