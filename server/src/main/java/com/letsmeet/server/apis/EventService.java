@@ -4,7 +4,9 @@ import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.ApiNamespace;
 import com.google.appengine.api.datastore.GeoPt;
+import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import com.letsmeet.server.apis.messages.CreateEventRequest;
 import com.letsmeet.server.apis.messages.CreateEventResponse;
 import com.letsmeet.server.apis.messages.EventDetails;
@@ -12,8 +14,10 @@ import com.letsmeet.server.apis.messages.ListEventsForUserRequest;
 import com.letsmeet.server.apis.messages.ListEventsForUserResponse;
 import com.letsmeet.server.data.EventRecord;
 import com.letsmeet.server.data.Invites;
+import com.letsmeet.server.data.RegistrationRecord;
 
 import java.util.List;
+import java.util.Set;
 import java.util.logging.Logger;
 
 import static com.letsmeet.server.OfyService.ofy;
@@ -42,23 +46,42 @@ public class EventService {
 
     long eventId = ofy().save().entity(event).now().getId();
 
-    List<Invites> invitesList = Lists.newArrayList();
+    Set<Long> invitedUsers = Sets.newHashSet();
     // Add owner by default.
-    invitesList.add(new Invites(eventId, eventDetails.getOwnerId()));
+    invitedUsers.add(eventDetails.getOwnerId());
 
-    for (String phone : eventDetails.getInviteePhoneNumbers()) {
+    for (String phoneNumber : eventDetails.getInviteePhoneNumbers()) {
       // TODO(suhas): Get registration records for these phone numbers and add eventId, userId in
       // invites.
+      List<RegistrationRecord> users = ofy().load().type(RegistrationRecord.class)
+          .filter("phoneNumber", phoneNumber).list();
+      Preconditions.checkArgument(users.size() <= 1, "More than one user with same phone number");
+      long invitedUserId;
+      if (users.isEmpty()) {
+        RegistrationRecord newUserRecord = new RegistrationRecord()
+            .setPhoneNumber(phoneNumber);
+        invitedUserId = ofy().save().entity(newUserRecord).now().getId();
+      } else {
+        invitedUserId = users.get(0).getId();
+      }
+      invitedUsers.add(invitedUserId);
 
       // TODO(suhas): Sanitize phone numbers or match excluding country code.
       // Possible options to handle country code -
       // Assume phone number does not contain country code - assume owners country.
-
-      // TODO(suhas): Create new user for each of the phone number that do not exist yet.
     }
+    List<Invites> invitesList = createInvitesList(eventId, invitedUsers);
     ofy().save().entities(invitesList).now();
 
     return new CreateEventResponse().setEventId(eventId);
+  }
+
+  private List<Invites> createInvitesList(long eventId, Set<Long> invitedUsers) {
+    List<Invites> invitesList = Lists.newArrayList();
+    for (long userId : invitedUsers) {
+      invitesList.add(new Invites(eventId, userId));
+    }
+    return invitesList;
   }
 
   @ApiMethod(name = "eventsForUser")
