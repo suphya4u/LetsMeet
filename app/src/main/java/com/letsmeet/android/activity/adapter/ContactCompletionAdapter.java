@@ -3,6 +3,7 @@ package com.letsmeet.android.activity.adapter;
 import android.content.Context;
 import android.database.Cursor;
 import android.letsmeet.com.letsmeet.R;
+import android.provider.BaseColumns;
 import android.provider.ContactsContract;
 import android.widget.FilterQueryProvider;
 import android.widget.SimpleCursorAdapter;
@@ -13,13 +14,15 @@ import android.widget.SimpleCursorAdapter;
 public class ContactCompletionAdapter extends SimpleCursorAdapter {
 
   private final static String[] FROM_COLUMNS = {
-    ContactsContract.Contacts.DISPLAY_NAME_PRIMARY,
-    ContactsContract.Contacts.PHOTO_THUMBNAIL_URI,
+      ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME,
+      ContactsContract.CommonDataKinds.Phone.PHOTO_THUMBNAIL_URI,
+      ContactsContract.CommonDataKinds.Phone.NUMBER,
   };
 
   private final static int[] TO_IDS = {
       R.id.contact_name,
-      R.id.contact_thumbnail
+      R.id.contact_thumbnail,
+      R.id.contact_number
   };
 
   private final Context context;
@@ -47,13 +50,14 @@ public class ContactCompletionAdapter extends SimpleCursorAdapter {
     String select = ContactsContract.Contacts.DISPLAY_NAME + " LIKE ? ";
     String[]  selectArgs = { "%" + str + "%"};
     String[] contactsProjection = new String[] {
-        ContactsContract.Contacts._ID,
-        ContactsContract.Contacts.DISPLAY_NAME,
-        ContactsContract.Contacts.PHOTO_THUMBNAIL_URI,
-        ContactsContract.Contacts.LOOKUP_KEY,
+        ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME,
+        ContactsContract.CommonDataKinds.Phone.NUMBER,
+        ContactsContract.CommonDataKinds.Phone.PHOTO_THUMBNAIL_URI,
+        ContactsContract.CommonDataKinds.Phone.CONTACT_ID,
+        BaseColumns._ID
     };
 
     return context.getContentResolver().query(
-        ContactsContract.Contacts.CONTENT_URI, contactsProjection, select, selectArgs, null);
+        ContactsContract.CommonDataKinds.Phone.CONTENT_URI, contactsProjection, select, selectArgs, null);
   }
 }
