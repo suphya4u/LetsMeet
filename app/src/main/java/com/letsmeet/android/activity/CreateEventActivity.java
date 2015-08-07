@@ -1,24 +1,18 @@
 package com.letsmeet.android.activity;
 
 import android.os.AsyncTask;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.letsmeet.com.letsmeet.R;
 import android.view.View;
-import android.widget.Adapter;
-import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
-import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ListAdapter;
 
 import com.letsmeet.android.activity.adapter.ContactCompletionAdapter;
 import com.letsmeet.android.apiclient.EventServiceClient;
-import com.letsmeet.android.gcm.GcmRegistrationAsyncTask;
 import com.letsmeet.android.storage.LocalStore;
 import com.letsmeet.server.eventService.model.CreateEventRequest;
 import com.letsmeet.server.eventService.model.CreateEventResponse;

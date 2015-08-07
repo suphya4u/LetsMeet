@@ -1,41 +1,25 @@
 package com.letsmeet.android.activity.adapter;
 
-import android.app.Activity;
 import android.content.Context;
 import android.database.Cursor;
 import android.letsmeet.com.letsmeet.R;
-import android.os.Build;
 import android.provider.ContactsContract;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.BaseAdapter;
-import android.widget.Filter;
 import android.widget.FilterQueryProvider;
-import android.widget.Filterable;
 import android.widget.SimpleCursorAdapter;
-import android.widget.TextView;
-
-import com.google.api.client.util.Lists;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
- * Created by suhas on 8/4/15.
+ * Adapter to read contacts and filter with prefix.
  */
 public class ContactCompletionAdapter extends SimpleCursorAdapter {
 
   private final static String[] FROM_COLUMNS = {
-      Build.VERSION.SDK_INT
-          >= Build.VERSION_CODES.HONEYCOMB ?
-          ContactsContract.Contacts.DISPLAY_NAME_PRIMARY :
-          ContactsContract.Contacts.DISPLAY_NAME
+    ContactsContract.Contacts.DISPLAY_NAME_PRIMARY,
+    ContactsContract.Contacts.PHOTO_THUMBNAIL_URI,
   };
 
   private final static int[] TO_IDS = {
-      R.id.contact_name
+      R.id.contact_name,
+      R.id.contact_thumbnail
   };
 
   private final Context context;
@@ -65,7 +49,9 @@ public class ContactCompletionAdapter extends SimpleCursorAdapter {
     String[] contactsProjection = new String[] {
         ContactsContract.Contacts._ID,
         ContactsContract.Contacts.DISPLAY_NAME,
-        ContactsContract.Contacts.LOOKUP_KEY,  };
+        ContactsContract.Contacts.PHOTO_THUMBNAIL_URI,
+        ContactsContract.Contacts.LOOKUP_KEY,
+    };
 
     return context.getContentResolver().query(
         ContactsContract.Contacts.CONTENT_URI, contactsProjection, select, selectArgs, null);
