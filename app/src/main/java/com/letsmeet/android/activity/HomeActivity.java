@@ -45,14 +45,18 @@ public class HomeActivity extends AppCompatActivity {
     });
 
     eventListView = (RecyclerView) findViewById(R.id.events_list);
-    eventListView.setLayoutManager(new LinearLayoutManager(this));
+    final LinearLayoutManager layoutManager = new LinearLayoutManager(this);
+    layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+    eventListView.setLayoutManager(layoutManager);
   }
 
   @Override
   protected void onResume() {
     super.onResume();
     // TODO(suhas): Prefer caching than fetching events on every resume.
-    listEvents();
+    if (eventListView != null) {
+      listEvents();
+    }
   }
 
   @Override

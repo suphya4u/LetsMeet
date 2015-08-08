@@ -28,6 +28,9 @@ import java.util.concurrent.TimeUnit;
  * Note that this adapter requires a valid {@link com.google.android.gms.common.api.GoogleApiClient}.
  * The API client must be maintained in the encapsulating Activity, including all lifecycle and
  * connection states. The API client must be connected with the {@link Places#GEO_DATA_API} API.
+ * <p>
+ * Code taken from - https://github.com/googlesamples/android-play-places/tree/master/PlaceComplete/Application/src/main/java/com/example/google/playservices/placecomplete
+ * </p>
  */
 public class PlaceAutocompleteAdapter
     extends ArrayAdapter<PlaceAutocompleteAdapter.PlaceAutocomplete> implements Filterable {

@@ -4,6 +4,7 @@ import com.google.api.client.extensions.android.http.AndroidHttp;
 import com.google.api.client.extensions.android.json.AndroidJsonFactory;
 import com.google.api.client.googleapis.services.AbstractGoogleClientRequest;
 import com.google.api.client.googleapis.services.GoogleClientRequestInitializer;
+import com.letsmeet.android.config.Config;
 import com.letsmeet.server.eventService.EventService;
 import com.letsmeet.server.eventService.model.CreateEventRequest;
 import com.letsmeet.server.eventService.model.CreateEventResponse;
@@ -55,19 +56,18 @@ public class EventServiceClient {
     }
     // TODO(suhas): This is common code for all services. Move it to a common place.
     EventService.Builder serviceBuilder = new EventService.Builder(
-        AndroidHttp.newCompatibleTransport(), new AndroidJsonFactory(), null);
-    // Need setRootUrl and setGoogleClientRequestInitializer only for local testing.
-    // TODO(suhas): This is required only for runninly locally. Maybe create a flag to identify
-    // local run.
-    // TODO(suhas): Move server path to a constant common between all services.
-    serviceBuilder.setRootUrl("http://10.0.2.2:8080/_ah/api/")
-        .setGoogleClientRequestInitializer(new GoogleClientRequestInitializer() {
-          @Override
-          public void initialize(AbstractGoogleClientRequest<?> abstractGoogleClientRequest)
-              throws IOException {
-            abstractGoogleClientRequest.setDisableGZipContent(true);
-          }
-        });
+        AndroidHttp.newCompatibleTransport(), new AndroidJsonFactory(), null)
+        .setRootUrl(Config.getServerUrl());
+
+    if (Config.isEmulator()) {
+      serviceBuilder.setGoogleClientRequestInitializer(new GoogleClientRequestInitializer() {
+        @Override
+        public void initialize(AbstractGoogleClientRequest<?> abstractGoogleClientRequest)
+            throws IOException {
+          abstractGoogleClientRequest.setDisableGZipContent(true);
+        }
+      });
+    }
     eventService = serviceBuilder.build();
     return eventService;
   }
