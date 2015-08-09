@@ -26,12 +26,6 @@ public class CreateEventActivity extends AppCompatActivity {
     setContentView(R.layout.activity_create_event);
     final Button button = (Button) findViewById(R.id.create_event_button);
 
-    // TODO(suhas): Replace AutoCompleteTextView with customer View that can add more contacts.
-    AutoCompleteTextView contactAutoComplete =
-        (AutoCompleteTextView) findViewById(R.id.contact_autocomplete);
-    ContactCompletionAdapter contactAdapter = new ContactCompletionAdapter(this);
-    contactAutoComplete.setAdapter(contactAdapter);
-
     button.setOnClickListener(new View.OnClickListener() {
       public void onClick(View v) {
         EditText nameEditText = (EditText) findViewById(R.id.create_event_name);
