@@ -1,4 +1,4 @@
-package com.letsmeet.android.activity.adapter;
+package com.letsmeet.android.widgets.adapter;
 
 import android.content.Context;
 import android.database.Cursor;
@@ -7,6 +7,8 @@ import android.provider.BaseColumns;
 import android.provider.ContactsContract;
 import android.widget.FilterQueryProvider;
 import android.widget.SimpleCursorAdapter;
+
+import com.letsmeet.android.widgets.ContactInfo;
 
 /**
  * Adapter to read contacts and filter with prefix.
@@ -38,6 +40,21 @@ public class ContactCompletionAdapter extends SimpleCursorAdapter {
     });
 
     this.context = context;
+  }
+
+  public ContactInfo getSelectedContact(int position) {
+    Cursor cursor = (Cursor) getItem(position);
+    ContactInfo contactInfo = null;
+    if (cursor != null) {
+      contactInfo = new ContactInfo()
+          .setDisplayName(cursor.getString(
+              cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME)))
+          .setThumbnailUrl(cursor.getString(
+              cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.PHOTO_THUMBNAIL_URI)))
+          .setPhoneNumber(cursor.getString(
+              cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER)));
+    }
+    return contactInfo;
   }
 
   @Override

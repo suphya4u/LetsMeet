@@ -22,7 +22,7 @@
 
     <fragment
         android:name="com.letsmeet.android.activity.fragments.SelectContactFragment"
-        android:id="@+id/select_contact"
+        android:id="@+id/select_contact_fragment"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         tools:layout="@layout/fragment_select_contact"/>

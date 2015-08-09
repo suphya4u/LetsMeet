@@ -1,5 +1,6 @@
 package com.letsmeet.android.activity;
 
+import android.app.FragmentManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -7,16 +8,20 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.letsmeet.com.letsmeet.R;
 import android.view.View;
-import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 
-import com.letsmeet.android.activity.adapter.ContactCompletionAdapter;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
+import com.letsmeet.android.activity.fragments.SelectContactFragment;
 import com.letsmeet.android.apiclient.EventServiceClient;
 import com.letsmeet.android.storage.LocalStore;
+import com.letsmeet.android.widgets.ContactInfo;
 import com.letsmeet.server.eventService.model.CreateEventRequest;
 import com.letsmeet.server.eventService.model.CreateEventResponse;
 import com.letsmeet.server.eventService.model.EventDetails;
+
+import java.util.List;
 
 public class CreateEventActivity extends AppCompatActivity {
 
@@ -30,6 +35,9 @@ public class CreateEventActivity extends AppCompatActivity {
       public void onClick(View v) {
         EditText nameEditText = (EditText) findViewById(R.id.create_event_name);
         EditText notesEditText = (EditText) findViewById(R.id.create_event_notes);
+        FragmentManager fragmentManager = getFragmentManager();
+        SelectContactFragment contactFragment =
+            (SelectContactFragment) fragmentManager.findFragmentById(R.id.select_contact_fragment);
         String name = nameEditText.getText().toString();
         String notes = notesEditText.getText().toString();
         // TODO(suhas): Validate input.
@@ -39,6 +47,16 @@ public class CreateEventActivity extends AppCompatActivity {
             .setName(name)
             .setNotes(notes)
             .setOwnerId(userId);
+        ImmutableList<ContactInfo> invitees = contactFragment.getSelectedContacts();
+
+        // EventDetails#setInviteePhoneNumbers is deleted and replaced with addInviteePhoneNumber.
+        // However client lib is somehow not updated. So continue using set.
+        // TODO(suhas): Investigate and fix.
+        List<String> inviteePhoneNumbers = Lists.newArrayList();
+        for (ContactInfo invitee : invitees) {
+          inviteePhoneNumbers.add(invitee.getPhoneNumber());
+        }
+        eventDetails.setInviteePhoneNumbers(inviteePhoneNumbers);
         createEvent(new CreateEventRequest().setEventDetails(eventDetails));
         finish();
       }

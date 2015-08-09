@@ -1,16 +1,19 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-             xmlns:tools="http://schemas.android.com/tools"
-             android:layout_width="match_parent"
-             android:layout_height="match_parent"
-             tools:context="com.letsmeet.android.activity.fragments.SelectContactFragment">
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    tools:context="com.letsmeet.android.activity.fragments.SelectContactFragment">
 
-    <!-- TODO: Update blank fragment layout -->
+    <!-- TODO: Selected contacts could be a list -->
     <TextView
+        android:id="@+id/selected_contacts"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment"/>
+        android:layout_height="wrap_content"
+        android:text="@string/placeholder_for_selected_contacts"/>
 
-    <AutoCompleteTextView
+    <com.letsmeet.android.widgets.SelectContactsView
         xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/contact_autocomplete"
         android:hint="@string/contact_autocomplete"
@@ -18,4 +21,4 @@
         android:layout_height="wrap_content"
         android:completionThreshold="1" />
 
-</FrameLayout>
+</LinearLayout>
