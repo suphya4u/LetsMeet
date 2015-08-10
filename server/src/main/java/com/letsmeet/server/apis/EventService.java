@@ -14,7 +14,7 @@ import com.letsmeet.server.apis.messages.ListEventsForUserRequest;
 import com.letsmeet.server.apis.messages.ListEventsForUserResponse;
 import com.letsmeet.server.data.EventRecord;
 import com.letsmeet.server.data.Invites;
-import com.letsmeet.server.data.RegistrationRecord;
+import com.letsmeet.server.data.UserRecord;
 
 import java.util.List;
 import java.util.Set;
@@ -53,12 +53,12 @@ public class EventService {
     for (String phoneNumber : eventDetails.getInviteePhoneNumbers()) {
       // TODO(suhas): Get registration records for these phone numbers and add eventId, userId in
       // invites.
-      List<RegistrationRecord> users = ofy().load().type(RegistrationRecord.class)
+      List<UserRecord> users = ofy().load().type(UserRecord.class)
           .filter("phoneNumber", phoneNumber).list();
       Preconditions.checkArgument(users.size() <= 1, "More than one user with same phone number");
       long invitedUserId;
       if (users.isEmpty()) {
-        RegistrationRecord newUserRecord = new RegistrationRecord()
+        UserRecord newUserRecord = new UserRecord()
             .setPhoneNumber(phoneNumber);
         invitedUserId = ofy().save().entity(newUserRecord).now().getId();
       } else {

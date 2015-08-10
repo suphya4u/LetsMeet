@@ -8,9 +8,8 @@ import com.googlecode.objectify.annotation.Index;
 /**
  * The Objectify object model for device registrations we are persisting
  */
-// TODO(suhas): Rename this to UserRecord. As this is used as user data later in the code.
 @Entity
-public class RegistrationRecord {
+public class UserRecord {
 
   @Id
   Long id;
@@ -25,7 +24,7 @@ public class RegistrationRecord {
 
   private GeoPt userLocation;
 
-  public RegistrationRecord() {
+  public UserRecord() {
   }
 
   public long getId() {
@@ -36,7 +35,7 @@ public class RegistrationRecord {
     return regId;
   }
 
-  public RegistrationRecord setRegId(String regId) {
+  public UserRecord setRegId(String regId) {
     this.regId = regId;
     return this;
   }
@@ -45,7 +44,7 @@ public class RegistrationRecord {
     return phoneNumber;
   }
 
-  public RegistrationRecord setPhoneNumber(String phoneNumber) {
+  public UserRecord setPhoneNumber(String phoneNumber) {
     this.phoneNumber = phoneNumber;
     return this;
   }
@@ -54,7 +53,7 @@ public class RegistrationRecord {
     return name;
   }
 
-  public RegistrationRecord setName(String name) {
+  public UserRecord setName(String name) {
     this.name = name;
     return this;
   }
@@ -63,7 +62,7 @@ public class RegistrationRecord {
     return userLocation;
   }
 
-  public RegistrationRecord setUserLocation(GeoPt userLocation) {
+  public UserRecord setUserLocation(GeoPt userLocation) {
     this.userLocation = userLocation;
     return this;
   }

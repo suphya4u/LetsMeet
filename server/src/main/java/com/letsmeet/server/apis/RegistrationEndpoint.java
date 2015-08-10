@@ -13,7 +13,7 @@ import com.google.api.server.spi.response.CollectionResponse;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.letsmeet.server.apis.messages.RegistrationResponse;
-import com.letsmeet.server.data.RegistrationRecord;
+import com.letsmeet.server.data.UserRecord;
 import com.letsmeet.server.apis.messages.RegistrationRequest;
 
 import java.util.List;
@@ -49,11 +49,11 @@ public class RegistrationEndpoint {
   @ApiMethod(name = "register")
   public RegistrationResponse registerDevice(RegistrationRequest request) {
     // Match records by phone number.
-    RegistrationRecord record = findExistingRecord(request);
+    UserRecord record = findExistingRecord(request);
     if (record != null) {
       log.info("Device " + request.getRegId() + " already registered, updating record");
     } else {
-      record = new RegistrationRecord();
+      record = new UserRecord();
     }
     record.setRegId(request.getRegId());
     record.setName(request.getName());
@@ -69,7 +69,7 @@ public class RegistrationEndpoint {
    */
   @ApiMethod(name = "unregister")
   public void unregisterDevice(@Named("regId") String regId) {
-    RegistrationRecord record = ofy().load().type(RegistrationRecord.class)
+    UserRecord record = ofy().load().type(UserRecord.class)
         .filter("regId", regId).first().now();
     if (record == null) {
       log.info("Device " + regId + " not registered, skipping unregister");
@@ -85,17 +85,17 @@ public class RegistrationEndpoint {
    * @return a list of Google Cloud Messaging registration Ids
    */
   @ApiMethod(name = "listDevices")
-  public CollectionResponse<RegistrationRecord> listDevices(@Named("count") int count) {
-    List<RegistrationRecord> records = ofy().load().type(RegistrationRecord.class).limit(count).list();
-    return CollectionResponse.<RegistrationRecord>builder().setItems(records).build();
+  public CollectionResponse<UserRecord> listDevices(@Named("count") int count) {
+    List<UserRecord> records = ofy().load().type(UserRecord.class).limit(count).list();
+    return CollectionResponse.<UserRecord>builder().setItems(records).build();
   }
 
-  private RegistrationRecord findExistingRecord(RegistrationRequest request) {
-    List<RegistrationRecord> recordByPhoneList = ofy().load().type(RegistrationRecord.class)
+  private UserRecord findExistingRecord(RegistrationRequest request) {
+    List<UserRecord> recordByPhoneList = ofy().load().type(UserRecord.class)
         .filter("phoneNumber", request.getPhoneNumber()).list();
     Preconditions.checkArgument(recordByPhoneList.size() < 2, "Too many records by phone number");
     if (!recordByPhoneList.isEmpty()) {
-      RegistrationRecord recordByPhone = recordByPhoneList.get(0);
+      UserRecord recordByPhone = recordByPhoneList.get(0);
       if (!Strings.isNullOrEmpty(recordByPhone.getRegId())
           && !recordByPhone.getRegId().equals(request.getRegId())) {
         // TODO(suhas): Phone number is already signed up. We may need extra verification in this case.
@@ -106,7 +106,7 @@ public class RegistrationEndpoint {
       return recordByPhone;
     }
 
-    return ofy().load().type(RegistrationRecord.class)
+    return ofy().load().type(UserRecord.class)
         .filter("regId", request.getRegId()).first().now();
   }
 
