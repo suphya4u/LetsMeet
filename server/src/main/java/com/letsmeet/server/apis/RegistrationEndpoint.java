@@ -10,6 +10,8 @@ import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.ApiNamespace;
 import com.google.api.server.spi.response.CollectionResponse;
+import com.google.common.base.Preconditions;
+import com.google.common.base.Strings;
 import com.letsmeet.server.apis.messages.RegistrationResponse;
 import com.letsmeet.server.data.RegistrationRecord;
 import com.letsmeet.server.apis.messages.RegistrationRequest;
@@ -31,7 +33,10 @@ import static com.letsmeet.server.OfyService.ofy;
  * authentication! If this app is deployed, anyone can access this endpoint! If
  * you'd like to add authentication, take a look at the documentation.
  */
-@Api(name = "registration", version = "v1", namespace = @ApiNamespace(ownerDomain = "server.letsmeet.com", ownerName = "server.letsmeet.com", packagePath = ""))
+@Api(name = "registration", version = "v1",
+    namespace = @ApiNamespace(ownerDomain = "server.letsmeet.com",
+        ownerName = "server.letsmeet.com",
+        packagePath = ""))
 public class RegistrationEndpoint {
 
   private static final Logger log = Logger.getLogger(RegistrationEndpoint.class.getName());
@@ -43,16 +48,14 @@ public class RegistrationEndpoint {
    */
   @ApiMethod(name = "register")
   public RegistrationResponse registerDevice(RegistrationRequest request) {
-    // TODO(suhas): Check if the phone number already exists and maybe update same user record.
-    // Phone number can already exist if the user is invited by someone and we already have an user
-    // record for the invitation.
-    RegistrationRecord record = findRecord(request.getRegId());
+    // Match records by phone number.
+    RegistrationRecord record = findExistingRecord(request);
     if (record != null) {
       log.info("Device " + request.getRegId() + " already registered, updating record");
     } else {
       record = new RegistrationRecord();
-      record.setRegId(request.getRegId());
     }
+    record.setRegId(request.getRegId());
     record.setName(request.getName());
     record.setPhoneNumber(request.getPhoneNumber());
     long userId = ofy().save().entity(record).now().getId();
@@ -66,7 +69,8 @@ public class RegistrationEndpoint {
    */
   @ApiMethod(name = "unregister")
   public void unregisterDevice(@Named("regId") String regId) {
-    RegistrationRecord record = findRecord(regId);
+    RegistrationRecord record = ofy().load().type(RegistrationRecord.class)
+        .filter("regId", regId).first().now();
     if (record == null) {
       log.info("Device " + regId + " not registered, skipping unregister");
       return;
@@ -86,8 +90,24 @@ public class RegistrationEndpoint {
     return CollectionResponse.<RegistrationRecord>builder().setItems(records).build();
   }
 
-  private RegistrationRecord findRecord(String regId) {
-    return ofy().load().type(RegistrationRecord.class).filter("regId", regId).first().now();
+  private RegistrationRecord findExistingRecord(RegistrationRequest request) {
+    List<RegistrationRecord> recordByPhoneList = ofy().load().type(RegistrationRecord.class)
+        .filter("phoneNumber", request.getPhoneNumber()).list();
+    Preconditions.checkArgument(recordByPhoneList.size() < 2, "Too many records by phone number");
+    if (!recordByPhoneList.isEmpty()) {
+      RegistrationRecord recordByPhone = recordByPhoneList.get(0);
+      if (!Strings.isNullOrEmpty(recordByPhone.getRegId())
+          && !recordByPhone.getRegId().equals(request.getRegId())) {
+        // TODO(suhas): Phone number is already signed up. We may need extra verification in this case.
+        // Allowing it for now.
+        log.severe("Record with phone [" + request.getPhoneNumber()
+            + "] already exists with regId [" + request.getRegId());
+      }
+      return recordByPhone;
+    }
+
+    return ofy().load().type(RegistrationRecord.class)
+        .filter("regId", request.getRegId()).first().now();
   }
 
 }
