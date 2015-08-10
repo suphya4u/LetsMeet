@@ -24,6 +24,8 @@ public class UserRecord {
 
   private GeoPt userLocation;
 
+  private String countryCode;
+
   public UserRecord() {
   }
 
@@ -64,6 +66,15 @@ public class UserRecord {
 
   public UserRecord setUserLocation(GeoPt userLocation) {
     this.userLocation = userLocation;
+    return this;
+  }
+
+  public String getCountryCode() {
+    return countryCode;
+  }
+
+  public UserRecord setCountryCode(String countryCode) {
+    this.countryCode = countryCode;
     return this;
   }
 }

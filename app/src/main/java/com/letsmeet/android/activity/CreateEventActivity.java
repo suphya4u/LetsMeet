@@ -15,6 +15,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.letsmeet.android.activity.fragments.SelectContactFragment;
 import com.letsmeet.android.apiclient.EventServiceClient;
+import com.letsmeet.android.common.PhoneNumberHelper;
 import com.letsmeet.android.storage.LocalStore;
 import com.letsmeet.android.widgets.ContactInfo;
 import com.letsmeet.server.eventService.model.CreateEventRequest;
@@ -53,8 +54,9 @@ public class CreateEventActivity extends AppCompatActivity {
         // However client lib is somehow not updated. So continue using set.
         // TODO(suhas): Investigate and fix.
         List<String> inviteePhoneNumbers = Lists.newArrayList();
+        PhoneNumberHelper phoneNumberHelper = new PhoneNumberHelper(CreateEventActivity.this);
         for (ContactInfo invitee : invitees) {
-          inviteePhoneNumbers.add(invitee.getPhoneNumber());
+          inviteePhoneNumbers.add(phoneNumberHelper.formatPhoneNumber(invitee.getPhoneNumber()));
         }
         eventDetails.setInviteePhoneNumbers(inviteePhoneNumbers);
         createEvent(new CreateEventRequest().setEventDetails(eventDetails));

@@ -27,4 +27,5 @@ dependencies {
     compile project(path: ':server', configuration: 'android-endpoints')
     compile 'com.android.support:recyclerview-v7:+'
     compile 'com.android.support:multidex:1.0.0'
+    compile files('libs/libphonenumber-7.0.9.jar')
 }

@@ -10,6 +10,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.letsmeet.android.common.PhoneNumberHelper;
 import com.letsmeet.android.gcm.GcmRegistrationAsyncTask;
 
 
@@ -26,7 +27,8 @@ public class RegisterActivity extends AppCompatActivity {
         EditText nameEditText = (EditText) findViewById(R.id.registration_name);
         EditText phoneEditText = (EditText) findViewById(R.id.registration_phone);
         String name = nameEditText.getText().toString();
-        String phone = phoneEditText.getText().toString();
+        PhoneNumberHelper phoneNumberHelper = new PhoneNumberHelper(RegisterActivity.this);
+        String phone = phoneNumberHelper.formatPhoneNumber(phoneEditText.getText().toString());
         if (isInputValid(name, phone)) {
           new GcmRegistrationAsyncTask(RegisterActivity.this, name, phone).execute();
         }
