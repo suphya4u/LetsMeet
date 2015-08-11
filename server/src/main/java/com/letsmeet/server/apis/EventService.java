@@ -50,12 +50,14 @@ public class EventService {
     // Add owner by default.
     invitedUsers.add(eventDetails.getOwnerId());
 
-    for (String phoneNumber : eventDetails.getInviteePhoneNumbers()) {
+    for (EventDetails.Invitee invitee : eventDetails.getInviteePhoneNumbers()) {
       // TODO(suhas): Get registration records for these phone numbers and add eventId, userId in
       // invites.
+      String phoneNumber = invitee.getPhoneNumber();
       List<UserRecord> users = ofy().load().type(UserRecord.class)
           .filter("phoneNumber", phoneNumber).list();
       Preconditions.checkArgument(users.size() <= 1, "More than one user with same phone number");
+
       long invitedUserId;
       if (users.isEmpty()) {
         UserRecord newUserRecord = new UserRecord()
@@ -86,17 +88,32 @@ public class EventService {
 
   @ApiMethod(name = "eventsForUser")
   public ListEventsForUserResponse eventsForUser(ListEventsForUserRequest request) {
-    List<Invites> eventInvites = ofy().load().type(Invites.class)
+    List<Invites> userInvites = ofy().load().type(Invites.class)
         .filter("userId", request.getUserId()).list();
     ListEventsForUserResponse response = new ListEventsForUserResponse();
-    for (Invites invite : eventInvites) {
-      EventRecord event = ofy().load().type(EventRecord.class).id(invite.getEventId()).now();
+
+    // TODO(suhas): Add more checks like user does not exist / event or user or invite missing few
+    // fields. Handle all error cases.
+    for (Invites userInvite : userInvites) {
+      EventRecord event = ofy().load().type(EventRecord.class).id(userInvite.getEventId()).now();
+
       // TODO(suhas): Move constructing EventDetails from EventRecord loging and other way round to
       // a common place. We might need this quite a lot.
       EventDetails eventDetails = new EventDetails();
       eventDetails.setName(event.getName());
       eventDetails.setNotes(event.getNotes());
-      // Populate other event details.
+      List<Invites> otherInvitees = ofy().load().type(Invites.class)
+          .filter("eventId", event.getId()).list();
+
+      for (Invites otherInvitee : otherInvitees) {
+        UserRecord invitee = ofy().load().type(UserRecord.class).id(otherInvitee.getUserId()).now();
+        eventDetails.addInvitee(new EventDetails.Invitee()
+            .setPhoneNumber(invitee.getPhoneNumber())
+            .setResponse(userInvite.getResponse()));
+        if (otherInvitee.getUserId() == event.getOwnerId()) {
+          eventDetails.setOwnerPhoneNumber(invitee.getPhoneNumber());
+        }
+      }
 
       // TODO(suhas): Make sure each event is added only once. Currently there is no check on it.
       response.addEvent(eventDetails);

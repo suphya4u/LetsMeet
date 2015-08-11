@@ -21,6 +21,7 @@ import com.letsmeet.android.widgets.ContactInfo;
 import com.letsmeet.server.eventService.model.CreateEventRequest;
 import com.letsmeet.server.eventService.model.CreateEventResponse;
 import com.letsmeet.server.eventService.model.EventDetails;
+import com.letsmeet.server.eventService.model.Invitee;
 
 import java.util.List;
 
@@ -48,15 +49,17 @@ public class CreateEventActivity extends AppCompatActivity {
             .setName(name)
             .setNotes(notes)
             .setOwnerId(userId);
-        ImmutableList<ContactInfo> invitees = contactFragment.getSelectedContacts();
+        ImmutableList<ContactInfo> selectedContacts = contactFragment.getSelectedContacts();
 
         // EventDetails#setInviteePhoneNumbers is deleted and replaced with addInviteePhoneNumber.
         // However client lib is somehow not updated. So continue using set.
         // TODO(suhas): Investigate and fix.
-        List<String> inviteePhoneNumbers = Lists.newArrayList();
+        List<Invitee> inviteePhoneNumbers = Lists.newArrayList();
         PhoneNumberHelper phoneNumberHelper = new PhoneNumberHelper(CreateEventActivity.this);
-        for (ContactInfo invitee : invitees) {
-          inviteePhoneNumbers.add(phoneNumberHelper.formatPhoneNumber(invitee.getPhoneNumber()));
+        for (ContactInfo contact : selectedContacts) {
+          String phoneNumber = phoneNumberHelper.formatPhoneNumber(contact.getPhoneNumber());
+          Invitee invitee = new Invitee().setPhoneNumber(phoneNumber);
+          inviteePhoneNumbers.add(invitee);
         }
         eventDetails.setInviteePhoneNumbers(inviteePhoneNumbers);
         createEvent(new CreateEventRequest().setEventDetails(eventDetails));
