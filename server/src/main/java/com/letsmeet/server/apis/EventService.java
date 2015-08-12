@@ -15,6 +15,7 @@ import com.letsmeet.server.apis.messages.ListEventsForUserResponse;
 import com.letsmeet.server.data.EventRecord;
 import com.letsmeet.server.data.Invites;
 import com.letsmeet.server.data.UserRecord;
+import com.letsmeet.server.notifications.GcmNotifier;
 
 import java.util.List;
 import java.util.Set;
@@ -49,6 +50,8 @@ public class EventService {
     Set<Long> invitedUsers = Sets.newHashSet();
     // Add owner by default.
     invitedUsers.add(eventDetails.getOwnerId());
+    List<UserRecord> usersToNotify = Lists.newArrayList();
+    CreateEventResponse response = new CreateEventResponse();
 
     for (EventDetails.Invitee invitee : eventDetails.getInviteePhoneNumbers()) {
       // TODO(suhas): Get registration records for these phone numbers and add eventId, userId in
@@ -56,15 +59,20 @@ public class EventService {
       String phoneNumber = invitee.getPhoneNumber();
       List<UserRecord> users = ofy().load().type(UserRecord.class)
           .filter("phoneNumber", phoneNumber).list();
-      Preconditions.checkArgument(users.size() <= 1, "More than one user with same phone number");
+      if (users.size() > 1) {
+        log.severe("More than one user with same phone number");
+      };
 
       long invitedUserId;
       if (users.isEmpty()) {
         UserRecord newUserRecord = new UserRecord()
             .setPhoneNumber(phoneNumber);
         invitedUserId = ofy().save().entity(newUserRecord).now().getId();
+        response.addPhoneNumberNotYetRegistered(phoneNumber);
       } else {
-        invitedUserId = users.get(0).getId();
+        UserRecord user = users.get(0);
+        invitedUserId = user.getId();
+        usersToNotify.add(user);
       }
       invitedUsers.add(invitedUserId);
 
@@ -75,7 +83,8 @@ public class EventService {
     List<Invites> invitesList = createInvitesList(eventId, invitedUsers);
     ofy().save().entities(invitesList).now();
 
-    return new CreateEventResponse().setEventId(eventId);
+    GcmNotifier.getInstance().notifyNewEvent(usersToNotify, eventDetails);
+    return response.setEventId(eventId);
   }
 
   private List<Invites> createInvitesList(long eventId, Set<Long> invitedUsers) {
