@@ -11,6 +11,8 @@ import com.letsmeet.server.apis.messages.EventDetails;
 import com.letsmeet.server.data.UserRecord;
 
 import java.io.IOException;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -20,6 +22,11 @@ import static com.letsmeet.server.OfyService.ofy;
  * Send notifications to devices.
  */
 public class GcmNotifier {
+
+  // TODO(suhas): Move these constants to a common place which can be shared with app.
+  private static final String NOTIFICATION_EVENT_NAME_KEY = "EVENT_NAME";
+  private static final String NOTIFICATION_EVENT_DETAILS_KEY = "EVENT_DETAILS";
+  private static final String NOTIFICATION_EVENT_TIME_KEY = "EVENT_TIME";
 
   private static GcmNotifier instance;
 
@@ -50,6 +57,12 @@ public class GcmNotifier {
 
     Message message = new Message.Builder()
         .timeToLive(3 * 60 * 60) // 3 hours
+        .addData(NOTIFICATION_EVENT_NAME_KEY, event.getName())
+        .addData(NOTIFICATION_EVENT_DETAILS_KEY, event.getNotes())
+        .addData(NOTIFICATION_EVENT_TIME_KEY,
+            // TODO(suhas): Use event time instead of current time.
+            String.valueOf(Calendar.getInstance().getTimeInMillis()))
+        .collapseKey("Invitations available")
         .build();
 
     MulticastResult multicastResult = null;
@@ -72,7 +85,7 @@ public class GcmNotifier {
       }
       if (result.getMessageId() != null) {
         String canonicalRegId = result.getCanonicalRegistrationId();
-        if (canonicalRegId != null && !user.getRegId().equals(canonicalRegId)) {
+        if (!Strings.isNullOrEmpty(canonicalRegId) && !user.getRegId().equals(canonicalRegId)) {
           log.info("Registration Id " + user.getRegId()
               + " is not changed to " + canonicalRegId);
           user.setRegId(canonicalRegId);

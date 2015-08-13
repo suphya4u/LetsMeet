@@ -1,5 +1,7 @@
 package com.letsmeet.android.activity;
 
+import android.app.NotificationManager;
+import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -27,6 +29,9 @@ public class HomeActivity extends AppCompatActivity {
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
 
+    NotificationManager notificationManager =
+        (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+    notificationManager.cancelAll();
     LocalStore localStore = LocalStore.getInstance(this);
     userId = localStore.getUserId();
     if (userId == 0) {

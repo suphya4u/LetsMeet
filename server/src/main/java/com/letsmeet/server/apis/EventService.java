@@ -116,11 +116,13 @@ public class EventService {
 
       for (Invites otherInvitee : otherInvitees) {
         UserRecord invitee = ofy().load().type(UserRecord.class).id(otherInvitee.getUserId()).now();
-        eventDetails.addInvitee(new EventDetails.Invitee()
-            .setPhoneNumber(invitee.getPhoneNumber())
-            .setResponse(userInvite.getResponse()));
-        if (otherInvitee.getUserId() == event.getOwnerId()) {
-          eventDetails.setOwnerPhoneNumber(invitee.getPhoneNumber());
+        if (invitee != null) {
+          eventDetails.addInvitee(new EventDetails.Invitee()
+              .setPhoneNumber(invitee.getPhoneNumber())
+              .setResponse(userInvite.getResponse()));
+          if (otherInvitee.getUserId() == event.getOwnerId()) {
+            eventDetails.setOwnerPhoneNumber(invitee.getPhoneNumber());
+          }
         }
       }
 
