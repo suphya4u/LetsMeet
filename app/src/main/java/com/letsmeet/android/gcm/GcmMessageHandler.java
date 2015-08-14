@@ -64,11 +64,14 @@ public class GcmMessageHandler extends GcmListenerService {
 
     NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this)
         .setSmallIcon(R.mipmap.ic_launcher)
+        .setAutoCancel(true)
         .setContentTitle(eventName)
-        .setContentText("These are some random notes about the event that is happening on some" +
-            " random day and random time. This text is intentionally big to test how it shows up")
-            // TODO(suhas): Add actions for Yes, No, Maybe.
-        .setContentIntent(pendingIntent);
+        // TODO(suhas): Add actions for Yes, No, Maybe.
+        .setContentIntent(pendingIntent)
+        // TODO(suhas): Set right intent.
+        .addAction(0, "Yes", pendingIntent)
+        .addAction(0, "No", pendingIntent)
+        .addAction(0, "Maybe", pendingIntent);
 
     NotificationCompat.InboxStyle style = new NotificationCompat.InboxStyle();
     style.setBuilder(notificationBuilder);
@@ -78,7 +81,9 @@ public class GcmMessageHandler extends GcmListenerService {
       eventTime.setTimeInMillis(eventTimeMillis);
       String eventDateString = DateFormat.getDateFormat(this).format(eventTime.getTime());
       String eventTimeString = DateFormat.getTimeFormat(this).format(eventTime.getTime());
-      style.addLine(eventDateString + " " + eventTimeString);
+      String eventTimeLine = eventDateString + " " + eventTimeString;
+      style.addLine(eventTimeLine);
+      notificationBuilder.setContentText(eventTimeLine);
     }
     if (!Strings.isNullOrEmpty(eventNotes)) {
       style.addLine(eventNotes);

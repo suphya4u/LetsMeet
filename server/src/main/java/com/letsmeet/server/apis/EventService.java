@@ -114,6 +114,9 @@ public class EventService {
           .filter("eventId", event.getId()).list();
 
       for (Invites otherInvitee : otherInvitees) {
+        if (otherInvitee.getUserId() == 0) {
+          continue;
+        }
         UserRecord invitee = ofy().load().type(UserRecord.class).id(otherInvitee.getUserId()).now();
         if (invitee != null) {
           eventDetails.addInvitee(new EventDetails.Invitee()
