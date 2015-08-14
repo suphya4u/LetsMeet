@@ -12,7 +12,6 @@ import com.letsmeet.server.data.UserRecord;
 
 import java.io.IOException;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -24,9 +23,11 @@ import static com.letsmeet.server.OfyService.ofy;
 public class GcmNotifier {
 
   // TODO(suhas): Move these constants to a common place which can be shared with app.
+  private static final String NOTIFICATION_TYPE = "NOTIFICATION_TYPE";
   private static final String NOTIFICATION_EVENT_NAME_KEY = "EVENT_NAME";
   private static final String NOTIFICATION_EVENT_DETAILS_KEY = "EVENT_DETAILS";
   private static final String NOTIFICATION_EVENT_TIME_KEY = "EVENT_TIME";
+  private static final String NEW_EVENT_NOTIFICATION = "NEW_EVENT";
 
   private static GcmNotifier instance;
 
@@ -57,6 +58,7 @@ public class GcmNotifier {
 
     Message message = new Message.Builder()
         .timeToLive(3 * 60 * 60) // 3 hours
+        .addData(NOTIFICATION_TYPE, NEW_EVENT_NOTIFICATION)
         .addData(NOTIFICATION_EVENT_NAME_KEY, event.getName())
         .addData(NOTIFICATION_EVENT_DETAILS_KEY, event.getNotes())
         .addData(NOTIFICATION_EVENT_TIME_KEY,

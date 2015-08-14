@@ -4,7 +4,6 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
-import android.provider.ContactsContract;
 import android.widget.Toast;
 
 import com.google.android.gms.gcm.GoogleCloudMessaging;

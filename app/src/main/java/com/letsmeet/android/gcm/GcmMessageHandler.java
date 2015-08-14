@@ -1,5 +1,6 @@
 package com.letsmeet.android.gcm;
 
+import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -18,9 +19,11 @@ import java.util.TimeZone;
 
 public class GcmMessageHandler extends GcmListenerService {
 
+  private static final String NOTIFICATION_TYPE = "NOTIFICATION_TYPE";
   private static final String NOTIFICATION_EVENT_NAME_KEY = "EVENT_NAME";
   private static final String NOTIFICATION_EVENT_DETAILS_KEY = "EVENT_DETAILS";
   private static final String NOTIFICATION_EVENT_TIME_KEY = "EVENT_TIME";
+  private static final String NEW_EVENT_NOTIFICATION = "NEW_EVENT";
 
   public GcmMessageHandler() {
   }
@@ -30,6 +33,21 @@ public class GcmMessageHandler extends GcmListenerService {
     if (data == null || data.isEmpty()) {
       return;
     }
+    Notification notification = null;
+    if (NEW_EVENT_NOTIFICATION.equals(data.getString(NOTIFICATION_TYPE))) {
+      notification = createNewEventNotification(data);
+    }
+    // TODO(suhas): Handle other notifications.
+
+    if (notification != null) {
+      NotificationManager notificationManager =
+          (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+      int notificationId = 1;
+      notificationManager.notify(notificationId, notification);
+    }
+  }
+
+  private Notification createNewEventNotification(Bundle data) {
     String eventName = "Invitation: " + data.getString(NOTIFICATION_EVENT_NAME_KEY);
     String eventNotes = data.getString(NOTIFICATION_EVENT_DETAILS_KEY);
     long eventTimeMillis = 0;
@@ -49,15 +67,12 @@ public class GcmMessageHandler extends GcmListenerService {
         .setContentTitle(eventName)
         .setContentText("These are some random notes about the event that is happening on some" +
             " random day and random time. This text is intentionally big to test how it shows up")
-        // TODO(suhas): Add actions for Yes, No, Maybe.
+            // TODO(suhas): Add actions for Yes, No, Maybe.
         .setContentIntent(pendingIntent);
 
     NotificationCompat.InboxStyle style = new NotificationCompat.InboxStyle();
     style.setBuilder(notificationBuilder);
     style.setBigContentTitle(eventName);
-    if (!Strings.isNullOrEmpty(eventNotes)) {
-      style.addLine(eventNotes);
-    }
     if (eventTimeMillis > 0) {
       Calendar eventTime = Calendar.getInstance(TimeZone.getDefault());
       eventTime.setTimeInMillis(eventTimeMillis);
@@ -65,11 +80,10 @@ public class GcmMessageHandler extends GcmListenerService {
       String eventTimeString = DateFormat.getTimeFormat(this).format(eventTime.getTime());
       style.addLine(eventDateString + " " + eventTimeString);
     }
+    if (!Strings.isNullOrEmpty(eventNotes)) {
+      style.addLine(eventNotes);
+    }
     notificationBuilder.setStyle(style);
-
-    NotificationManager notificationManager =
-        (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-    int notificationId = 1;
-    notificationManager.notify(notificationId, notificationBuilder.build());
+    return notificationBuilder.build();
   }
 }

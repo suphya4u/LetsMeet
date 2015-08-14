@@ -1,7 +1,7 @@
 package com.letsmeet.android.widgets;
 
 /**
- * Created by suhas on 8/8/15.
+ * Contact info POJO used for contact completion.
  */
 public class ContactInfo {
 

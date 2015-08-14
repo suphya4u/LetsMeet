@@ -7,14 +7,12 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import android.letsmeet.com.letsmeet.R;
-import android.widget.AutoCompleteTextView;
 import android.widget.TextView;
 
 import com.google.api.client.util.Lists;
 import com.google.common.collect.ImmutableList;
 import com.letsmeet.android.widgets.ContactInfo;
 import com.letsmeet.android.widgets.SelectContactsView;
-import com.letsmeet.android.widgets.adapter.ContactCompletionAdapter;
 
 import java.util.List;
 
