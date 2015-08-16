@@ -13,6 +13,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.letsmeet.com.letsmeet.R;
+import android.widget.Toast;
 
 import com.letsmeet.android.activity.adapter.EventListRecyclerAdapter;
 import com.letsmeet.android.apiclient.EventServiceClient;
@@ -33,14 +34,25 @@ public class HomeActivity extends AppCompatActivity {
         (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
     notificationManager.cancelAll();
     LocalStore localStore = LocalStore.getInstance(this);
-    userId = localStore.getUserId();
-    if (userId == 0) {
+    if (!localStore.isRegistered()) {
       Intent intent = new Intent(this, RegisterActivity.class);
       intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
       startActivity(intent);
       return;
     }
 
+    if (!localStore.isPhoneVerified()) {
+      // TODO(suhas): Add new screen that has details about phone verification and auto refresh it
+      // while on the screen.
+      Toast.makeText(this, "We are trying to verify your phone number...",
+          Toast.LENGTH_LONG).show();
+
+      // TODO(suhas): Verification not yet complete. Return here. Commented out return for testing
+      // rest of flow without actually completing verification.
+      // return;
+    }
+
+    userId = localStore.getUserId();
     setContentView(R.layout.activity_home);
     final Button button = (Button) findViewById(R.id.new_event_button);
     button.setOnClickListener(new View.OnClickListener() {

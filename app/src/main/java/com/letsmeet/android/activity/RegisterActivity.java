@@ -13,12 +13,11 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.letsmeet.android.apiclient.RegistrationServiceClient;
 import com.letsmeet.android.common.PhoneNumberHelper;
+import com.letsmeet.android.config.Config;
 import com.letsmeet.android.gcm.GcmRegistrationHandler;
 import com.letsmeet.android.storage.LocalStore;
-import com.letsmeet.server.registration.model.RegistrationRequest;
-import com.letsmeet.server.registration.model.RegistrationResponse;
+import com.letsmeet.android.verification.SmsVerifier;
 
 import java.io.IOException;
 
@@ -36,9 +35,15 @@ public class RegisterActivity extends AppCompatActivity {
         EditText nameEditText = (EditText) findViewById(R.id.registration_name);
         EditText phoneEditText = (EditText) findViewById(R.id.registration_phone);
         String name = nameEditText.getText().toString();
-        PhoneNumberHelper phoneNumberHelper = new PhoneNumberHelper(RegisterActivity.this);
-        String phone = phoneNumberHelper.formatPhoneNumber(phoneEditText.getText().toString());
-        registerUser(name, phone);
+        String formattedPhoneNumber;
+        if (Config.isEmulator()) {
+          formattedPhoneNumber = phoneEditText.getText().toString();
+        } else {
+          PhoneNumberHelper phoneNumberHelper = new PhoneNumberHelper(RegisterActivity.this);
+          formattedPhoneNumber = phoneNumberHelper
+              .formatPhoneNumber(phoneEditText.getText().toString());
+        }
+        registerUser(name, formattedPhoneNumber);
       }
     });
   }
@@ -77,43 +82,33 @@ public class RegisterActivity extends AppCompatActivity {
     return true;
   }
 
-  private void registerUser(String name, String phone) {
+  private void registerUser(final String name, final String phone) {
     final ProgressDialog pd = new ProgressDialog(this);
+    pd.show();
 
-    final RegistrationRequest registrationRequest = new RegistrationRequest()
-        .setName(name)
-        .setPhoneNumber(phone);
+    new AsyncTask<Void, Void, Void>() {
 
-    new AsyncTask<RegistrationRequest, Void, RegistrationResponse>() {
-
-      @Override
-      protected void onPreExecute() {
-        pd.show();
-      }
-
-      @Override protected RegistrationResponse doInBackground(RegistrationRequest... params) {
+      @Override protected Void doInBackground(Void... params) {
         try {
           String registrationId = GcmRegistrationHandler.getRegistrationId(RegisterActivity.this);
-          registrationRequest.setRegId(registrationId);
-          // TODO(suhas): Verify phone number by sms before registration.
-          RegistrationResponse response = RegistrationServiceClient.getInstance()
-              .registerUser(registrationRequest);
           LocalStore localStore = LocalStore.getInstance(RegisterActivity.this);
-          localStore.saveUserId(response.getUserId());
-          return response;
+          localStore.saveUserData(name, phone, registrationId);
+          localStore.setVerificationStarted();
+          SmsVerifier.getInstance().verifyPhoneNumber(phone);
         } catch (IOException e) {
           // TODO(suhas): Handle gracefully.
           throw new RuntimeException(e);
         }
+        return null;
       }
 
       @Override
-      protected void onPostExecute(RegistrationResponse response) {
+      protected void onPostExecute(Void response) {
         pd.hide();
         Intent intent = new Intent(RegisterActivity.this, HomeActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
       }
-    }.execute(registrationRequest);
+    }.execute();
   }
 }
