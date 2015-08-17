@@ -83,7 +83,7 @@ public class RegisterActivity extends AppCompatActivity {
   }
 
   private void registerUser(final String name, final String phone) {
-    final ProgressDialog pd = new ProgressDialog(this);
+    final ProgressDialog pd = new ProgressDialog(RegisterActivity.this);
     pd.show();
 
     new AsyncTask<Void, Void, Void>() {
@@ -94,7 +94,7 @@ public class RegisterActivity extends AppCompatActivity {
           LocalStore localStore = LocalStore.getInstance(RegisterActivity.this);
           localStore.saveUserData(name, phone, registrationId);
           localStore.setVerificationStarted();
-          SmsVerifier.getInstance().verifyPhoneNumber(phone);
+          SmsVerifier.getInstance().verifyPhoneNumber(RegisterActivity.this, phone);
         } catch (IOException e) {
           // TODO(suhas): Handle gracefully.
           throw new RuntimeException(e);

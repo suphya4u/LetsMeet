@@ -8,8 +8,8 @@ import android.os.Bundle;
 import android.telephony.SmsMessage;
 import android.widget.Toast;
 
-import com.letsmeet.android.activity.HomeActivity;
 import com.letsmeet.android.apiclient.RegistrationServiceClient;
+import com.letsmeet.android.config.Constants;
 import com.letsmeet.android.storage.LocalStore;
 import com.letsmeet.server.registration.model.RegistrationRequest;
 import com.letsmeet.server.registration.model.RegistrationResponse;
@@ -24,23 +24,23 @@ public class SmsReceiver extends BroadcastReceiver {
   // TODO(suhas): Stop receiver once phone number is verified.
   @Override public void onReceive(Context context, Intent intent) {
     final Bundle intentExtras = intent.getExtras();
-    if (intentExtras != null) {
-      Object[] smsObjects = (Object[]) intentExtras.get(SMS_BUNDLE);
-      String smsMessageStr = "";
-      for (Object sms : smsObjects) {
-        SmsMessage smsMessage = SmsMessage.createFromPdu((byte[]) sms);
+    if (intentExtras == null) {
+      return;
+    }
+    Object[] smsObjects = (Object[]) intentExtras.get(SMS_BUNDLE);
+    String smsMessageStr = "";
+    for (Object sms : smsObjects) {
+      SmsMessage smsMessage = SmsMessage.createFromPdu((byte[]) sms);
 
-        String smsBody = smsMessage.getMessageBody();
-        String address = smsMessage.getOriginatingAddress();
-
-        // TODO(suhas): Verify sender of message matches the phone number in record
-        // (maybe without country code).
-        // TODO(suhas): Verify verification code matches with the one sent out.
-        smsMessageStr += "SMS From: " + address + "\n";
-        smsMessageStr += smsBody + "\n";
-      }
+      String smsBody = smsMessage.getMessageBody();
+      String address = smsMessage.getOriginatingAddress();
+      smsMessageStr += "SMS From: " + address + "\n";
+      smsMessageStr += smsBody + "\n";
       Toast.makeText(context, smsMessageStr, Toast.LENGTH_SHORT).show();
 
+      if (!isVerificationMessage(context, address, smsBody)) {
+        return;
+      }
       LocalStore localStore = LocalStore.getInstance(context);
       String name = localStore.getUserName();
       String phoneNumber = localStore.getUserPhoneNumber();
@@ -51,6 +51,18 @@ public class SmsReceiver extends BroadcastReceiver {
           .setRegId(registrationId);
       registerUser(registrationRequest, context);
     }
+  }
+
+  private boolean isVerificationMessage(Context context, String sender, String smsBody) {
+    LocalStore localStore = LocalStore.getInstance(context);
+    long verificationCode = localStore.getVerificationCode();
+    if (smsBody.contains(Constants.SMS_TEXT_PREFIX)
+        && smsBody.contains(String.valueOf(verificationCode))) {
+      // TODO(suhas): Verify sender of message matches the phone number in record
+      // (maybe without country code).
+      return true;
+    }
+    return false;
   }
 
   private void registerUser(final RegistrationRequest registrationRequest, final Context context) {

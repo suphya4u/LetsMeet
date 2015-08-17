@@ -13,10 +13,10 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.letsmeet.com.letsmeet.R;
-import android.widget.Toast;
 
 import com.letsmeet.android.activity.adapter.EventListRecyclerAdapter;
 import com.letsmeet.android.apiclient.EventServiceClient;
+import com.letsmeet.android.config.Config;
 import com.letsmeet.android.storage.LocalStore;
 import com.letsmeet.server.eventService.model.ListEventsForUserResponse;
 
@@ -35,27 +35,31 @@ public class HomeActivity extends AppCompatActivity {
     notificationManager.cancelAll();
     LocalStore localStore = LocalStore.getInstance(this);
     if (!localStore.isRegistered()) {
-      Intent intent = new Intent(this, RegisterActivity.class);
-      intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-      startActivity(intent);
+      navigateToRegistration();
       return;
     }
 
     if (!localStore.isPhoneVerified()) {
-      // TODO(suhas): Add new screen that has details about phone verification and auto refresh it
-      // while on the screen.
-      Toast.makeText(this, "We are trying to verify your phone number...",
-          Toast.LENGTH_LONG).show();
-
-      // TODO(suhas): Verification not yet complete. Return here. Commented out return for testing
-      // rest of flow without actually completing verification.
-      // return;
+      if (!Config.isEmulator()) {
+        // Emulator does not need verification. Remove this check if you specifically want to test
+        // verification flow.
+        setContentView(R.layout.activity_home_pending_verification);
+        final Button registerAgainButton = (Button) findViewById(R.id.register_again_button);
+        registerAgainButton.setOnClickListener(new View.OnClickListener() {
+          @Override public void onClick(View v) {
+            navigateToRegistration();
+          }
+        });
+        // TODO(suhas): Register event listener to listen to when verification complete and load
+        // actual home screen on verification complete.
+        return;
+      }
     }
 
     userId = localStore.getUserId();
     setContentView(R.layout.activity_home);
-    final Button button = (Button) findViewById(R.id.new_event_button);
-    button.setOnClickListener(new View.OnClickListener() {
+    final Button createEventButton = (Button) findViewById(R.id.new_event_button);
+    createEventButton.setOnClickListener(new View.OnClickListener() {
       public void onClick(View v) {
         startActivity(new Intent(HomeActivity.this, CreateEventActivity.class));
       }
@@ -110,5 +114,11 @@ public class HomeActivity extends AppCompatActivity {
         eventListView.setAdapter(new EventListRecyclerAdapter(response.getEventsList()));
       }
     }.execute();
+  }
+
+  private void navigateToRegistration() {
+    Intent intent = new Intent(this, RegisterActivity.class);
+    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+    startActivity(intent);
   }
 }

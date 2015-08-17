@@ -22,4 +22,6 @@
 
 <!-- TODO: Remove or change this placeholder text -->
     <string name="placeholder_for_selected_contacts">Selected: </string>
+    <string name="pending_verification_info">We are still trying to verify your phone number. If you would like change the number please retry registration again ..</string>
+    <string name="register_again_button">Register again</string>
 </resources>
