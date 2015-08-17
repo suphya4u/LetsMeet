@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.telephony.SmsMessage;
 import android.widget.Toast;
 
@@ -28,19 +29,15 @@ public class SmsReceiver extends BroadcastReceiver {
       return;
     }
     Object[] smsObjects = (Object[]) intentExtras.get(SMS_BUNDLE);
-    String smsMessageStr = "";
     for (Object sms : smsObjects) {
       SmsMessage smsMessage = SmsMessage.createFromPdu((byte[]) sms);
 
       String smsBody = smsMessage.getMessageBody();
       String address = smsMessage.getOriginatingAddress();
-      smsMessageStr += "SMS From: " + address + "\n";
-      smsMessageStr += smsBody + "\n";
-      Toast.makeText(context, smsMessageStr, Toast.LENGTH_SHORT).show();
-
       if (!isVerificationMessage(context, address, smsBody)) {
         return;
       }
+
       LocalStore localStore = LocalStore.getInstance(context);
       String name = localStore.getUserName();
       String phoneNumber = localStore.getUserPhoneNumber();
@@ -50,6 +47,11 @@ public class SmsReceiver extends BroadcastReceiver {
           .setPhoneNumber(phoneNumber)
           .setRegId(registrationId);
       registerUser(registrationRequest, context);
+
+      // Verification complete. Broadcast.
+      Intent broadcast = new Intent();
+      broadcast.setAction(Constants.VERIFICATION_COMPLETE_BROADCAST);
+      context.sendBroadcast(broadcast);
     }
   }
 
