@@ -5,7 +5,7 @@ import com.googlecode.objectify.ObjectifyFactory;
 import com.googlecode.objectify.ObjectifyService;
 import com.letsmeet.server.data.EventRecord;
 import com.letsmeet.server.data.Invites;
-import com.letsmeet.server.data.RegistrationRecord;
+import com.letsmeet.server.data.UserRecord;
 
 /**
  * Objectify service wrapper so we can statically register our persistence classes
@@ -14,7 +14,7 @@ import com.letsmeet.server.data.RegistrationRecord;
 public class OfyService {
 
   static {
-    ObjectifyService.register(RegistrationRecord.class);
+    ObjectifyService.register(UserRecord.class);
     ObjectifyService.register(EventRecord.class);
     ObjectifyService.register(Invites.class);
   }

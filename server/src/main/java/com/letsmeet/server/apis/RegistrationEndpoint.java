@@ -10,8 +10,10 @@ import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.ApiNamespace;
 import com.google.api.server.spi.response.CollectionResponse;
+import com.google.common.base.Preconditions;
+import com.google.common.base.Strings;
 import com.letsmeet.server.apis.messages.RegistrationResponse;
-import com.letsmeet.server.data.RegistrationRecord;
+import com.letsmeet.server.data.UserRecord;
 import com.letsmeet.server.apis.messages.RegistrationRequest;
 
 import java.util.List;
@@ -31,7 +33,10 @@ import static com.letsmeet.server.OfyService.ofy;
  * authentication! If this app is deployed, anyone can access this endpoint! If
  * you'd like to add authentication, take a look at the documentation.
  */
-@Api(name = "registration", version = "v1", namespace = @ApiNamespace(ownerDomain = "server.letsmeet.com", ownerName = "server.letsmeet.com", packagePath = ""))
+@Api(name = "registration", version = "v1",
+    namespace = @ApiNamespace(ownerDomain = "server.letsmeet.com",
+        ownerName = "server.letsmeet.com",
+        packagePath = ""))
 public class RegistrationEndpoint {
 
   private static final Logger log = Logger.getLogger(RegistrationEndpoint.class.getName());
@@ -43,11 +48,13 @@ public class RegistrationEndpoint {
    */
   @ApiMethod(name = "register")
   public RegistrationResponse registerDevice(RegistrationRequest request) {
-    if (findRecord(request.getRegId()) != null) {
-      log.info("Device " + request.getRegId() + " already registered, skipping register");
-      return new RegistrationResponse().setIsSuccess(true);
+    // Match records by phone number.
+    UserRecord record = findExistingRecord(request);
+    if (record != null) {
+      log.info("Device " + request.getRegId() + " already registered, updating record");
+    } else {
+      record = new UserRecord();
     }
-    RegistrationRecord record = new RegistrationRecord();
     record.setRegId(request.getRegId());
     record.setName(request.getName());
     record.setPhoneNumber(request.getPhoneNumber());
@@ -62,7 +69,8 @@ public class RegistrationEndpoint {
    */
   @ApiMethod(name = "unregister")
   public void unregisterDevice(@Named("regId") String regId) {
-    RegistrationRecord record = findRecord(regId);
+    UserRecord record = ofy().load().type(UserRecord.class)
+        .filter("regId", regId).first().now();
     if (record == null) {
       log.info("Device " + regId + " not registered, skipping unregister");
       return;
@@ -77,13 +85,29 @@ public class RegistrationEndpoint {
    * @return a list of Google Cloud Messaging registration Ids
    */
   @ApiMethod(name = "listDevices")
-  public CollectionResponse<RegistrationRecord> listDevices(@Named("count") int count) {
-    List<RegistrationRecord> records = ofy().load().type(RegistrationRecord.class).limit(count).list();
-    return CollectionResponse.<RegistrationRecord>builder().setItems(records).build();
+  public CollectionResponse<UserRecord> listDevices(@Named("count") int count) {
+    List<UserRecord> records = ofy().load().type(UserRecord.class).limit(count).list();
+    return CollectionResponse.<UserRecord>builder().setItems(records).build();
   }
 
-  private RegistrationRecord findRecord(String regId) {
-    return ofy().load().type(RegistrationRecord.class).filter("regId", regId).first().now();
+  private UserRecord findExistingRecord(RegistrationRequest request) {
+    List<UserRecord> recordByPhoneList = ofy().load().type(UserRecord.class)
+        .filter("phoneNumber", request.getPhoneNumber()).list();
+    Preconditions.checkArgument(recordByPhoneList.size() < 2, "Too many records by phone number");
+    if (!recordByPhoneList.isEmpty()) {
+      UserRecord recordByPhone = recordByPhoneList.get(0);
+      if (!Strings.isNullOrEmpty(recordByPhone.getRegId())
+          && !recordByPhone.getRegId().equals(request.getRegId())) {
+        // TODO(suhas): Phone number is already signed up. We may need extra verification in this case.
+        // Allowing it for now.
+        log.severe("Record with phone [" + request.getPhoneNumber()
+            + "] already exists with regId [" + request.getRegId());
+      }
+      return recordByPhone;
+    }
+
+    return ofy().load().type(UserRecord.class)
+        .filter("regId", request.getRegId()).first().now();
   }
 
 }

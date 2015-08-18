@@ -1,65 +1,81 @@
 package com.letsmeet.android.activity;
 
-import java.util.Locale;
-
+import android.app.NotificationManager;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
-import android.support.v7.app.ActionBarActivity;
-import android.support.v7.app.ActionBar;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
-import android.support.v4.app.FragmentPagerAdapter;
+import android.content.IntentFilter;
+import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
-import android.view.Gravity;
-import android.view.LayoutInflater;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.TextView;
 import android.letsmeet.com.letsmeet.R;
+import android.widget.Toast;
 
+import com.letsmeet.android.activity.adapter.EventListRecyclerAdapter;
+import com.letsmeet.android.apiclient.EventServiceClient;
+import com.letsmeet.android.config.Config;
+import com.letsmeet.android.config.Constants;
 import com.letsmeet.android.storage.LocalStore;
+import com.letsmeet.server.eventService.model.ListEventsForUserResponse;
 
 public class HomeActivity extends AppCompatActivity {
 
-  /**
-   * The {@link android.support.v4.view.PagerAdapter} that will provide
-   * fragments for each of the sections. We use a
-   * {@link FragmentPagerAdapter} derivative, which will keep every
-   * loaded fragment in memory. If this becomes too memory intensive, it
-   * may be best to switch to a
-   * {@link android.support.v4.app.FragmentStatePagerAdapter}.
-   */
-  SectionsPagerAdapter mSectionsPagerAdapter;
+  private RecyclerView eventListView;
 
-  /**
-   * The {@link ViewPager} that will host the section contents.
-   */
-  ViewPager mViewPager;
+  private BroadcastReceiver verificationCompleteReceiver = new BroadcastReceiver() {
+    @Override public void onReceive(Context context, Intent intent) {
+      Toast.makeText(HomeActivity.this, "Verification complete", Toast.LENGTH_LONG).show();
+      renderEventList();
+    }
+  };
+
+  private long userId;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
 
-    if (!isRegistered()) {
-      Intent intent = new Intent(this, RegisterActivity.class); // Your list's Intent
-      // Add the FLAG_ACTIVITY_NO_HISTORY flag
-      intent.setFlags(intent.getFlags() | Intent.FLAG_ACTIVITY_NO_HISTORY);
-      startActivity(intent);
+    IntentFilter filter = new IntentFilter();
+    filter.addAction(Constants.VERIFICATION_COMPLETE_BROADCAST);
+    registerReceiver(verificationCompleteReceiver, filter);
+
+    NotificationManager notificationManager =
+        (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+    notificationManager.cancelAll();
+
+    LocalStore localStore = LocalStore.getInstance(this);
+    if (!localStore.isRegistered()) {
+      navigateToRegistration();
+      return;
     }
-    setContentView(R.layout.activity_home);
 
-    // Create the adapter that will return a fragment for each of the three
-    // primary sections of the activity.
-    mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
+    if (!localStore.isPhoneVerified()) {
+      if (Config.isEmulator() && !Config.isVerificationRequiredForEmulator()) {
+        Toast.makeText(this,
+            "Verification not yet complete, but continuing since you are in Emulator",
+            Toast.LENGTH_LONG).show();
+      } else {
+        renderPendingVerification();
+        return;
+      }
+    }
 
-    // Set up the ViewPager with the sections adapter.
-    mViewPager = (ViewPager) findViewById(R.id.pager);
-    mViewPager.setAdapter(mSectionsPagerAdapter);
+    renderEventList();
+  }
+
+  @Override
+  protected void onResume() {
+    super.onResume();
+    // TODO(suhas): Prefer caching than fetching events on every resume.
+    if (eventListView != null) {
+      listEvents();
+    }
   }
 
   @Override
@@ -84,96 +100,52 @@ public class HomeActivity extends AppCompatActivity {
     return super.onOptionsItemSelected(item);
   }
 
-
-  /**
-   * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
-   * one of the sections/tabs/pages.
-   */
-  public class SectionsPagerAdapter extends FragmentPagerAdapter {
-
-    public SectionsPagerAdapter(FragmentManager fm) {
-      super(fm);
-    }
-
-    @Override
-    public Fragment getItem(int position) {
-      // getItem is called to instantiate the fragment for the given page.
-      // Return a PlaceholderFragment (defined as a static inner class below).
-      return PlaceholderFragment.newInstance(position + 1);
-    }
-
-    @Override
-    public int getCount() {
-      // Show 3 total pages.
-      return 3;
-    }
-
-    @Override
-    public CharSequence getPageTitle(int position) {
-      Locale l = Locale.getDefault();
-      switch (position) {
-        case 0:
-          return getString(R.string.title_section1).toUpperCase(l);
-        case 1:
-          return getString(R.string.title_section2).toUpperCase(l);
-        case 2:
-          return getString(R.string.title_section3).toUpperCase(l);
+  private void renderPendingVerification() {
+    setContentView(R.layout.activity_home_pending_verification);
+    final Button registerAgainButton = (Button) findViewById(R.id.register_again_button);
+    registerAgainButton.setOnClickListener(new View.OnClickListener() {
+      @Override public void onClick(View v) {
+        navigateToRegistration();
       }
-      return null;
-    }
+    });
   }
 
-  private boolean isRegistered() {
+  private void renderEventList() {
     LocalStore localStore = LocalStore.getInstance(this);
-    return localStore.getUserId() != 0;
+    userId = localStore.getUserId();
+    setContentView(R.layout.activity_home);
+    final Button createEventButton = (Button) findViewById(R.id.new_event_button);
+    createEventButton.setOnClickListener(new View.OnClickListener() {
+      public void onClick(View v) {
+        startActivity(new Intent(HomeActivity.this, CreateEventActivity.class));
+      }
+    });
+
+    eventListView = (RecyclerView) findViewById(R.id.events_list);
+    final LinearLayoutManager layoutManager = new LinearLayoutManager(this);
+    layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+    eventListView.setLayoutManager(layoutManager);
+    listEvents();
   }
 
-  // TODO(suhas): Below is just a placeholder for one of the tab view. Create different class for
-  // each of fragment.
-  /**
-   * A placeholder fragment containing a simple view.
-   */
-  public static class PlaceholderFragment extends Fragment {
-    /**
-     * The fragment argument representing the section number for this
-     * fragment.
-     */
-    private static final String ARG_SECTION_NUMBER = "section_number";
+  // TODO(suhas): Fetching event list code should be moved to ApiClient.
+  private void listEvents() {
+    new AsyncTask<Long, Void, ListEventsForUserResponse>() {
 
-    /**
-     * Returns a new instance of this fragment for the given section
-     * number.
-     */
-    public static PlaceholderFragment newInstance(int sectionNumber) {
-      PlaceholderFragment fragment = new PlaceholderFragment();
-      Bundle args = new Bundle();
-      args.putInt(ARG_SECTION_NUMBER, sectionNumber);
-      fragment.setArguments(args);
-      return fragment;
-    }
+      @Override protected ListEventsForUserResponse doInBackground(Long... params) {
+        return EventServiceClient.getInstance().listEvents(userId);
+      }
 
-    public PlaceholderFragment() {
-    }
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-      final View rootView = inflater.inflate(R.layout.fragment_home, container, false);
-      final Button button = (Button) rootView.findViewById(R.id.new_event_button);
-      button.setOnClickListener(new View.OnClickListener() {
-        public void onClick(View v) {
-          startActivity(new Intent(rootView.getContext(), CreateEventActivity.class));
-        }
-      });
-
-      final Button btnListEvents = (Button) rootView.findViewById(R.id.list_events_button);
-      btnListEvents.setOnClickListener(new View.OnClickListener() {
-        public void onClick(View v) {
-          startActivity(new Intent(rootView.getContext(), EventListActivity.class));
-        }
-      });
-      return rootView;
-    }
+      @Override protected void onPostExecute(ListEventsForUserResponse response) {
+        // TODO(suhas): Do not create new adapter everytime. Update list in same adapter instead.
+        eventListView.setAdapter(new EventListRecyclerAdapter(response.getEventsList()));
+      }
+    }.execute();
   }
 
+  private void navigateToRegistration() {
+    Intent intent = new Intent(this, RegisterActivity.class);
+    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+    startActivity(intent);
+  }
 }

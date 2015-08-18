@@ -1,7 +1,7 @@
 package com.letsmeet.server.apis.messages;
 
 /**
- * Created by suhas on 7/30/15.
+ * Request for list events.
  */
 public class ListEventsForUserRequest {
 

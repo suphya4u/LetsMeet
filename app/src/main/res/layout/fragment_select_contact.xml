@@ -1,0 +1,24 @@
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    tools:context="com.letsmeet.android.activity.fragments.SelectContactFragment">
+
+    <!-- TODO: Selected contacts could be a list -->
+    <TextView
+        android:id="@+id/selected_contacts"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/placeholder_for_selected_contacts"/>
+
+    <com.letsmeet.android.widgets.SelectContactsView
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/contact_autocomplete"
+        android:hint="@string/contact_autocomplete"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:completionThreshold="1" />
+
+</LinearLayout>

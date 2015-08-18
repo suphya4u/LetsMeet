@@ -25,6 +25,10 @@ public class EventRecord {
 
   private long ownerId;
 
+  public long getId() {
+    return id;
+  }
+
   public String getName() {
     return name;
   }
