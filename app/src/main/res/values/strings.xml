@@ -15,4 +15,6 @@
     <string name="create_event_name">Give some name to event</string>
     <string name="title_activity_create_event">CreateEventActivity</string>
     <string name="new_event">Create New Event</string>
+    <string name="list_events">View Events</string>
+    <string name="title_activity_event_list">Events</string>
 </resources>

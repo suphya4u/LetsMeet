@@ -63,6 +63,10 @@
             android:name="com.letsmeet.android.activity.CreateEventActivity"
             android:label="@string/title_activity_create_event" >
         </activity>
+        <activity
+            android:name="com.letsmeet.android.activity.EventListActivity"
+            android:label="@string/title_activity_event_list" >
+        </activity>
     </application>
 
 </manifest>

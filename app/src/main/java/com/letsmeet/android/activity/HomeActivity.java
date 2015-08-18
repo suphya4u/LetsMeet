@@ -165,6 +165,13 @@ public class HomeActivity extends AppCompatActivity {
           startActivity(new Intent(rootView.getContext(), CreateEventActivity.class));
         }
       });
+
+      final Button btnListEvents = (Button) rootView.findViewById(R.id.list_events_button);
+      btnListEvents.setOnClickListener(new View.OnClickListener() {
+        public void onClick(View v) {
+          startActivity(new Intent(rootView.getContext(), EventListActivity.class));
+        }
+      });
       return rootView;
     }
   }
