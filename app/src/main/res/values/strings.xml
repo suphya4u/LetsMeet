@@ -24,5 +24,7 @@
     <string name="placeholder_for_selected_contacts">Selected: </string>
     <string name="pending_verification_info">We are still trying to verify your phone number. If you would like change the number please retry registration again ..</string>
     <string name="register_again_button">Register again</string>
-    <string name="title_activity_event_list">Events</string>
+    <string name="list_events">View Events</string>
+    <string name="title_activity_event_list">Upcoming Events</string>
+
 </resources>

@@ -121,6 +121,13 @@ public class HomeActivity extends AppCompatActivity {
       }
     });
 
+    final Button btnListEvents = (Button) findViewById(R.id.list_events_button);
+    btnListEvents.setOnClickListener(new View.OnClickListener() {
+      public void onClick(View v) {
+        startActivity(new Intent(HomeActivity.this, EventListActivity.class));
+      }
+    });
+
     eventListView = (RecyclerView) findViewById(R.id.events_list);
     final LinearLayoutManager layoutManager = new LinearLayoutManager(this);
     layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
