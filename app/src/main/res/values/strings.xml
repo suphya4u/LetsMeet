@@ -26,5 +26,6 @@
     <string name="register_again_button">Register again</string>
     <string name="list_events">View Events</string>
     <string name="title_activity_event_list">Upcoming Events</string>
+    <string name="pick_a_time">Pick date and time</string>
 
 </resources>

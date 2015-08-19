@@ -13,6 +13,7 @@ import android.widget.EditText;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
+import com.letsmeet.android.widgets.datetime.DateTimePicker;
 import com.letsmeet.android.activity.fragments.SelectContactFragment;
 import com.letsmeet.android.apiclient.EventServiceClient;
 import com.letsmeet.android.common.PhoneNumberHelper;
@@ -23,6 +24,7 @@ import com.letsmeet.server.eventService.model.CreateEventResponse;
 import com.letsmeet.server.eventService.model.EventDetails;
 import com.letsmeet.server.eventService.model.Invitee;
 
+import java.util.Calendar;
 import java.util.List;
 
 public class CreateEventActivity extends AppCompatActivity {
@@ -31,9 +33,23 @@ public class CreateEventActivity extends AppCompatActivity {
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_create_event);
-    final Button button = (Button) findViewById(R.id.create_event_button);
 
-    button.setOnClickListener(new View.OnClickListener() {
+    final Button pickTimeButton = (Button) findViewById(R.id.pick_time_button);
+    pickTimeButton.setOnClickListener(new View.OnClickListener() {
+      @Override public void onClick(View v) {
+        DateTimePicker dateTimePicker = new DateTimePicker(
+            getFragmentManager(), "EventDateTimePicker");
+        dateTimePicker.setDateTimeSetListener(new DateTimePicker.OnDateTimeSetListener() {
+          @Override public void onDateTimeSet(Calendar calendar) {
+            // Populate this in event.
+          }
+        });
+        dateTimePicker.show();
+      }
+    });
+
+    final Button createEventButton = (Button) findViewById(R.id.create_event_button);
+    createEventButton.setOnClickListener(new View.OnClickListener() {
       public void onClick(View v) {
         EditText nameEditText = (EditText) findViewById(R.id.create_event_name);
         EditText notesEditText = (EditText) findViewById(R.id.create_event_notes);
