@@ -42,7 +42,7 @@ public class EventService {
         .setLocation(new GeoPt(eventDetails.getLatitude(), eventDetails.getLongitude()))
         .setNotes(eventDetails.getNotes())
         .setOwnerId(eventDetails.getOwnerId())
-        .setTime(eventDetails.getTime());
+        .setEventTimeMillis(eventDetails.getEventTimeMillis());
 
     long eventId = ofy().save().entity(event).now().getId();
 
@@ -82,6 +82,7 @@ public class EventService {
     List<Invites> invitesList = createInvitesList(eventId, invitedUsers);
     ofy().save().entities(invitesList).now();
 
+    // TODO(suhas): Do this in background and not in user request.
     GcmNotifier.getInstance().notifyNewEvent(usersToNotify, eventDetails);
     return response.setEventId(eventId);
   }
@@ -107,9 +108,10 @@ public class EventService {
 
       // TODO(suhas): Move constructing EventDetails from EventRecord loging and other way round to
       // a common place. We might need this quite a lot.
-      EventDetails eventDetails = new EventDetails();
-      eventDetails.setName(event.getName());
-      eventDetails.setNotes(event.getNotes());
+      EventDetails eventDetails = new EventDetails()
+          .setName(event.getName())
+          .setNotes(event.getNotes())
+          .setEventTimeMillis(event.getEventTimeMillis());
       List<Invites> otherInvitees = ofy().load().type(Invites.class)
           .filter("eventId", event.getId()).list();
 

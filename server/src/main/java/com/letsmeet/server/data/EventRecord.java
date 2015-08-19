@@ -14,15 +14,10 @@ public class EventRecord {
 
   @Id
   Long id;
-
   private String name;
-
   private String notes;
-
   private GeoPt location;
-
-  private Date time;
-
+  private long eventTimeMillis;
   private long ownerId;
 
   public long getId() {
@@ -56,12 +51,12 @@ public class EventRecord {
     return this;
   }
 
-  public Date getTime() {
-    return time;
+  public long getEventTimeMillis() {
+    return eventTimeMillis;
   }
 
-  public EventRecord setTime(Date time) {
-    this.time = time;
+  public EventRecord setEventTimeMillis(long time) {
+    this.eventTimeMillis = time;
     return this;
   }
 

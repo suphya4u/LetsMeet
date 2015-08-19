@@ -29,6 +29,8 @@ import java.util.List;
 
 public class CreateEventActivity extends AppCompatActivity {
 
+  private long eventTimeSelected = 0;
+
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
@@ -40,8 +42,8 @@ public class CreateEventActivity extends AppCompatActivity {
         DateTimePicker dateTimePicker = new DateTimePicker(
             getFragmentManager(), "EventDateTimePicker");
         dateTimePicker.setDateTimeSetListener(new DateTimePicker.OnDateTimeSetListener() {
-          @Override public void onDateTimeSet(Calendar calendar) {
-            // Populate this in event.
+          @Override public void onDateTimeSet(Calendar timeSelected) {
+            setEventTime(timeSelected);
           }
         });
         dateTimePicker.show();
@@ -78,6 +80,7 @@ public class CreateEventActivity extends AppCompatActivity {
           inviteePhoneNumbers.add(invitee);
         }
         eventDetails.setInviteePhoneNumbers(inviteePhoneNumbers);
+        eventDetails.setEventTimeMillis(eventTimeSelected);
         createEvent(new CreateEventRequest().setEventDetails(eventDetails));
         finish();
       }
@@ -114,5 +117,9 @@ public class CreateEventActivity extends AppCompatActivity {
         return EventServiceClient.getInstance().createEvent(request);
       }
     }.execute(request);
+  }
+
+  private void setEventTime(Calendar timeSelected) {
+    eventTimeSelected = timeSelected.getTimeInMillis();
   }
 }

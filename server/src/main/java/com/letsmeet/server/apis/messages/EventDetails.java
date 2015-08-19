@@ -13,7 +13,7 @@ public class EventDetails {
 
   private String name;
   private String notes;
-  private Date time;
+  private long eventTimeMillis;
   // TODO(suhas): Maybe use some location object.
   private long latitude;
   private long longitude;
@@ -44,12 +44,12 @@ public class EventDetails {
     return this;
   }
 
-  public Date getTime() {
-    return time;
+  public long getEventTimeMillis() {
+    return eventTimeMillis;
   }
 
-  public EventDetails setTime(Date time) {
-    this.time = time;
+  public EventDetails setEventTimeMillis(long eventTimeMillis) {
+    this.eventTimeMillis = eventTimeMillis;
     return this;
   }
 

@@ -2,6 +2,7 @@ package com.letsmeet.android.activity.adapter;
 
 import android.letsmeet.com.letsmeet.R;
 import android.support.v7.widget.RecyclerView;
+import android.text.format.DateFormat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,7 +10,10 @@ import android.widget.TextView;
 
 import com.letsmeet.server.eventService.model.EventDetails;
 
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 
 /**
  * Recycle view adapter for events list.
@@ -41,8 +45,9 @@ public class EventListRecyclerAdapter
   @Override public void onBindViewHolder(
       EventListRecyclerAdapter.EventCompactViewHolder viewHolder, int i) {
     EventDetails event = eventList.get(i);
-    viewHolder.nameView.setText(event.getName());
-    viewHolder.notesView.setText(event.getNotes());
+    viewHolder.setEventName(event.getName());
+    viewHolder.setEventNotes(event.getNotes());
+    viewHolder.setEventTime(event.getEventTimeMillis());
   }
 
   @Override public int getItemCount() {
@@ -56,11 +61,31 @@ public class EventListRecyclerAdapter
 
     private TextView nameView;
     private TextView notesView;
+    private TextView eventTimeView;
 
     public EventCompactViewHolder(View itemView) {
       super(itemView);
       nameView = (TextView) itemView.findViewById(R.id.event_name);
       notesView = (TextView) itemView.findViewById(R.id.event_notes);
+      eventTimeView = (TextView) itemView.findViewById(R.id.event_time);
+    }
+
+    public void setEventTime(long eventTimeMillis) {
+      Calendar eventTime = Calendar.getInstance(TimeZone.getDefault());
+      eventTime.setTimeInMillis(eventTimeMillis);
+      String eventDateString = DateFormat.getDateFormat(itemView.getContext())
+          .format(eventTime.getTime());
+      String eventTimeString = DateFormat.getTimeFormat(itemView.getContext())
+          .format(eventTime.getTime());
+      eventTimeView.setText(eventDateString + " " + eventTimeString);
+    }
+
+    public void setEventName(String eventName) {
+      nameView.setText(eventName);
+    }
+
+    public void setEventNotes(String eventNotes) {
+      notesView.setText(eventNotes);
     }
 
     public void onClick(View view) {

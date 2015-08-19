@@ -55,6 +55,9 @@ public class GcmNotifier {
         registrationIds.add(user.getRegId());
       }
     }
+    if (registrationIds.isEmpty()) {
+      return;
+    }
 
     Message message = new Message.Builder()
         .timeToLive(3 * 60 * 60) // 3 hours
@@ -73,6 +76,7 @@ public class GcmNotifier {
     } catch (IOException e) {
       log.severe("Failed to send notifications");
       e.printStackTrace();
+      return;
     }
     List<Result> resultList = multicastResult.getResults();
     if (users.size() < resultList.size()) {

@@ -8,6 +8,7 @@ import android.widget.DatePicker;
 import android.widget.TimePicker;
 
 import java.util.Calendar;
+import java.util.TimeZone;
 
 /**
  * Widget to pick a date and time.
@@ -18,6 +19,10 @@ public class DateTimePicker implements TimePickerDialog.OnTimeSetListener,
   private final FragmentManager fragmentManager;
   private final String uniqueTag;
   private OnDateTimeSetListener listener;
+
+  private int year;
+  private int monthOfYear;
+  private int dayOfMonth;
 
   public static interface OnDateTimeSetListener {
     void onDateTimeSet(Calendar calendar);
@@ -39,6 +44,9 @@ public class DateTimePicker implements TimePickerDialog.OnTimeSetListener,
   }
 
   @Override public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+    this.year = year;
+    this.monthOfYear = monthOfYear;
+    this.dayOfMonth = dayOfMonth;
     TimePickerFragment timePickerFragment = new TimePickerFragment();
     timePickerFragment.setOnTimeSetListener(this);
     timePickerFragment.show(fragmentManager, uniqueTag);
@@ -47,7 +55,8 @@ public class DateTimePicker implements TimePickerDialog.OnTimeSetListener,
   @Override public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
     if (listener != null) {
       Calendar calendar = Calendar.getInstance();
-      // TODO(suhas): Set all date time fields.
+      calendar.set(year, monthOfYear, dayOfMonth, hourOfDay, minute, 0 /* second */);
+      calendar.setTimeZone(TimeZone.getDefault());
       listener.onDateTimeSet(calendar);
     }
   }
