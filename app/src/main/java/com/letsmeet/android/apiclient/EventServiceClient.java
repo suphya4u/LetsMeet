@@ -10,6 +10,8 @@ import com.letsmeet.server.eventService.model.CreateEventRequest;
 import com.letsmeet.server.eventService.model.CreateEventResponse;
 import com.letsmeet.server.eventService.model.ListEventsForUserRequest;
 import com.letsmeet.server.eventService.model.ListEventsForUserResponse;
+import com.letsmeet.server.eventService.model.RsvpRequest;
+import com.letsmeet.server.eventService.model.RsvpResponse;
 
 import java.io.IOException;
 
@@ -45,6 +47,15 @@ public class EventServiceClient {
       ListEventsForUserRequest request = new ListEventsForUserRequest()
           .setUserId(userId);
       return service.eventsForUser(request).execute();
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  public RsvpResponse rsvpEvent(RsvpRequest request) {
+    try {
+      EventService service = getService();
+      return service.rsvpEvent(request).execute();
     } catch (IOException e) {
       throw new RuntimeException(e);
     }

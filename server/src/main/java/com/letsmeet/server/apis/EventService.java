@@ -85,6 +85,7 @@ public class EventService {
     ofy().save().entities(invitesList).now();
 
     // TODO(suhas): Do this in background and not in user request.
+    eventDetails.setEventId(eventId);
     GcmNotifier.getInstance().notifyNewEvent(usersToNotify, eventDetails);
     return response.setEventId(eventId);
   }
@@ -111,6 +112,7 @@ public class EventService {
       // TODO(suhas): Move constructing EventDetails from EventRecord loging and other way round to
       // a common place. We might need this quite a lot.
       EventDetails eventDetails = new EventDetails()
+          .setEventId(event.getId())
           .setName(event.getName())
           .setNotes(event.getNotes())
           .setEventTimeMillis(event.getEventTimeMillis());

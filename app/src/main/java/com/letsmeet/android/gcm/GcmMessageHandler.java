@@ -13,17 +13,12 @@ import android.text.format.DateFormat;
 import com.google.android.gms.gcm.GcmListenerService;
 import com.google.common.base.Strings;
 import com.letsmeet.android.activity.HomeActivity;
+import com.letsmeet.android.config.Constants;
 
 import java.util.Calendar;
 import java.util.TimeZone;
 
 public class GcmMessageHandler extends GcmListenerService {
-
-  private static final String NOTIFICATION_TYPE = "NOTIFICATION_TYPE";
-  private static final String NOTIFICATION_EVENT_NAME_KEY = "EVENT_NAME";
-  private static final String NOTIFICATION_EVENT_DETAILS_KEY = "EVENT_DETAILS";
-  private static final String NOTIFICATION_EVENT_TIME_KEY = "EVENT_TIME";
-  private static final String NEW_EVENT_NOTIFICATION = "NEW_EVENT";
 
   public GcmMessageHandler() {
   }
@@ -34,7 +29,8 @@ public class GcmMessageHandler extends GcmListenerService {
       return;
     }
     Notification notification = null;
-    if (NEW_EVENT_NOTIFICATION.equals(data.getString(NOTIFICATION_TYPE))) {
+    if (Constants.NOTIFICATION_TYPE_NEW_EVENT.equals(
+        data.getString(Constants.NOTIFICATION_TYPE_KEY))) {
       notification = createNewEventNotification(data);
     }
     // TODO(suhas): Handle other notifications.
@@ -48,11 +44,13 @@ public class GcmMessageHandler extends GcmListenerService {
   }
 
   private Notification createNewEventNotification(Bundle data) {
-    String eventName = "Invitation: " + data.getString(NOTIFICATION_EVENT_NAME_KEY);
-    String eventNotes = data.getString(NOTIFICATION_EVENT_DETAILS_KEY);
+    long eventId = 0;
+    String eventName = "Invitation: " + data.getString(Constants.NOTIFICATION_EVENT_NAME_KEY);
+    String eventNotes = data.getString(Constants.NOTIFICATION_EVENT_DETAILS_KEY);
     long eventTimeMillis = 0;
     try {
-      eventTimeMillis = Long.parseLong(data.getString(NOTIFICATION_EVENT_TIME_KEY));
+      eventId = Long.parseLong(data.getString(Constants.NOTIFICATION_EVENT_ID_KEY));
+      eventTimeMillis = Long.parseLong(data.getString(Constants.NOTIFICATION_EVENT_TIME_KEY));
     } catch (NumberFormatException ex) {
       // Failed to parse.
       // Log
@@ -62,6 +60,10 @@ public class GcmMessageHandler extends GcmListenerService {
     PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent,
         PendingIntent.FLAG_CANCEL_CURRENT);
 
+    PendingIntent rsvpYesIntent = createPendingIntent(1, eventId, "YES");
+    PendingIntent rsvpNoIntent = createPendingIntent(2, eventId, "NO");
+    PendingIntent rsvpMaybeIntent = createPendingIntent(3, eventId, "MAYBE");
+
     NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this)
         .setSmallIcon(R.mipmap.ic_launcher)
         .setAutoCancel(true)
@@ -69,9 +71,9 @@ public class GcmMessageHandler extends GcmListenerService {
         // TODO(suhas): Add actions for Yes, No, Maybe.
         .setContentIntent(pendingIntent)
         // TODO(suhas): Set right intent.
-        .addAction(0, "Yes", pendingIntent)
-        .addAction(0, "No", pendingIntent)
-        .addAction(0, "Maybe", pendingIntent);
+        .addAction(0, "Yes", rsvpYesIntent)
+        .addAction(0, "No", rsvpNoIntent)
+        .addAction(0, "Maybe", rsvpMaybeIntent);
 
     NotificationCompat.InboxStyle style = new NotificationCompat.InboxStyle();
     style.setBuilder(notificationBuilder);
@@ -90,5 +92,14 @@ public class GcmMessageHandler extends GcmListenerService {
     }
     notificationBuilder.setStyle(style);
     return notificationBuilder.build();
+  }
+
+  private PendingIntent createPendingIntent(int requestCode, long eventId, String rsvpResponse) {
+    Intent rsvpBroadcast = new Intent();
+    rsvpBroadcast.setAction(Constants.RSVP_FROM_NOTIFICATION_BROADCAST);
+    rsvpBroadcast.putExtra(Constants.RSVP_RESPONSE_FROM_NOTIFICATION, rsvpResponse);
+    rsvpBroadcast.putExtra(Constants.EVENT_ID_FOR_RSVP, eventId);
+    return PendingIntent.getBroadcast(this, requestCode, rsvpBroadcast,
+        PendingIntent.FLAG_CANCEL_CURRENT);
   }
 }

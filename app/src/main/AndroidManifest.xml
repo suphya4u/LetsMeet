@@ -45,6 +45,12 @@
             </intent-filter>
         </receiver>
 
+        <receiver android:name="com.letsmeet.android.gcm.RsvpBroadcastReceiver">
+            <intent-filter>
+                <action android:name="com.letsmeet.android.rsvp.UPDATE_RESPONSE" />
+            </intent-filter>
+        </receiver>
+
         <service
             android:name="com.letsmeet.android.gcm.GcmMessageHandler"
             android:exported="false" >

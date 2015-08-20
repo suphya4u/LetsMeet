@@ -11,6 +11,7 @@ import java.util.List;
  */
 public class EventDetails {
 
+  private long eventId;
   private String name;
   private String notes;
   private long eventTimeMillis;
@@ -93,8 +94,18 @@ public class EventDetails {
     return ownerPhoneNumber;
   }
 
-  public void setOwnerPhoneNumber(String ownerPhoneNumber) {
+  public EventDetails setOwnerPhoneNumber(String ownerPhoneNumber) {
     this.ownerPhoneNumber = ownerPhoneNumber;
+    return this;
+  }
+
+  public long getEventId() {
+    return eventId;
+  }
+
+  public EventDetails setEventId(long eventId) {
+    this.eventId = eventId;
+    return this;
   }
 
   public static class Invitee {

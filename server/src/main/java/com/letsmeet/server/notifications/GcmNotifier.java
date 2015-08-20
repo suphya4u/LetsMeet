@@ -28,6 +28,7 @@ public class GcmNotifier {
   private static final String NOTIFICATION_EVENT_DETAILS_KEY = "EVENT_DETAILS";
   private static final String NOTIFICATION_EVENT_TIME_KEY = "EVENT_TIME";
   private static final String NEW_EVENT_NOTIFICATION = "NEW_EVENT";
+  private static final java.lang.String NOTIFICATION_EVENT_ID_KEY = "EVENT_ID";
 
   private static GcmNotifier instance;
 
@@ -61,6 +62,7 @@ public class GcmNotifier {
 
     Message message = new Message.Builder()
         .timeToLive(3 * 60 * 60) // 3 hours
+        .addData(NOTIFICATION_EVENT_ID_KEY, String.valueOf(event.getEventId()))
         .addData(NOTIFICATION_TYPE, NEW_EVENT_NOTIFICATION)
         .addData(NOTIFICATION_EVENT_NAME_KEY, event.getName())
         .addData(NOTIFICATION_EVENT_DETAILS_KEY, event.getNotes())
