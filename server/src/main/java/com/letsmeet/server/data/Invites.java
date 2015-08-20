@@ -3,6 +3,7 @@ package com.letsmeet.server.data;
 import com.googlecode.objectify.annotation.Entity;
 import com.googlecode.objectify.annotation.Id;
 import com.googlecode.objectify.annotation.Index;
+import com.letsmeet.server.apis.messages.RsvpRequest;
 
 /**
  * event-user mapping.
@@ -61,6 +62,20 @@ public class Invites {
 
   public Invites setResponse(Response response) {
     this.response = response;
+    return this;
+  }
+
+  public Invites setFromRsvpRequestEnum(RsvpRequest.ResponseEnum response) {
+    switch (response) {
+      case YES:
+        setResponse(Response.YES);
+        break;
+      case NO:
+        setResponse(Response.NO);
+        break;
+      case MAYBE:
+        setResponse(Response.MAYBE);
+    }
     return this;
   }
 }

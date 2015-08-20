@@ -11,6 +11,8 @@ import com.letsmeet.server.apis.messages.CreateEventResponse;
 import com.letsmeet.server.apis.messages.EventDetails;
 import com.letsmeet.server.apis.messages.ListEventsForUserRequest;
 import com.letsmeet.server.apis.messages.ListEventsForUserResponse;
+import com.letsmeet.server.apis.messages.RsvpRequest;
+import com.letsmeet.server.apis.messages.RsvpResponse;
 import com.letsmeet.server.data.EventRecord;
 import com.letsmeet.server.data.Invites;
 import com.letsmeet.server.data.UserRecord;
@@ -135,5 +137,27 @@ public class EventService {
     }
 
     return response;
+  }
+
+  @ApiMethod(name = "rsvpEvent")
+  public RsvpResponse rsvpEvent(RsvpRequest request) {
+    List<Invites> invitesList = ofy().load().type(Invites.class)
+        .filter("userId", request.getUserId())
+        .filter("eventId", request.getEventId())
+        .list();
+    if (invitesList.isEmpty()) {
+      log.severe("Empty invites list while RSVP request for user [" + request.getUserId()
+          + "] Event [" + request.getEventId() + "]");
+      return new RsvpResponse().setSuccess(false);
+    }
+
+    if (invitesList.size() > 1) {
+      log.severe("More than one invite for user [" + request.getUserId() + "] event ["
+          + request.getEventId() + "]");
+    }
+    Invites invite = invitesList.get(0);
+    invite.setFromRsvpRequestEnum(request.getResponse());
+    ofy().save().entity(invite).now();
+    return new RsvpResponse().setSuccess(true);
   }
 }
