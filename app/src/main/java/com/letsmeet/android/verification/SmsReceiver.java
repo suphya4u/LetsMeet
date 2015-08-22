@@ -24,6 +24,11 @@ public class SmsReceiver extends BroadcastReceiver {
 
   // TODO(suhas): Stop receiver once phone number is verified.
   @Override public void onReceive(Context context, Intent intent) {
+    Toast.makeText(context, "Sms Received", Toast.LENGTH_LONG).show();
+    LocalStore localStore = LocalStore.getInstance(context);
+    if (localStore.isPhoneVerified()) {
+      // TODO(suhas): Phone already verified but somehow receiver not yet stopped. Stop receiver.
+    }
     final Bundle intentExtras = intent.getExtras();
     if (intentExtras == null) {
       return;
@@ -38,7 +43,6 @@ public class SmsReceiver extends BroadcastReceiver {
         return;
       }
 
-      LocalStore localStore = LocalStore.getInstance(context);
       String name = localStore.getUserName();
       String phoneNumber = localStore.getUserPhoneNumber();
       String registrationId = localStore.getUserRegistrationId();

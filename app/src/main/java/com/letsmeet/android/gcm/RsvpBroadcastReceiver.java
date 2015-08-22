@@ -1,5 +1,6 @@
 package com.letsmeet.android.gcm;
 
+import android.app.NotificationManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -28,6 +29,10 @@ public class RsvpBroadcastReceiver extends BroadcastReceiver {
     }
     LocalStore localStore = LocalStore.getInstance(context);
     setRsvpResponse(localStore.getUserId(), eventId, rsvpResponse);
+
+    NotificationManager notificationManager =
+        (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+    notificationManager.cancelAll();
   }
 
   private void setRsvpResponse(final long userId, final long eventId, final String rsvpResponse) {

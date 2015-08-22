@@ -39,13 +39,15 @@
             </intent-filter>
         </receiver>
 
-        <receiver android:name="com.letsmeet.android.verification.SmsReceiver">
+        <receiver android:name="com.letsmeet.android.verification.SmsReceiver"
+            android:enabled="false">
             <intent-filter>
                 <action android:name="android.provider.Telephony.SMS_RECEIVED" />
             </intent-filter>
         </receiver>
 
-        <receiver android:name="com.letsmeet.android.gcm.RsvpBroadcastReceiver">
+        <receiver android:name="com.letsmeet.android.gcm.RsvpBroadcastReceiver"
+            android:exported="false">
             <intent-filter>
                 <action android:name="com.letsmeet.android.rsvp.UPDATE_RESPONSE" />
             </intent-filter>
