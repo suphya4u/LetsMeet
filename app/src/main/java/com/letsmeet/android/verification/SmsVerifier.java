@@ -1,6 +1,11 @@
 package com.letsmeet.android.verification;
 
+import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.pm.PackageManager;
 import android.telephony.SmsManager;
 
 import com.letsmeet.android.config.Constants;
@@ -24,11 +29,23 @@ public class SmsVerifier {
     LocalStore localStore = LocalStore.getInstance(context);
     long verificationCode = localStore.getVerificationCode();
     SmsManager smsManager = SmsManager.getDefault();
+
+    enableSmsReceiver(context);
+
     // TODO(suhas): Use sentIntent and deliveryIntent to identify failures and delivery.
     smsManager.sendTextMessage(phoneNumber,
         null /* scAddress */,
         Constants.SMS_TEXT_PREFIX + verificationCode,
         null /* sendIntent */,
         null /* deliveryIntent */);
+  }
+
+  private void enableSmsReceiver(Context context) {
+    ComponentName receiver = new ComponentName(context, SmsReceiver.class);
+    PackageManager pm = context.getPackageManager();
+
+    pm.setComponentEnabledSetting(receiver,
+        PackageManager.COMPONENT_ENABLED_STATE_ENABLED,
+        PackageManager.DONT_KILL_APP);
   }
 }
