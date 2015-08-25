@@ -2,11 +2,9 @@ package com.letsmeet.android.activity;
 
 import android.app.NotificationManager;
 import android.content.BroadcastReceiver;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.pm.PackageManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -24,7 +22,6 @@ import com.letsmeet.android.apiclient.EventServiceClient;
 import com.letsmeet.android.config.Config;
 import com.letsmeet.android.config.Constants;
 import com.letsmeet.android.storage.LocalStore;
-import com.letsmeet.android.verification.SmsReceiver;
 import com.letsmeet.server.eventService.model.ListEventsForUserResponse;
 
 public class HomeActivity extends AppCompatActivity {
@@ -35,7 +32,6 @@ public class HomeActivity extends AppCompatActivity {
     @Override public void onReceive(Context context, Intent intent) {
       Toast.makeText(HomeActivity.this, "Verification complete", Toast.LENGTH_LONG).show();
       renderEventList();
-      disableSmsReceiver(context);
     }
   };
 
@@ -80,6 +76,15 @@ public class HomeActivity extends AppCompatActivity {
     if (eventListView != null) {
       listEvents();
     }
+  }
+
+  @Override protected void onStop() {
+    try {
+      unregisterReceiver(verificationCompleteReceiver);
+    } catch (IllegalArgumentException e) {
+      // Ignore. Thrown when receiver is already unregistered.
+    }
+    super.onStop();
   }
 
   @Override
@@ -158,14 +163,5 @@ public class HomeActivity extends AppCompatActivity {
     Intent intent = new Intent(this, RegisterActivity.class);
     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
     startActivity(intent);
-  }
-
-  private void disableSmsReceiver(Context context) {
-    ComponentName receiver = new ComponentName(context, SmsReceiver.class);
-    PackageManager pm = context.getPackageManager();
-
-    pm.setComponentEnabledSetting(receiver,
-        PackageManager.COMPONENT_ENABLED_STATE_DISABLED,
-        PackageManager.DONT_KILL_APP);
   }
 }

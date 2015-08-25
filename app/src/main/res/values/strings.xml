@@ -27,5 +27,7 @@
     <string name="list_events">View Events</string>
     <string name="title_activity_event_list">Upcoming Events</string>
     <string name="pick_a_time">Pick date and time</string>
+    <string name="share_by_sms">Invite by SMS</string>
+    <string name="share_other_channel">Share ..</string>
 
 </resources>

@@ -1,5 +1,6 @@
 package com.letsmeet.android.activity;
 
+import android.app.DialogFragment;
 import android.app.FragmentManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -13,6 +14,7 @@ import android.widget.EditText;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
+import com.letsmeet.android.activity.fragments.ShareOptionsDialogFragment;
 import com.letsmeet.android.widgets.datetime.DateTimePicker;
 import com.letsmeet.android.activity.fragments.SelectContactFragment;
 import com.letsmeet.android.apiclient.EventServiceClient;
@@ -82,7 +84,6 @@ public class CreateEventActivity extends AppCompatActivity {
         eventDetails.setInviteePhoneNumbers(inviteePhoneNumbers);
         eventDetails.setEventTimeMillis(eventTimeSelected);
         createEvent(new CreateEventRequest().setEventDetails(eventDetails));
-        finish();
       }
     });
   }
@@ -114,7 +115,15 @@ public class CreateEventActivity extends AppCompatActivity {
   private void createEvent(final CreateEventRequest request) {
     new AsyncTask<CreateEventRequest, Void, CreateEventResponse>() {
       @Override protected CreateEventResponse doInBackground(CreateEventRequest... params) {
-        return EventServiceClient.getInstance().createEvent(request);
+        return  EventServiceClient.getInstance().createEvent(request);
+      }
+
+      @Override protected void onPostExecute(CreateEventResponse response) {
+        List<String> phoneNumbersNotYetRegistered = response.getPhoneNumbersNotYetRegistered();
+        if (!phoneNumbersNotYetRegistered.isEmpty()) {
+          DialogFragment dialog = new ShareOptionsDialogFragment();
+          dialog.show(getFragmentManager(), "ShareOptionsDialogFragment");
+        }
       }
     }.execute(request);
   }

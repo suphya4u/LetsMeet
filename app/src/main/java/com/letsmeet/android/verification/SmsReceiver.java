@@ -1,8 +1,10 @@
 package com.letsmeet.android.verification;
 
 import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.ContactsContract;
@@ -56,6 +58,7 @@ public class SmsReceiver extends BroadcastReceiver {
       Intent broadcast = new Intent();
       broadcast.setAction(Constants.VERIFICATION_COMPLETE_BROADCAST);
       context.sendBroadcast(broadcast);
+      disableSmsReceiver(context);
     }
   }
 
@@ -83,5 +86,14 @@ public class SmsReceiver extends BroadcastReceiver {
         return null;
       }
     }.execute();
+  }
+
+  private void disableSmsReceiver(Context context) {
+    ComponentName receiver = new ComponentName(context, SmsReceiver.class);
+    PackageManager pm = context.getPackageManager();
+
+    pm.setComponentEnabledSetting(receiver,
+        PackageManager.COMPONENT_ENABLED_STATE_DISABLED,
+        PackageManager.DONT_KILL_APP);
   }
 }
