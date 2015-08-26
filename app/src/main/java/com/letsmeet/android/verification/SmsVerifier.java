@@ -7,7 +7,9 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.telephony.SmsManager;
+import android.widget.Toast;
 
+import com.letsmeet.android.config.Config;
 import com.letsmeet.android.config.Constants;
 import com.letsmeet.android.storage.LocalStore;
 
@@ -38,6 +40,10 @@ public class SmsVerifier {
         Constants.SMS_TEXT_PREFIX + verificationCode,
         null /* sendIntent */,
         null /* deliveryIntent */);
+
+    if (Config.isEmulator() && !Config.isVerificationRequiredForEmulator()) {
+      new SmsReceiver().fakeVerification(context);
+    }
   }
 
   private void enableSmsReceiver(Context context) {

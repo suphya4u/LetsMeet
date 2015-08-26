@@ -83,7 +83,7 @@ public class CreateEventActivity extends AppCompatActivity {
         }
         eventDetails.setInviteePhoneNumbers(inviteePhoneNumbers);
         eventDetails.setEventTimeMillis(eventTimeSelected);
-        createEvent(new CreateEventRequest().setEventDetails(eventDetails));
+        createEvent(eventDetails);
       }
     });
   }
@@ -112,7 +112,8 @@ public class CreateEventActivity extends AppCompatActivity {
 
 
   // TODO(suhas): This piece of code should be in the ApiClient.
-  private void createEvent(final CreateEventRequest request) {
+  private void createEvent(final EventDetails eventDetails) {
+    final CreateEventRequest request = new CreateEventRequest().setEventDetails(eventDetails);
     new AsyncTask<CreateEventRequest, Void, CreateEventResponse>() {
       @Override protected CreateEventResponse doInBackground(CreateEventRequest... params) {
         return  EventServiceClient.getInstance().createEvent(request);
@@ -121,7 +122,9 @@ public class CreateEventActivity extends AppCompatActivity {
       @Override protected void onPostExecute(CreateEventResponse response) {
         List<String> phoneNumbersNotYetRegistered = response.getPhoneNumbersNotYetRegistered();
         if (!phoneNumbersNotYetRegistered.isEmpty()) {
-          DialogFragment dialog = new ShareOptionsDialogFragment();
+          ShareOptionsDialogFragment dialog = new ShareOptionsDialogFragment();
+          // TODO(suhas): Show names instead of phone numbers in dialog.
+          dialog.setSharingDetails(phoneNumbersNotYetRegistered, eventDetails);
           dialog.show(getFragmentManager(), "ShareOptionsDialogFragment");
         }
       }

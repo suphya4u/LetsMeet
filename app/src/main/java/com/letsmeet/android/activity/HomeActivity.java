@@ -19,7 +19,6 @@ import android.widget.Toast;
 
 import com.letsmeet.android.activity.adapter.EventListRecyclerAdapter;
 import com.letsmeet.android.apiclient.EventServiceClient;
-import com.letsmeet.android.config.Config;
 import com.letsmeet.android.config.Constants;
 import com.letsmeet.android.storage.LocalStore;
 import com.letsmeet.server.eventService.model.ListEventsForUserResponse;
@@ -56,14 +55,8 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     if (!localStore.isPhoneVerified()) {
-      if (Config.isEmulator() && !Config.isVerificationRequiredForEmulator()) {
-        Toast.makeText(this,
-            "Verification not yet complete, but continuing since you are in Emulator",
-            Toast.LENGTH_LONG).show();
-      } else {
-        renderPendingVerification();
-        return;
-      }
+      renderPendingVerification();
+      return;
     }
 
     renderEventList();

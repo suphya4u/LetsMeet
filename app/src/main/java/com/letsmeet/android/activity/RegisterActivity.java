@@ -83,8 +83,9 @@ public class RegisterActivity extends AppCompatActivity {
   }
 
   private void registerUser(final String name, final String phone) {
-    final ProgressDialog pd = new ProgressDialog(RegisterActivity.this);
-    pd.show();
+    final ProgressDialog progressDialog = new ProgressDialog(RegisterActivity.this);
+    progressDialog.setCancelable(false);
+    progressDialog.show();
 
     new AsyncTask<Void, Void, Void>() {
 
@@ -104,7 +105,7 @@ public class RegisterActivity extends AppCompatActivity {
 
       @Override
       protected void onPostExecute(Void response) {
-        pd.hide();
+        progressDialog.dismiss();
         Intent intent = new Intent(RegisterActivity.this, HomeActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);

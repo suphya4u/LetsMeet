@@ -8,6 +8,7 @@ import android.content.pm.PackageManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.ContactsContract;
+import android.support.v4.content.ContextCompat;
 import android.telephony.SmsMessage;
 import android.widget.Toast;
 
@@ -29,7 +30,7 @@ public class SmsReceiver extends BroadcastReceiver {
     Toast.makeText(context, "Sms Received", Toast.LENGTH_LONG).show();
     LocalStore localStore = LocalStore.getInstance(context);
     if (localStore.isPhoneVerified()) {
-      // TODO(suhas): Phone already verified but somehow receiver not yet stopped. Stop receiver.
+      disableSmsReceiver(context);
     }
     final Bundle intentExtras = intent.getExtras();
     if (intentExtras == null) {
@@ -41,25 +42,31 @@ public class SmsReceiver extends BroadcastReceiver {
 
       String smsBody = smsMessage.getMessageBody();
       String address = smsMessage.getOriginatingAddress();
-      if (!isVerificationMessage(context, address, smsBody)) {
-        return;
+      if (isVerificationMessage(context, address, smsBody)) {
+        verificationComplete(localStore, context);
       }
-
-      String name = localStore.getUserName();
-      String phoneNumber = localStore.getUserPhoneNumber();
-      String registrationId = localStore.getUserRegistrationId();
-      final RegistrationRequest registrationRequest = new RegistrationRequest()
-          .setName(name)
-          .setPhoneNumber(phoneNumber)
-          .setRegId(registrationId);
-      registerUser(registrationRequest, context);
-
-      // Verification complete. Broadcast.
-      Intent broadcast = new Intent();
-      broadcast.setAction(Constants.VERIFICATION_COMPLETE_BROADCAST);
-      context.sendBroadcast(broadcast);
-      disableSmsReceiver(context);
     }
+  }
+
+  void fakeVerification(Context context) {
+    verificationComplete(LocalStore.getInstance(context), context);
+  }
+
+  private void verificationComplete(LocalStore localStore, Context context) {
+    String name = localStore.getUserName();
+    String phoneNumber = localStore.getUserPhoneNumber();
+    String registrationId = localStore.getUserRegistrationId();
+    final RegistrationRequest registrationRequest = new RegistrationRequest()
+        .setName(name)
+        .setPhoneNumber(phoneNumber)
+        .setRegId(registrationId);
+    registerUser(registrationRequest, context);
+
+    // Verification complete. Broadcast.
+    Intent broadcast = new Intent();
+    broadcast.setAction(Constants.VERIFICATION_COMPLETE_BROADCAST);
+    context.sendBroadcast(broadcast);
+    disableSmsReceiver(context);
   }
 
   private boolean isVerificationMessage(Context context, String sender, String smsBody) {
