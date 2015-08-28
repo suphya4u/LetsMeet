@@ -8,6 +8,9 @@ import com.letsmeet.android.config.Config;
 import com.letsmeet.server.eventService.EventService;
 import com.letsmeet.server.eventService.model.CreateEventRequest;
 import com.letsmeet.server.eventService.model.CreateEventResponse;
+import com.letsmeet.server.eventService.model.EventDetails;
+import com.letsmeet.server.eventService.model.FetchEventDetailsRequest;
+import com.letsmeet.server.eventService.model.FetchEventDetailsResponse;
 import com.letsmeet.server.eventService.model.ListEventsForUserRequest;
 import com.letsmeet.server.eventService.model.ListEventsForUserResponse;
 import com.letsmeet.server.eventService.model.RsvpRequest;
@@ -47,6 +50,17 @@ public class EventServiceClient {
       ListEventsForUserRequest request = new ListEventsForUserRequest()
           .setUserId(userId);
       return service.eventsForUser(request).execute();
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  public EventDetails GetEventDetails(long eventId) {
+    try {
+      FetchEventDetailsRequest request = new FetchEventDetailsRequest()
+          .setEventId(eventId);
+      FetchEventDetailsResponse response = getService().fetchEventDetails(request).execute();
+      return response.getEventDetails();
     } catch (IOException e) {
       throw new RuntimeException(e);
     }

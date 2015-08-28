@@ -16,7 +16,7 @@
     <EditText
         android:id="@+id/create_event_notes"
         android:hint="@string/create_event_notes"
-        android:inputType="textAutoComplete"
+        android:inputType="textAutoComplete|textCapSentences"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content" />
 

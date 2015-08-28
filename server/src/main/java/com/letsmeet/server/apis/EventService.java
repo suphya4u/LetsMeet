@@ -10,6 +10,8 @@ import com.google.common.collect.Sets;
 import com.letsmeet.server.apis.messages.CreateEventRequest;
 import com.letsmeet.server.apis.messages.CreateEventResponse;
 import com.letsmeet.server.apis.messages.EventDetails;
+import com.letsmeet.server.apis.messages.FetchEventDetailsRequest;
+import com.letsmeet.server.apis.messages.FetchEventDetailsResponse;
 import com.letsmeet.server.apis.messages.ListEventsForUserRequest;
 import com.letsmeet.server.apis.messages.ListEventsForUserResponse;
 import com.letsmeet.server.apis.messages.RsvpRequest;
@@ -110,38 +112,22 @@ public class EventService {
     // TODO(suhas): Add more checks like user does not exist / event or user or invite missing few
     // fields. Handle all error cases.
     for (Invites userInvite : userInvites) {
-      EventRecord event = ofy().load().type(EventRecord.class).id(userInvite.getEventId()).now();
-
-      // TODO(suhas): Move constructing EventDetails from EventRecord loging and other way round to
-      // a common place. We might need this quite a lot.
-      EventDetails eventDetails = new EventDetails()
-          .setEventId(event.getId())
-          .setName(event.getName())
-          .setNotes(event.getNotes())
-          .setEventTimeMillis(event.getEventTimeMillis());
-      List<Invites> otherInvitees = ofy().load().type(Invites.class)
-          .filter("eventId", event.getId()).list();
-
-      for (Invites otherInvitee : otherInvitees) {
-        if (otherInvitee.getUserId() == 0) {
-          continue;
-        }
-        UserRecord invitee = ofy().load().type(UserRecord.class).id(otherInvitee.getUserId()).now();
-        if (invitee != null) {
-          eventDetails.addInvitee(new EventDetails.Invitee()
-              .setPhoneNumber(invitee.getPhoneNumber())
-              .setResponse(userInvite.getResponse()));
-          if (otherInvitee.getUserId() == event.getOwnerId()) {
-            eventDetails.setOwnerPhoneNumber(invitee.getPhoneNumber());
-          }
-        }
-      }
+      EventDetails eventDetails = getEventDetails(userInvite.getEventId(),
+          false /* populatePhoneNumberData */);  // No phone numbers populated for list view.
 
       // TODO(suhas): Make sure each event is added only once. Currently there is no check on it.
       response.addEvent(eventDetails);
     }
 
     return response;
+  }
+
+  // TODO(suhas): Not using API names starting with Get, List etc. If failed for some random reason.
+  // Not sure if Name really matter.
+  @ApiMethod(name = "fetchEventDetails")
+  public FetchEventDetailsResponse FetchEventDetails(FetchEventDetailsRequest request) {
+    return new FetchEventDetailsResponse()
+        .setEventDetails(getEventDetails(request.getEventId(), true /* populatePhoneNumberData */));
   }
 
   @ApiMethod(name = "rsvpEvent")
@@ -164,5 +150,40 @@ public class EventService {
     invite.setFromRsvpRequestEnum(request.getResponse());
     ofy().save().entity(invite).now();
     return new RsvpResponse().setSuccess(true);
+  }
+
+  private EventDetails getEventDetails(long eventId, boolean populatePhoneNumberData) {
+    EventRecord event = ofy().load().type(EventRecord.class).id(eventId).now();
+
+    // TODO(suhas): Move constructing EventDetails from EventRecord and other way round to
+    // a common place. We might need this quite a lot.
+    EventDetails eventDetails = new EventDetails()
+        .setEventId(event.getId())
+        .setName(event.getName())
+        .setNotes(event.getNotes())
+        .setEventTimeMillis(event.getEventTimeMillis());
+    List<Invites> otherInvitees = ofy().load().type(Invites.class)
+        .filter("eventId", event.getId()).list();
+
+    for (Invites otherInvitee : otherInvitees) {
+      if (otherInvitee.getUserId() == 0) {
+        continue;
+      }
+      EventDetails.Invitee invitee = new EventDetails.Invitee()
+          .setResponse(otherInvitee.getResponse());
+      if (populatePhoneNumberData) {
+        // TODO(suhas): Cache userId to phoneNumber mapping.
+        UserRecord inviteeUserRecord = ofy().load().type(UserRecord.class)
+            .id(otherInvitee.getUserId()).now();
+        if (invitee != null) {
+          invitee.setPhoneNumber(inviteeUserRecord.getPhoneNumber());
+          if (otherInvitee.getUserId() == event.getOwnerId()) {
+            eventDetails.setOwnerPhoneNumber(invitee.getPhoneNumber());
+          }
+        }
+      }
+      eventDetails.addInvitee(invitee);
+    }
+    return eventDetails;
   }
 }

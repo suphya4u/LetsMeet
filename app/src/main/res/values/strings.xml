@@ -13,7 +13,7 @@
     <string name="title_section3">Section 3</string>
     <string name="create_event">Create Event</string>
     <string name="create_event_name">Give some name to event</string>
-    <string name="title_activity_create_event">CreateEventActivity</string>
+    <string name="title_activity_create_event">Create Event</string>
     <string name="new_event">Create New Event</string>
 
     <string name="create_event_notes">Notes / Details</string>
@@ -30,5 +30,6 @@
     <string name="share_by_sms">Invite by SMS</string>
     <string name="share_other_channel">Share ..</string>
     <string name="users_not_registered_help_text">Following friends are not yet using Lets meet, invite them using sms?</string>
+    <string name="title_activity_event_details">Event Details</string>
 
 </resources>

@@ -49,7 +49,7 @@ public class GcmMessageHandler extends GcmListenerService {
     String eventNotes = data.getString(Constants.NOTIFICATION_EVENT_DETAILS_KEY);
     long eventTimeMillis = 0;
     try {
-      eventId = Long.parseLong(data.getString(Constants.NOTIFICATION_EVENT_ID_KEY));
+      eventId = Long.parseLong(data.getString(Constants.EVENT_ID_KEY));
       eventTimeMillis = Long.parseLong(data.getString(Constants.NOTIFICATION_EVENT_TIME_KEY));
     } catch (NumberFormatException ex) {
       // Failed to parse.
