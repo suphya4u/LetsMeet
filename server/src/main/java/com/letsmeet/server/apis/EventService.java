@@ -113,6 +113,7 @@ public class EventService {
     // fields. Handle all error cases.
     for (Invites userInvite : userInvites) {
       EventDetails eventDetails = getEventDetails(userInvite.getEventId(),
+          request.getUserId(),
           false /* populatePhoneNumberData */);  // No phone numbers populated for list view.
 
       // TODO(suhas): Make sure each event is added only once. Currently there is no check on it.
@@ -126,8 +127,11 @@ public class EventService {
   // Not sure if Name really matter.
   @ApiMethod(name = "fetchEventDetails")
   public FetchEventDetailsResponse FetchEventDetails(FetchEventDetailsRequest request) {
+    EventDetails eventDetails = getEventDetails(request.getEventId(),
+        request.getUserId(),
+        true /* populatePhoneNumberData */);
     return new FetchEventDetailsResponse()
-        .setEventDetails(getEventDetails(request.getEventId(), true /* populatePhoneNumberData */));
+        .setEventDetails(eventDetails);
   }
 
   @ApiMethod(name = "rsvpEvent")
@@ -152,7 +156,7 @@ public class EventService {
     return new RsvpResponse().setSuccess(true);
   }
 
-  private EventDetails getEventDetails(long eventId, boolean populatePhoneNumberData) {
+  private EventDetails getEventDetails(long eventId, long userId, boolean populatePhoneNumberData) {
     EventRecord event = ofy().load().type(EventRecord.class).id(eventId).now();
 
     // TODO(suhas): Move constructing EventDetails from EventRecord and other way round to
@@ -164,6 +168,9 @@ public class EventService {
         .setEventTimeMillis(event.getEventTimeMillis());
     List<Invites> otherInvitees = ofy().load().type(Invites.class)
         .filter("eventId", event.getId()).list();
+    if (userId == event.getOwnerId()) {
+      eventDetails.setIsOwner(true);
+    }
 
     for (Invites otherInvitee : otherInvitees) {
       if (otherInvitee.getUserId() == 0) {

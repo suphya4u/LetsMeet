@@ -55,10 +55,11 @@ public class EventServiceClient {
     }
   }
 
-  public EventDetails GetEventDetails(long eventId) {
+  public EventDetails GetEventDetails(long eventId, long userId) {
     try {
       FetchEventDetailsRequest request = new FetchEventDetailsRequest()
-          .setEventId(eventId);
+          .setEventId(eventId)
+          .setUserId(userId);
       FetchEventDetailsResponse response = getService().fetchEventDetails(request).execute();
       return response.getEventDetails();
     } catch (IOException e) {

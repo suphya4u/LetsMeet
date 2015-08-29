@@ -3,7 +3,6 @@ package com.letsmeet.server.apis.messages;
 import com.google.appengine.labs.repackaged.com.google.common.collect.Lists;
 import com.letsmeet.server.data.Invites;
 
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -21,6 +20,7 @@ public class EventDetails {
   private List<Invitee> invitees;
   // TODO(suhas): ownerId should not be part of request. It should be somehow referred from caller.
   private long ownerId;
+  private boolean isOwner;
   private String ownerPhoneNumber;
 
   public EventDetails() {
@@ -106,6 +106,14 @@ public class EventDetails {
   public EventDetails setEventId(long eventId) {
     this.eventId = eventId;
     return this;
+  }
+
+  public boolean getIsOwner() {
+    return isOwner;
+  }
+
+  public void setIsOwner(boolean isOwner) {
+    this.isOwner = isOwner;
   }
 
   public static class Invitee {

@@ -31,5 +31,6 @@
     <string name="share_other_channel">Share ..</string>
     <string name="users_not_registered_help_text">Following friends are not yet using Lets meet, invite them using sms?</string>
     <string name="title_activity_event_details">Event Details</string>
+    <string name="edit_event">Edit</string>
 
 </resources>

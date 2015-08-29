@@ -8,11 +8,12 @@ import android.content.Intent;
 import android.letsmeet.com.letsmeet.R;
 import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.TaskStackBuilder;
 import android.text.format.DateFormat;
 
 import com.google.android.gms.gcm.GcmListenerService;
 import com.google.common.base.Strings;
-import com.letsmeet.android.activity.HomeActivity;
+import com.letsmeet.android.activity.EventDetailsActivity;
 import com.letsmeet.android.config.Constants;
 
 import java.util.Calendar;
@@ -56,9 +57,13 @@ public class GcmMessageHandler extends GcmListenerService {
       // Log
     }
 
-    Intent intent = new Intent(this, HomeActivity.class);
-    PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent,
-        PendingIntent.FLAG_CANCEL_CURRENT);
+    Intent eventDetailsIntent = new Intent(this, EventDetailsActivity.class);
+    eventDetailsIntent.putExtra(Constants.EVENT_ID_KEY, String.valueOf(eventId));
+    TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
+    stackBuilder.addParentStack(EventDetailsActivity.class);
+    stackBuilder.addNextIntent(eventDetailsIntent);
+    PendingIntent eventDetailsPendingIntent = stackBuilder.getPendingIntent(
+        0, PendingIntent.FLAG_UPDATE_CURRENT);
 
     PendingIntent rsvpYesIntent = createPendingIntent(1, eventId, "YES");
     PendingIntent rsvpNoIntent = createPendingIntent(2, eventId, "NO");
@@ -68,9 +73,7 @@ public class GcmMessageHandler extends GcmListenerService {
         .setSmallIcon(R.mipmap.ic_launcher)
         .setAutoCancel(true)
         .setContentTitle(eventName)
-        // TODO(suhas): Add actions for Yes, No, Maybe.
-        .setContentIntent(pendingIntent)
-        // TODO(suhas): Set right intent.
+        .setContentIntent(eventDetailsPendingIntent)
         .addAction(0, "Yes", rsvpYesIntent)
         .addAction(0, "No", rsvpNoIntent)
         .addAction(0, "Maybe", rsvpMaybeIntent);

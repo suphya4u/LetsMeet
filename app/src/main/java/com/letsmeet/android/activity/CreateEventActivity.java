@@ -2,6 +2,7 @@ package com.letsmeet.android.activity;
 
 import android.app.DialogFragment;
 import android.app.FragmentManager;
+import android.app.ProgressDialog;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -12,9 +13,11 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.letsmeet.android.activity.fragments.ShareOptionsDialogFragment;
+import com.letsmeet.android.config.Constants;
 import com.letsmeet.android.widgets.datetime.DateTimePicker;
 import com.letsmeet.android.activity.fragments.SelectContactFragment;
 import com.letsmeet.android.apiclient.EventServiceClient;
@@ -38,6 +41,21 @@ public class CreateEventActivity extends AppCompatActivity {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_create_event);
 
+    long eventId = 0;
+    try {
+      String eventIdString = getIntent().getStringExtra(Constants.EVENT_ID_KEY);
+      if (!Strings.isNullOrEmpty(eventIdString)) {
+        eventId = Long.parseLong(eventIdString);
+      }
+    } catch (NumberFormatException e) {
+    }
+    if (eventId != 0) {
+      // We are in edit mode. Fetch event and pre-populate all fields.
+      LocalStore localStore = LocalStore.getInstance(this);
+      fetchEvent(eventId, localStore.getUserId());
+      // TODO(suhas): Update title, button and other string to reflect edit mode.
+    }
+
     final Button pickTimeButton = (Button) findViewById(R.id.pick_time_button);
     pickTimeButton.setOnClickListener(new View.OnClickListener() {
       @Override public void onClick(View v) {
@@ -55,6 +73,7 @@ public class CreateEventActivity extends AppCompatActivity {
     final Button createEventButton = (Button) findViewById(R.id.create_event_button);
     createEventButton.setOnClickListener(new View.OnClickListener() {
       public void onClick(View v) {
+        // TODO(suhas): Too big click handler. re-factor.
         EditText nameEditText = (EditText) findViewById(R.id.create_event_name);
         EditText notesEditText = (EditText) findViewById(R.id.create_event_notes);
         FragmentManager fragmentManager = getFragmentManager();
@@ -129,6 +148,34 @@ public class CreateEventActivity extends AppCompatActivity {
         }
       }
     }.execute(request);
+  }
+
+  private void fetchEvent(final long eventId, final long userId) {
+    final ProgressDialog progressDialog = new ProgressDialog(this);
+    progressDialog.setCancelable(false);
+    progressDialog.show();
+
+    new AsyncTask<Void, Void, EventDetails>() {
+
+      @Override protected EventDetails doInBackground(Void... params) {
+        return EventServiceClient.getInstance().GetEventDetails(eventId, userId);
+      }
+
+      @Override protected void onPostExecute(EventDetails eventDetails) {
+        populateEventDetails(eventDetails);
+        progressDialog.dismiss();
+      }
+    }.execute();
+  }
+
+  private void populateEventDetails(EventDetails eventDetails) {
+    EditText nameEditText = (EditText) findViewById(R.id.create_event_name);
+    EditText notesEditText = (EditText) findViewById(R.id.create_event_notes);
+
+    nameEditText.setText(eventDetails.getName());
+    notesEditText.setText(eventDetails.getNotes());
+
+    // TODO(suhas): Populate all details.
   }
 
   private void setEventTime(Calendar timeSelected) {

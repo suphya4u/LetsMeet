@@ -10,6 +10,13 @@
     android:orientation="vertical"
     tools:context="android.letsmeet.com.letsmeet.EventDetailsActivity">
 
+    <Button
+        android:id="@+id/edit_event_button"
+        android:text="@string/edit_event"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"/>
+
     <TextView
         android:id="@+id/event_name"
         android:layout_width="wrap_content"
