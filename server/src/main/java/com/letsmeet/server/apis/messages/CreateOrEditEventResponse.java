@@ -7,13 +7,13 @@ import java.util.List;
 /**
  * Response for create event api.
  */
-public class CreateEventResponse {
+public class CreateOrEditEventResponse {
 
   private long eventId;
 
   private List<String> phoneNumbersNotYetRegistered;
 
-  public CreateEventResponse() {
+  public CreateOrEditEventResponse() {
     phoneNumbersNotYetRegistered = Lists.newArrayList();
   }
 
@@ -21,7 +21,7 @@ public class CreateEventResponse {
     return eventId;
   }
 
-  public CreateEventResponse setEventId(long eventId) {
+  public CreateOrEditEventResponse setEventId(long eventId) {
     this.eventId = eventId;
     return this;
   }
@@ -30,7 +30,7 @@ public class CreateEventResponse {
     return phoneNumbersNotYetRegistered;
   }
 
-  public CreateEventResponse addPhoneNumberNotYetRegistered(
+  public CreateOrEditEventResponse addPhoneNumberNotYetRegistered(
       String phoneNumberNotYetRegistered) {
     this.phoneNumbersNotYetRegistered.add(phoneNumberNotYetRegistered);
     return this;

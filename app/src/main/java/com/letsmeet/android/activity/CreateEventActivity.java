@@ -24,8 +24,8 @@ import com.letsmeet.android.apiclient.EventServiceClient;
 import com.letsmeet.android.common.PhoneNumberHelper;
 import com.letsmeet.android.storage.LocalStore;
 import com.letsmeet.android.widgets.ContactInfo;
-import com.letsmeet.server.eventService.model.CreateEventRequest;
-import com.letsmeet.server.eventService.model.CreateEventResponse;
+import com.letsmeet.server.eventService.model.CreateOrEditEventRequest;
+import com.letsmeet.server.eventService.model.CreateOrEditEventResponse;
 import com.letsmeet.server.eventService.model.EventDetails;
 import com.letsmeet.server.eventService.model.Invitee;
 
@@ -35,6 +35,7 @@ import java.util.List;
 public class CreateEventActivity extends AppCompatActivity {
 
   private long eventTimeSelected = 0;
+  private EventDetails eventDetails;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -84,7 +85,10 @@ public class CreateEventActivity extends AppCompatActivity {
         // TODO(suhas): Validate input.
         LocalStore localStore = LocalStore.getInstance(CreateEventActivity.this);
         long userId = localStore.getUserId();
-        EventDetails eventDetails = new EventDetails()
+        if (eventDetails == null) {
+          eventDetails = new EventDetails();
+        }
+        eventDetails
             .setName(name)
             .setNotes(notes)
             .setOwnerId(userId);
@@ -132,19 +136,23 @@ public class CreateEventActivity extends AppCompatActivity {
 
   // TODO(suhas): This piece of code should be in the ApiClient.
   private void createEvent(final EventDetails eventDetails) {
-    final CreateEventRequest request = new CreateEventRequest().setEventDetails(eventDetails);
-    new AsyncTask<CreateEventRequest, Void, CreateEventResponse>() {
-      @Override protected CreateEventResponse doInBackground(CreateEventRequest... params) {
+    final CreateOrEditEventRequest request =
+        new CreateOrEditEventRequest().setEventDetails(eventDetails);
+    new AsyncTask<CreateOrEditEventRequest, Void, CreateOrEditEventResponse>() {
+      @Override protected CreateOrEditEventResponse doInBackground(
+          CreateOrEditEventRequest... params) {
         return  EventServiceClient.getInstance().createEvent(request);
       }
 
-      @Override protected void onPostExecute(CreateEventResponse response) {
+      @Override protected void onPostExecute(CreateOrEditEventResponse response) {
         List<String> phoneNumbersNotYetRegistered = response.getPhoneNumbersNotYetRegistered();
-        if (!phoneNumbersNotYetRegistered.isEmpty()) {
+        if (phoneNumbersNotYetRegistered != null && !phoneNumbersNotYetRegistered.isEmpty()) {
           ShareOptionsDialogFragment dialog = new ShareOptionsDialogFragment();
           // TODO(suhas): Show names instead of phone numbers in dialog.
           dialog.setSharingDetails(phoneNumbersNotYetRegistered, eventDetails);
           dialog.show(getFragmentManager(), "ShareOptionsDialogFragment");
+        } else {
+          finish();
         }
       }
     }.execute(request);
@@ -169,11 +177,17 @@ public class CreateEventActivity extends AppCompatActivity {
   }
 
   private void populateEventDetails(EventDetails eventDetails) {
+    this.eventDetails = eventDetails;
     EditText nameEditText = (EditText) findViewById(R.id.create_event_name);
     EditText notesEditText = (EditText) findViewById(R.id.create_event_notes);
 
     nameEditText.setText(eventDetails.getName());
     notesEditText.setText(eventDetails.getNotes());
+
+    setTitle(R.string.edit_event_title);
+
+    final Button createEventButton = (Button) findViewById(R.id.create_event_button);
+    createEventButton.setText(R.string.edit_event_button);
 
     // TODO(suhas): Populate all details.
   }

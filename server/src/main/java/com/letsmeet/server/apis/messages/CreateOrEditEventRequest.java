@@ -3,7 +3,7 @@ package com.letsmeet.server.apis.messages;
 /**
  * Request for creating an event.
  */
-public class CreateEventRequest {
+public class CreateOrEditEventRequest {
 
   private EventDetails eventDetails;
 
@@ -11,7 +11,7 @@ public class CreateEventRequest {
     return eventDetails;
   }
 
-  public CreateEventRequest setEvent(EventDetails eventDetails) {
+  public CreateOrEditEventRequest setEvent(EventDetails eventDetails) {
     this.eventDetails = eventDetails;
     return this;
   }

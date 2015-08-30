@@ -24,6 +24,11 @@ public class EventRecord {
     return id;
   }
 
+  public EventRecord setId(long id) {
+    this.id = id;
+    return this;
+  }
+
   public String getName() {
     return name;
   }

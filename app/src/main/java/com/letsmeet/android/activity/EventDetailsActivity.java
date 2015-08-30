@@ -48,6 +48,15 @@ public class EventDetailsActivity extends AppCompatActivity {
     }
   }
 
+  @Override protected void onResume() {
+    super.onResume();
+    // TODO(suhas): Cache!!! Don't fetch everytime unless cache expire or updated in some flow.
+    if (eventDetails != null) {
+      LocalStore localStore = LocalStore.getInstance(this);
+      fetchEvent(eventDetails.getEventId(), localStore.getUserId());
+    }
+  }
+
   private void populateEventData() {
     TextView eventNameView = (TextView) findViewById(R.id.event_name);
     eventNameView.setText(eventDetails.getName());

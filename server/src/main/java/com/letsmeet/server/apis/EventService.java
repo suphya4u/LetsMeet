@@ -4,11 +4,12 @@ import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.ApiNamespace;
 import com.google.appengine.api.datastore.GeoPt;
+import com.google.common.base.Function;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
-import com.letsmeet.server.apis.messages.CreateEventRequest;
-import com.letsmeet.server.apis.messages.CreateEventResponse;
+import com.letsmeet.server.apis.messages.CreateOrEditEventRequest;
+import com.letsmeet.server.apis.messages.CreateOrEditEventResponse;
 import com.letsmeet.server.apis.messages.EventDetails;
 import com.letsmeet.server.apis.messages.FetchEventDetailsRequest;
 import com.letsmeet.server.apis.messages.FetchEventDetailsResponse;
@@ -25,6 +26,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.logging.Logger;
 
+import javax.annotation.Nullable;
+
 import static com.letsmeet.server.OfyService.ofy;
 
 /**
@@ -39,11 +42,15 @@ public class EventService {
 
   private static final Logger log = Logger.getLogger(EventService.class.getName());
 
-  @ApiMethod(name = "createEvent")
-  public CreateEventResponse createEvent(CreateEventRequest request) {
+  @ApiMethod(name = "createOrEditEvent")
+  public CreateOrEditEventResponse createOrEditEvent(CreateOrEditEventRequest request) {
     EventDetails eventDetails = request.getEventDetails();
-    EventRecord event = new EventRecord()
-        .setName(eventDetails.getName())
+    EventRecord event = new EventRecord();
+    if (eventDetails.getEventId() != 0) {
+      event.setId(eventDetails.getEventId());
+      event = ofy().load().type(EventRecord.class).id(eventDetails.getEventId()).now();
+    }
+    event.setName(eventDetails.getName())
         .setLocation(new GeoPt(eventDetails.getLatitude(), eventDetails.getLongitude()))
         .setNotes(eventDetails.getNotes())
         .setOwnerId(eventDetails.getOwnerId())
@@ -55,7 +62,7 @@ public class EventService {
     // Add owner by default.
     invitedUsers.add(eventDetails.getOwnerId());
     List<UserRecord> usersToNotify = Lists.newArrayList();
-    CreateEventResponse response = new CreateEventResponse();
+    CreateOrEditEventResponse response = new CreateOrEditEventResponse();
 
     for (EventDetails.Invitee invitee : eventDetails.getInviteePhoneNumbers()) {
       // TODO(suhas): Get registration records for these phone numbers and add eventId, userId in
@@ -96,9 +103,20 @@ public class EventService {
   }
 
   private List<Invites> createInvitesList(long eventId, Set<Long> invitedUsers) {
+    // Make sure invite is added only once for each event.
+    List<Invites> existingInvites = ofy().load().type(Invites.class)
+        .filter("eventId", eventId).list();
+    List<Long> existedInvitedUsers = Lists.transform(
+        existingInvites, new Function<Invites, Long>() {
+          @Nullable @Override public Long apply(Invites input) {
+            return input.getUserId();
+          }
+        });
     List<Invites> invitesList = Lists.newArrayList();
     for (long userId : invitedUsers) {
-      invitesList.add(new Invites(eventId, userId));
+      if (!existedInvitedUsers.contains(userId)) {
+        invitesList.add(new Invites(eventId, userId));
+      }
     }
     return invitesList;
   }

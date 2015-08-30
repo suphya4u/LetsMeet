@@ -6,8 +6,8 @@ import com.google.api.client.googleapis.services.AbstractGoogleClientRequest;
 import com.google.api.client.googleapis.services.GoogleClientRequestInitializer;
 import com.letsmeet.android.config.Config;
 import com.letsmeet.server.eventService.EventService;
-import com.letsmeet.server.eventService.model.CreateEventRequest;
-import com.letsmeet.server.eventService.model.CreateEventResponse;
+import com.letsmeet.server.eventService.model.CreateOrEditEventRequest;
+import com.letsmeet.server.eventService.model.CreateOrEditEventResponse;
 import com.letsmeet.server.eventService.model.EventDetails;
 import com.letsmeet.server.eventService.model.FetchEventDetailsRequest;
 import com.letsmeet.server.eventService.model.FetchEventDetailsResponse;
@@ -35,10 +35,10 @@ public class EventServiceClient {
     return selfInstance;
   }
 
-  public CreateEventResponse createEvent(CreateEventRequest request) {
+  public CreateOrEditEventResponse createEvent(CreateOrEditEventRequest request) {
     try {
       EventService service = getService();
-      return service.createEvent(request).execute();
+      return service.createOrEditEvent(request).execute();
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
