@@ -1,7 +1,7 @@
 package com.letsmeet.android.activity.adapter;
 
 import android.content.Intent;
-import android.letsmeet.com.letsmeet.R;
+import com.letsmeet.android.R;
 import android.support.v7.widget.RecyclerView;
 import android.text.format.DateFormat;
 import android.view.LayoutInflater;

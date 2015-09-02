@@ -1,4 +1,4 @@
-package com.letsmeet.android.activity.adapter;
+package com.letsmeet.android.widgets.placeselect;
 
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.PendingResult;

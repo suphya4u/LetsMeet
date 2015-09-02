@@ -5,7 +5,7 @@ import android.app.Dialog;
 import android.app.DialogFragment;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
-import android.letsmeet.com.letsmeet.R;
+import com.letsmeet.android.R;
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;

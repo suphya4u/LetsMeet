@@ -1,14 +1,14 @@
 package com.letsmeet.android.activity;
 
-import android.app.DialogFragment;
 import android.app.FragmentManager;
 import android.app.ProgressDialog;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.letsmeet.com.letsmeet.R;
+import com.letsmeet.android.R;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -23,7 +23,8 @@ import com.letsmeet.android.activity.fragments.SelectContactFragment;
 import com.letsmeet.android.apiclient.EventServiceClient;
 import com.letsmeet.android.common.PhoneNumberHelper;
 import com.letsmeet.android.storage.LocalStore;
-import com.letsmeet.android.widgets.ContactInfo;
+import com.letsmeet.android.widgets.contactselect.ContactInfo;
+import com.letsmeet.android.widgets.placeselect.PlaceSelectView;
 import com.letsmeet.server.eventService.model.CreateOrEditEventRequest;
 import com.letsmeet.server.eventService.model.CreateOrEditEventResponse;
 import com.letsmeet.server.eventService.model.EventDetails;
@@ -32,7 +33,7 @@ import com.letsmeet.server.eventService.model.Invitee;
 import java.util.Calendar;
 import java.util.List;
 
-public class CreateEventActivity extends AppCompatActivity {
+public class CreateEventActivity extends FragmentActivity {
 
   private long eventTimeSelected = 0;
   private EventDetails eventDetails;
@@ -56,6 +57,9 @@ public class CreateEventActivity extends AppCompatActivity {
       fetchEvent(eventId, localStore.getUserId());
       // TODO(suhas): Update title, button and other string to reflect edit mode.
     }
+
+    PlaceSelectView placeSelectView = (PlaceSelectView) findViewById(R.id.place_autocomplete);
+    placeSelectView.init(this);
 
     final Button pickTimeButton = (Button) findViewById(R.id.pick_time_button);
     pickTimeButton.setOnClickListener(new View.OnClickListener() {

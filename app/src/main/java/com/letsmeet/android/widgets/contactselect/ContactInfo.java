@@ -1,4 +1,4 @@
-package com.letsmeet.android.widgets;
+package com.letsmeet.android.widgets.contactselect;
 
 /**
  * Contact info POJO used for contact completion.

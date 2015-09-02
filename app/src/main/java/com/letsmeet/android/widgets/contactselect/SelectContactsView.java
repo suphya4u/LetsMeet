@@ -1,12 +1,10 @@
-package com.letsmeet.android.widgets;
+package com.letsmeet.android.widgets.contactselect;
 
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AutoCompleteTextView;
-
-import com.letsmeet.android.widgets.adapter.ContactCompletionAdapter;
 
 /**
  * Widget to select contacts.

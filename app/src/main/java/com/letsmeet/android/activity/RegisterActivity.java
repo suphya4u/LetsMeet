@@ -2,7 +2,7 @@ package com.letsmeet.android.activity;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
-import android.letsmeet.com.letsmeet.R;
+import com.letsmeet.android.R;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;

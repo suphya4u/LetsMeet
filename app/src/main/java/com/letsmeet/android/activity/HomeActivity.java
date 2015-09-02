@@ -14,7 +14,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import android.letsmeet.com.letsmeet.R;
+import com.letsmeet.android.R;
 import android.widget.Toast;
 
 import com.letsmeet.android.activity.adapter.EventListRecyclerAdapter;

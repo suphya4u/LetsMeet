@@ -1,14 +1,12 @@
-package com.letsmeet.android.widgets.adapter;
+package com.letsmeet.android.widgets.contactselect;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.letsmeet.com.letsmeet.R;
+import com.letsmeet.android.R;
 import android.provider.BaseColumns;
 import android.provider.ContactsContract;
 import android.widget.FilterQueryProvider;
 import android.widget.SimpleCursorAdapter;
-
-import com.letsmeet.android.widgets.ContactInfo;
 
 /**
  * Adapter to read contacts and filter with prefix.

@@ -6,13 +6,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import android.letsmeet.com.letsmeet.R;
+import com.letsmeet.android.R;
 import android.widget.TextView;
 
 import com.google.api.client.util.Lists;
 import com.google.common.collect.ImmutableList;
-import com.letsmeet.android.widgets.ContactInfo;
-import com.letsmeet.android.widgets.SelectContactsView;
+import com.letsmeet.android.widgets.contactselect.ContactInfo;
+import com.letsmeet.android.widgets.contactselect.SelectContactsView;
 
 import java.util.List;
 
