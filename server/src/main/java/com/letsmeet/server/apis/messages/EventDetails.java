@@ -14,9 +14,7 @@ public class EventDetails {
   private String name;
   private String notes;
   private long eventTimeMillis;
-  // TODO(suhas): Maybe use some location object.
-  private long latitude;
-  private long longitude;
+  private EventLocation location;
   private List<Invitee> invitees;
   // TODO(suhas): ownerId should not be part of request. It should be somehow referred from caller.
   private long ownerId;
@@ -51,24 +49,6 @@ public class EventDetails {
 
   public EventDetails setEventTimeMillis(long eventTimeMillis) {
     this.eventTimeMillis = eventTimeMillis;
-    return this;
-  }
-
-  public long getLatitude() {
-    return latitude;
-  }
-
-  public EventDetails setLatitude(long latitude) {
-    this.latitude = latitude;
-    return this;
-  }
-
-  public long getLongitude() {
-    return longitude;
-  }
-
-  public EventDetails setLongitude(long longitude) {
-    this.longitude = longitude;
     return this;
   }
 
@@ -116,6 +96,15 @@ public class EventDetails {
     this.isOwner = isOwner;
   }
 
+  public EventLocation getLocation() {
+    return location;
+  }
+
+  public EventDetails setLocation(EventLocation location) {
+    this.location = location;
+    return this;
+  }
+
   public static class Invitee {
 
     private String phoneNumber;
@@ -136,6 +125,40 @@ public class EventDetails {
 
     public Invitee setResponse(Invites.Response response) {
       this.response = response;
+      return this;
+    }
+  }
+
+  public static class EventLocation {
+    // Place id to identify the place in Google Maps.
+    private String placeId;
+    private String placeName;
+    private String placeAddress;
+
+    public String getPlaceId() {
+      return placeId;
+    }
+
+    public EventLocation setPlaceId(String placeId) {
+      this.placeId = placeId;
+      return this;
+    }
+
+    public String getPlaceAddress() {
+      return placeAddress;
+    }
+
+    public EventLocation setPlaceAddress(String placeAddress) {
+      this.placeAddress = placeAddress;
+      return this;
+    }
+
+    public String getPlaceName() {
+      return placeName;
+    }
+
+    public EventLocation setPlaceName(String placeName) {
+      this.placeName = placeName;
       return this;
     }
   }

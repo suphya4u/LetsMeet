@@ -35,13 +35,11 @@
         android:layout_height="wrap_content"
         android:completionThreshold="1" />
 
-    <TextView
-        android:id="@+id/place_attribution"
+    <Button
+        android:id="@+id/place_picker_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:autoLink="all"
-        android:text=""
-        android:textAppearance="?android:attr/textAppearanceSmall" />
+        android:text="@string/pick_a_place"/>
 
     <Button
         android:id="@+id/pick_time_button"

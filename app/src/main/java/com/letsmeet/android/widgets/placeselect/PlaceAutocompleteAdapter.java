@@ -33,13 +33,13 @@ import java.util.concurrent.TimeUnit;
  * </p>
  */
 public class PlaceAutocompleteAdapter
-    extends ArrayAdapter<PlaceAutocompleteAdapter.PlaceAutocomplete> implements Filterable {
+    extends ArrayAdapter<PlaceInfo> implements Filterable {
 
   private static final String TAG = "PlaceAutocompleteAdapter";
   /**
    * Current results returned by this adapter.
    */
-  private ArrayList<PlaceAutocomplete> mResultList;
+  private ArrayList<PlaceInfo> mResultList;
 
   /**
    * Handles autocomplete requests.
@@ -88,7 +88,7 @@ public class PlaceAutocompleteAdapter
    * Returns an item from the last autocomplete query.
    */
   @Override
-  public PlaceAutocomplete getItem(int position) {
+  public PlaceInfo getItem(int position) {
     return mResultList.get(position);
   }
 
@@ -142,7 +142,7 @@ public class PlaceAutocompleteAdapter
    * @return Results from the autocomplete API or null if the query was not successful.
    * @see Places#GEO_DATA_API#getAutocomplete(CharSequence)
    */
-  private ArrayList<PlaceAutocomplete> getAutocomplete(CharSequence constraint) {
+  private ArrayList<PlaceInfo> getAutocomplete(CharSequence constraint) {
     if (mGoogleApiClient.isConnected()) {
 
       // Submit the query to the autocomplete API and retrieve a PendingResult that will
@@ -174,8 +174,9 @@ public class PlaceAutocompleteAdapter
       while (iterator.hasNext()) {
         AutocompletePrediction prediction = iterator.next();
         // Get the details of this prediction and copy it into a new PlaceAutocomplete object.
-        resultList.add(new PlaceAutocomplete(prediction.getPlaceId(),
-            prediction.getDescription()));
+        PlaceInfo placeInfo = new PlaceInfo().setPlaceId(prediction.getPlaceId())
+            .setAddress(prediction.getDescription());
+        resultList.add(placeInfo);
       }
 
       // Release the buffer now that all data has been copied.
@@ -184,24 +185,5 @@ public class PlaceAutocompleteAdapter
       return resultList;
     }
     return null;
-  }
-
-  /**
-   * Holder for Places Geo Data Autocomplete API results.
-   */
-  public class PlaceAutocomplete {
-
-    public CharSequence placeId;
-    public CharSequence description;
-
-    PlaceAutocomplete(CharSequence placeId, CharSequence description) {
-      this.placeId = placeId;
-      this.description = description;
-    }
-
-    @Override
-    public String toString() {
-      return description.toString();
-    }
   }
 }

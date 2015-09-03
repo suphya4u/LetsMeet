@@ -1,6 +1,5 @@
 package com.letsmeet.android.widgets.placeselect;
 
-import android.app.Activity;
 import android.content.Context;
 import android.support.v4.app.FragmentActivity;
 import android.util.AttributeSet;
@@ -17,8 +16,12 @@ import com.google.android.gms.maps.model.LatLngBounds;
 
 /**
  * View to select place.
+ * TODO(suhas): Add attribution 'Powered by Google'
  */
 public class PlaceSelectView extends AutoCompleteTextView {
+
+  private PlaceAutocompleteAdapter placeAdapter;
+  private OnPlaceSelection placeSelectionListener;
 
   private static final LatLngBounds BOUNDS_GREATER_SYDNEY = new LatLngBounds(
       new LatLng(-34.041458, 150.790100), new LatLng(-33.682247, 151.383362));
@@ -32,7 +35,7 @@ public class PlaceSelectView extends AutoCompleteTextView {
         .enableAutoManage(activity, 0 /* clientId */, new ConnectionFailedHandler())
         .addApi(Places.GEO_DATA_API)
         .build();
-    PlaceAutocompleteAdapter placeAdapter = new PlaceAutocompleteAdapter(getContext(),
+    placeAdapter = new PlaceAutocompleteAdapter(getContext(),
         android.R.layout.simple_list_item_1,
         googleApiClient, BOUNDS_GREATER_SYDNEY, null);
     setAdapter(placeAdapter);
@@ -40,11 +43,16 @@ public class PlaceSelectView extends AutoCompleteTextView {
     setOnItemClickListener(new ItemClickListener());
   }
 
+  public void setOnPlaceSelectionCallback(OnPlaceSelection callback) {
+    placeSelectionListener = callback;
+  }
+
   private class ItemClickListener implements AdapterView.OnItemClickListener {
     @Override public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-      Toast.makeText(getContext(),
-          "Item selected: " + position,
-          Toast.LENGTH_LONG).show();
+      if (placeSelectionListener != null) {
+        PlaceInfo placeInfo = placeAdapter.getItem(position);
+        placeSelectionListener.handlePlaceSelect(placeInfo);
+      }
     }
   }
 
@@ -54,5 +62,9 @@ public class PlaceSelectView extends AutoCompleteTextView {
           "Could not connect to Google API Client: Error " + connectionResult.getErrorCode(),
           Toast.LENGTH_LONG).show();
     }
+  }
+
+  public static interface OnPlaceSelection {
+    public void handlePlaceSelect(PlaceInfo placeInfo);
   }
 }

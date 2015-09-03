@@ -3,7 +3,6 @@ package com.letsmeet.server.apis;
 import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.ApiNamespace;
-import com.google.appengine.api.datastore.GeoPt;
 import com.google.common.base.Function;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
@@ -51,10 +50,14 @@ public class EventService {
       event = ofy().load().type(EventRecord.class).id(eventDetails.getEventId()).now();
     }
     event.setName(eventDetails.getName())
-        .setLocation(new GeoPt(eventDetails.getLatitude(), eventDetails.getLongitude()))
         .setNotes(eventDetails.getNotes())
         .setOwnerId(eventDetails.getOwnerId())
         .setEventTimeMillis(eventDetails.getEventTimeMillis());
+
+    if (eventDetails.getLocation() != null) {
+      event.setEventLocationAddress(eventDetails.getLocation().getPlaceAddress())
+          .setEventLocationGoogleMapPlaceId(eventDetails.getLocation().getPlaceId());
+    }
 
     long eventId = ofy().save().entity(event).now().getId();
 

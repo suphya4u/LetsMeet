@@ -1,10 +1,7 @@
 package com.letsmeet.server.data;
 
-import com.google.appengine.api.datastore.GeoPt;
 import com.googlecode.objectify.annotation.Entity;
 import com.googlecode.objectify.annotation.Id;
-
-import java.util.Date;
 
 /**
  * Event data object.
@@ -16,9 +13,12 @@ public class EventRecord {
   Long id;
   private String name;
   private String notes;
-  private GeoPt location;
   private long eventTimeMillis;
   private long ownerId;
+  private String eventLocationName;
+  private String eventLocationAddress;
+  private String eventLocationGoogleMapPlaceId;
+  // TODO(suhas): May be set lat-lang as well?
 
   public long getId() {
     return id;
@@ -47,15 +47,6 @@ public class EventRecord {
     return this;
   }
 
-  public GeoPt getLocation() {
-    return location;
-  }
-
-  public EventRecord setLocation(GeoPt location) {
-    this.location = location;
-    return this;
-  }
-
   public long getEventTimeMillis() {
     return eventTimeMillis;
   }
@@ -71,6 +62,33 @@ public class EventRecord {
 
   public EventRecord setOwnerId(long ownerId) {
     this.ownerId = ownerId;
+    return this;
+  }
+
+  public String getEventLocationName() {
+    return eventLocationName;
+  }
+
+  public EventRecord setEventLocationName(String eventLocationName) {
+    this.eventLocationName = eventLocationName;
+    return this;
+  }
+
+  public String getEventLocationAddress() {
+    return eventLocationAddress;
+  }
+
+  public EventRecord setEventLocationAddress(String eventLocationAddress) {
+    this.eventLocationAddress = eventLocationAddress;
+    return this;
+  }
+
+  public String getEventLocationGoogleMapPlaceId() {
+    return eventLocationGoogleMapPlaceId;
+  }
+
+  public EventRecord setEventLocationGoogleMapPlaceId(String eventLocationGoogleMapPlaceId) {
+    this.eventLocationGoogleMapPlaceId = eventLocationGoogleMapPlaceId;
     return this;
   }
 }

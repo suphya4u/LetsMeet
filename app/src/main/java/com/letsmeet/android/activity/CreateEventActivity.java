@@ -2,16 +2,22 @@ package com.letsmeet.android.activity;
 
 import android.app.FragmentManager;
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
-import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
+
+import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
+import com.google.android.gms.common.GooglePlayServicesRepairableException;
+import com.google.android.gms.location.places.Place;
+import com.google.android.gms.location.places.ui.PlacePicker;
 import com.letsmeet.android.R;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
@@ -24,10 +30,12 @@ import com.letsmeet.android.apiclient.EventServiceClient;
 import com.letsmeet.android.common.PhoneNumberHelper;
 import com.letsmeet.android.storage.LocalStore;
 import com.letsmeet.android.widgets.contactselect.ContactInfo;
+import com.letsmeet.android.widgets.placeselect.PlaceInfo;
 import com.letsmeet.android.widgets.placeselect.PlaceSelectView;
 import com.letsmeet.server.eventService.model.CreateOrEditEventRequest;
 import com.letsmeet.server.eventService.model.CreateOrEditEventResponse;
 import com.letsmeet.server.eventService.model.EventDetails;
+import com.letsmeet.server.eventService.model.EventLocation;
 import com.letsmeet.server.eventService.model.Invitee;
 
 import java.util.Calendar;
@@ -35,7 +43,10 @@ import java.util.List;
 
 public class CreateEventActivity extends FragmentActivity {
 
+  private static final int PLACE_PICKER_REQUEST_CODE = 1;
+
   private long eventTimeSelected = 0;
+  private PlaceInfo selectedPlace;
   private EventDetails eventDetails;
 
   @Override
@@ -60,6 +71,27 @@ public class CreateEventActivity extends FragmentActivity {
 
     PlaceSelectView placeSelectView = (PlaceSelectView) findViewById(R.id.place_autocomplete);
     placeSelectView.init(this);
+    placeSelectView.setOnPlaceSelectionCallback(new PlaceSelectView.OnPlaceSelection() {
+      @Override public void handlePlaceSelect(PlaceInfo placeInfo) {
+        selectedPlace = placeInfo;
+      }
+    });
+
+    final Button pickAPlaceButton = (Button) findViewById(R.id.place_picker_button);
+    pickAPlaceButton.setOnClickListener(new View.OnClickListener() {
+      @Override public void onClick(View v) {
+        Intent placePickerIntent;
+        try {
+          placePickerIntent = new PlacePicker.IntentBuilder().build(CreateEventActivity.this);
+        } catch (GooglePlayServicesRepairableException
+            | GooglePlayServicesNotAvailableException e) {
+          Toast.makeText(CreateEventActivity.this, "PlaceService exception", Toast.LENGTH_SHORT)
+              .show();
+          return;
+        }
+        startActivityForResult(placePickerIntent, PLACE_PICKER_REQUEST_CODE);
+      }
+    });
 
     final Button pickTimeButton = (Button) findViewById(R.id.pick_time_button);
     pickTimeButton.setOnClickListener(new View.OnClickListener() {
@@ -110,6 +142,10 @@ public class CreateEventActivity extends FragmentActivity {
         }
         eventDetails.setInviteePhoneNumbers(inviteePhoneNumbers);
         eventDetails.setEventTimeMillis(eventTimeSelected);
+        EventLocation location = new EventLocation()
+            .setPlaceId(selectedPlace.getPlaceId())
+            .setPlaceAddress(selectedPlace.getAddress());
+        eventDetails.setLocation(location);
         createEvent(eventDetails);
       }
     });
@@ -198,5 +234,15 @@ public class CreateEventActivity extends FragmentActivity {
 
   private void setEventTime(Calendar timeSelected) {
     eventTimeSelected = timeSelected.getTimeInMillis();
+  }
+
+  @Override protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    super.onActivityResult(requestCode, resultCode, data);
+    if (PLACE_PICKER_REQUEST_CODE == requestCode) {
+      if (resultCode == RESULT_OK) {
+        Place place = PlacePicker.getPlace(data, this);
+        Toast.makeText(this, "Place picked: " + place.getAddress(), Toast.LENGTH_LONG).show();
+      }
+    }
   }
 }
