@@ -4,9 +4,16 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    tools:context="com.letsmeet.android.activity.fragments.SelectContactFragment">
+    tools:context="com.letsmeet.android.widgets.contactselect.SelectContactFragment">
 
-    <!-- TODO: Selected contacts could be a list -->
+    <!-- TODO(suhas): Hard coded height Recycler view, as wrap-content / dynamic height does
+        not work with RecyclerView. Fix it. -->
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/selected_contacts_list"
+        android:layout_width="match_parent"
+        android:layout_height="120dp"
+        android:scrollbars="vertical"/>
+
     <TextView
         android:id="@+id/selected_contacts"
         android:layout_width="match_parent"

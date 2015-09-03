@@ -1,7 +1,9 @@
-package com.letsmeet.android.activity.fragments;
+package com.letsmeet.android.widgets.contactselect;
 
 import android.os.Bundle;
 import android.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,13 +23,14 @@ import java.util.List;
  * Activities that contain this fragment must implement the
  * create an instance of this fragment.
  */
+// TODO(suhas): Make this a view instead of fragment.
 public class SelectContactFragment extends Fragment {
 
-  private List<ContactInfo> selectedContacts;
+  private final SelectedContactsAdapter selectedContactAdapter;
 
   public SelectContactFragment() {
     // Required empty public constructor
-    selectedContacts = Lists.newArrayList();
+    selectedContactAdapter = new SelectedContactsAdapter();
   }
 
   @Override
@@ -41,23 +44,24 @@ public class SelectContactFragment extends Fragment {
     // Inflate the layout for this fragment
     View rootView = inflater.inflate(R.layout.fragment_select_contact, container, false);
 
-    final TextView selectedContactText = (TextView) rootView.findViewById(R.id.selected_contacts);
+    final RecyclerView selectedContactsListView =
+        (RecyclerView) rootView.findViewById(R.id.selected_contacts_list);
+    final LinearLayoutManager layoutManager = new LinearLayoutManager(rootView.getContext());
+    layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+    selectedContactsListView.setLayoutManager(layoutManager);
+    selectedContactsListView.setAdapter(selectedContactAdapter);
 
     SelectContactsView contactAutoComplete =
         (SelectContactsView) rootView.findViewById(R.id.contact_autocomplete);
     contactAutoComplete.setOnContactSelectionCallback(new SelectContactsView.OnContactSelection() {
       @Override public void handleContactSelect(ContactInfo contact) {
-        selectedContacts.add(contact);
-        String existingText = selectedContactText.getText().toString();
-        selectedContactText.setText(existingText
-            + contact.getDisplayName()
-            + "<" + contact.getPhoneNumber() + ">");
+        selectedContactAdapter.addContact(contact);
       }
     });
     return rootView;
   }
 
-  public ImmutableList<ContactInfo> getSelectedContacts() {
-    return ImmutableList.copyOf(selectedContacts);
+  public List<ContactInfo> getSelectedContacts() {
+    return selectedContactAdapter.getSelectedContacts();
   }
 }

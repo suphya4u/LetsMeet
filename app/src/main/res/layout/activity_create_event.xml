@@ -21,7 +21,7 @@
         android:layout_height="wrap_content" />
 
     <fragment
-        android:name="com.letsmeet.android.activity.fragments.SelectContactFragment"
+        android:name="com.letsmeet.android.widgets.contactselect.SelectContactFragment"
         android:id="@+id/select_contact_fragment"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

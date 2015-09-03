@@ -21,8 +21,9 @@ import com.google.android.gms.maps.model.LatLngBounds;
 public class PlaceSelectView extends AutoCompleteTextView {
 
   private PlaceAutocompleteAdapter placeAdapter;
-  private OnPlaceSelection placeSelectionListener;
+  private PlaceInfo selectedPlace;
 
+  // TODO(suhas): Get actual bounds for address bias.
   private static final LatLngBounds BOUNDS_GREATER_SYDNEY = new LatLngBounds(
       new LatLng(-34.041458, 150.790100), new LatLng(-33.682247, 151.383362));
 
@@ -43,16 +44,9 @@ public class PlaceSelectView extends AutoCompleteTextView {
     setOnItemClickListener(new ItemClickListener());
   }
 
-  public void setOnPlaceSelectionCallback(OnPlaceSelection callback) {
-    placeSelectionListener = callback;
-  }
-
   private class ItemClickListener implements AdapterView.OnItemClickListener {
     @Override public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-      if (placeSelectionListener != null) {
-        PlaceInfo placeInfo = placeAdapter.getItem(position);
-        placeSelectionListener.handlePlaceSelect(placeInfo);
-      }
+      selectedPlace = placeAdapter.getItem(position);
     }
   }
 
@@ -64,7 +58,10 @@ public class PlaceSelectView extends AutoCompleteTextView {
     }
   }
 
-  public static interface OnPlaceSelection {
-    public void handlePlaceSelect(PlaceInfo placeInfo);
+  public PlaceInfo getSelectedPlace() {
+    if (selectedPlace != null) {
+      return selectedPlace;
+    }
+    return new PlaceInfo().setAddress(getText().toString());
   }
 }

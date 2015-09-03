@@ -25,7 +25,7 @@ import com.google.common.collect.Lists;
 import com.letsmeet.android.activity.fragments.ShareOptionsDialogFragment;
 import com.letsmeet.android.config.Constants;
 import com.letsmeet.android.widgets.datetime.DateTimePicker;
-import com.letsmeet.android.activity.fragments.SelectContactFragment;
+import com.letsmeet.android.widgets.contactselect.SelectContactFragment;
 import com.letsmeet.android.apiclient.EventServiceClient;
 import com.letsmeet.android.common.PhoneNumberHelper;
 import com.letsmeet.android.storage.LocalStore;
@@ -46,7 +46,6 @@ public class CreateEventActivity extends FragmentActivity {
   private static final int PLACE_PICKER_REQUEST_CODE = 1;
 
   private long eventTimeSelected = 0;
-  private PlaceInfo selectedPlace;
   private EventDetails eventDetails;
 
   @Override
@@ -69,13 +68,8 @@ public class CreateEventActivity extends FragmentActivity {
       // TODO(suhas): Update title, button and other string to reflect edit mode.
     }
 
-    PlaceSelectView placeSelectView = (PlaceSelectView) findViewById(R.id.place_autocomplete);
+    final PlaceSelectView placeSelectView = (PlaceSelectView) findViewById(R.id.place_autocomplete);
     placeSelectView.init(this);
-    placeSelectView.setOnPlaceSelectionCallback(new PlaceSelectView.OnPlaceSelection() {
-      @Override public void handlePlaceSelect(PlaceInfo placeInfo) {
-        selectedPlace = placeInfo;
-      }
-    });
 
     final Button pickAPlaceButton = (Button) findViewById(R.id.place_picker_button);
     pickAPlaceButton.setOnClickListener(new View.OnClickListener() {
@@ -128,7 +122,7 @@ public class CreateEventActivity extends FragmentActivity {
             .setName(name)
             .setNotes(notes)
             .setOwnerId(userId);
-        ImmutableList<ContactInfo> selectedContacts = contactFragment.getSelectedContacts();
+        List<ContactInfo> selectedContacts = contactFragment.getSelectedContacts();
 
         // EventDetails#setInviteePhoneNumbers is deleted and replaced with addInviteePhoneNumber.
         // However client lib is somehow not updated. So continue using set.
@@ -142,6 +136,7 @@ public class CreateEventActivity extends FragmentActivity {
         }
         eventDetails.setInviteePhoneNumbers(inviteePhoneNumbers);
         eventDetails.setEventTimeMillis(eventTimeSelected);
+        PlaceInfo selectedPlace = placeSelectView.getSelectedPlace();
         EventLocation location = new EventLocation()
             .setPlaceId(selectedPlace.getPlaceId())
             .setPlaceAddress(selectedPlace.getAddress());

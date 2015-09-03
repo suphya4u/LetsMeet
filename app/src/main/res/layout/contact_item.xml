@@ -4,12 +4,6 @@
               android:layout_width="match_parent"
               android:layout_height="match_parent">
 
-    <!-- TODO(suhas): For testing. Fix the layout -->
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Select This: "/>
-
     <ImageView
         android:id="@+id/contact_thumbnail"
         android:layout_width="60dp"
