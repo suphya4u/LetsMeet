@@ -14,12 +14,6 @@
         android:layout_height="120dp"
         android:scrollbars="vertical"/>
 
-    <TextView
-        android:id="@+id/selected_contacts"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/placeholder_for_selected_contacts"/>
-
     <com.letsmeet.android.widgets.contactselect.SelectContactsView
         xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/contact_autocomplete"

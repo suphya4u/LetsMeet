@@ -18,4 +18,34 @@
         android:id="@+id/event_time"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
+
+    <TextView
+        android:id="@+id/event_location"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+    <TextView
+        android:id="@+id/event_my_response"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="My Response: "/>
+
+    <Button
+        android:id="@+id/rsvp_yes"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/rsvp_yes"/>
+
+    <Button
+        android:id="@+id/rsvp_maybe"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/rsvp_maybe"/>
+
+    <Button
+        android:id="@+id/rsvp_no"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/rsvp_no"/>
+
 </LinearLayout>

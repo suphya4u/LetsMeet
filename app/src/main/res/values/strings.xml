@@ -21,7 +21,6 @@
     <string name="place_autocomplete">Select Place</string>
 
 <!-- TODO: Remove or change this placeholder text -->
-    <string name="placeholder_for_selected_contacts">Selected: </string>
     <string name="pending_verification_info">We are still trying to verify your phone number. If you would like change the number please retry registration again ..</string>
     <string name="register_again_button">Register again</string>
     <string name="list_events">View Events</string>
@@ -36,5 +35,9 @@
     <string name="edit_event_button">Done</string>
     <string name="pick_a_place">Pick a place</string>
     <string name="title_activity_maps">Map</string>
+    <string name="change_date_time_button">Change</string>
+    <string name="rsvp_yes">Yes</string>
+    <string name="rsvp_maybe">Maybe</string>
+    <string name="rsvp_no">No</string>
 
 </resources>

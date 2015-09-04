@@ -2,16 +2,23 @@ package com.letsmeet.android.activity.adapter;
 
 import android.content.Intent;
 import com.letsmeet.android.R;
+
+import android.os.AsyncTask;
 import android.support.v7.widget.RecyclerView;
 import android.text.format.DateFormat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
 import com.letsmeet.android.activity.EventDetailsActivity;
+import com.letsmeet.android.apiclient.EventServiceClient;
+import com.letsmeet.android.common.DateTimeUtils;
 import com.letsmeet.android.config.Constants;
+import com.letsmeet.android.storage.LocalStore;
 import com.letsmeet.server.eventService.model.EventDetails;
+import com.letsmeet.server.eventService.model.RsvpRequest;
 
 import java.util.Calendar;
 import java.util.List;
@@ -46,11 +53,7 @@ public class EventListRecyclerAdapter
 
   @Override public void onBindViewHolder(
       EventListRecyclerAdapter.EventCompactViewHolder viewHolder, int i) {
-    EventDetails event = eventList.get(i);
-    viewHolder.setEventName(event.getName());
-    viewHolder.setEventNotes(event.getNotes());
-    viewHolder.setEventTime(event.getEventTimeMillis());
-    viewHolder.setEventId(event.getEventId());
+    viewHolder.setEvent(eventList.get(i));
   }
 
   @Override public int getItemCount() {
@@ -62,45 +65,76 @@ public class EventListRecyclerAdapter
 
   public class EventCompactViewHolder extends RecyclerView.ViewHolder {
 
+    private long eventId;
     private TextView nameView;
     private TextView notesView;
     private TextView eventTimeView;
-    private long eventId;
+    private TextView eventLocationView;
+    private TextView myResponseView;
 
     public EventCompactViewHolder(View itemView) {
       super(itemView);
       nameView = (TextView) itemView.findViewById(R.id.event_name);
       notesView = (TextView) itemView.findViewById(R.id.event_notes);
       eventTimeView = (TextView) itemView.findViewById(R.id.event_time);
+      eventLocationView = (TextView) itemView.findViewById(R.id.event_location);
+      myResponseView = (TextView) itemView.findViewById(R.id.event_my_response);
+
+      Button rsvpYesButton = (Button) itemView.findViewById(R.id.rsvp_yes);
+      rsvpYesButton.setOnClickListener(new View.OnClickListener() {
+        @Override public void onClick(View v) {
+          rsvp("YES");
+        }
+      });
+
+      Button rsvpMaybeButton = (Button) itemView.findViewById(R.id.rsvp_maybe);
+      rsvpMaybeButton.setOnClickListener(new View.OnClickListener() {
+        @Override public void onClick(View v) {
+          rsvp("MAYBE");
+        }
+      });
+
+      Button rsvpNoButton = (Button) itemView.findViewById(R.id.rsvp_no);
+      rsvpNoButton.setOnClickListener(new View.OnClickListener() {
+        @Override public void onClick(View v) {
+          rsvp("NO");
+        }
+      });
     }
 
-    // TODO(suhas): Maybe replace all below set methods with one method - setEventDetails()
-    public void setEventTime(long eventTimeMillis) {
+    public void setEvent(EventDetails eventDetails) {
+      eventId = eventDetails.getEventId();
+      nameView.setText(eventDetails.getName());
+      notesView.setText(eventDetails.getNotes());
+      if (eventDetails.getLocation() != null) {
+        eventLocationView.setText(eventDetails.getLocation().getPlaceAddress());
+      }
+      myResponseView.setText("My Response: " + eventDetails.getMyResponse());
+
       Calendar eventTime = Calendar.getInstance(TimeZone.getDefault());
-      eventTime.setTimeInMillis(eventTimeMillis);
-      String eventDateString = DateFormat.getDateFormat(itemView.getContext())
-          .format(eventTime.getTime());
-      String eventTimeString = DateFormat.getTimeFormat(itemView.getContext())
-          .format(eventTime.getTime());
-      eventTimeView.setText(eventDateString + " " + eventTimeString);
-    }
-
-    public void setEventName(String eventName) {
-      nameView.setText(eventName);
-    }
-
-    public void setEventNotes(String eventNotes) {
-      notesView.setText(eventNotes);
-    }
-
-    public void setEventId(long eventId) {
-      this.eventId = eventId;
+      eventTime.setTimeInMillis(eventDetails.getEventTimeMillis());
+      eventTimeView.setText(DateTimeUtils.getDisplayDateTime(itemView.getContext(), eventTime));
     }
 
     public void onClick(View view) {
       Intent intent = new Intent(view.getContext(), EventDetailsActivity.class);
       intent.putExtra(Constants.EVENT_ID_KEY, String.valueOf(eventId));
       view.getContext().startActivity(intent);
+    }
+
+    private void rsvp(final String response) {
+      LocalStore localStore = LocalStore.getInstance(itemView.getContext());
+      final long userId = localStore.getUserId();
+      new AsyncTask<Void, Void, Void>() {
+        @Override protected Void doInBackground(Void... params) {
+          RsvpRequest request = new RsvpRequest()
+              .setUserId(userId)
+              .setEventId(eventId)
+              .setResponse(response);
+          EventServiceClient.getInstance().rsvpEvent(request);
+          return null;
+        }
+      }.execute();
     }
   }
 }

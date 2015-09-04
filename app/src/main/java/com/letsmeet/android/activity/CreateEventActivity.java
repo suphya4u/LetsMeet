@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
+import android.text.format.DateFormat;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -17,12 +18,13 @@ import com.letsmeet.android.R;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.common.base.Strings;
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.letsmeet.android.activity.fragments.ShareOptionsDialogFragment;
+import com.letsmeet.android.common.DateTimeUtils;
 import com.letsmeet.android.config.Constants;
 import com.letsmeet.android.widgets.datetime.DateTimePicker;
 import com.letsmeet.android.widgets.contactselect.SelectContactFragment;
@@ -87,6 +89,7 @@ public class CreateEventActivity extends FragmentActivity {
       }
     });
 
+    final TextView selectedDateTime = (TextView) findViewById(R.id.selected_date_time);
     final Button pickTimeButton = (Button) findViewById(R.id.pick_time_button);
     pickTimeButton.setOnClickListener(new View.OnClickListener() {
       @Override public void onClick(View v) {
@@ -95,6 +98,9 @@ public class CreateEventActivity extends FragmentActivity {
         dateTimePicker.setDateTimeSetListener(new DateTimePicker.OnDateTimeSetListener() {
           @Override public void onDateTimeSet(Calendar timeSelected) {
             setEventTime(timeSelected);
+            selectedDateTime.setText(DateTimeUtils.getDisplayDateTime(
+                CreateEventActivity.this, timeSelected));
+            pickTimeButton.setText(R.string.change_date_time_button);
           }
         });
         dateTimePicker.show();

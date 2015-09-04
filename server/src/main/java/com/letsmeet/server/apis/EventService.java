@@ -197,6 +197,9 @@ public class EventService {
       if (otherInvitee.getUserId() == 0) {
         continue;
       }
+      if (otherInvitee.getUserId() == userId) {
+        eventDetails.setMyResponse(otherInvitee.getResponse());
+      }
       EventDetails.Invitee invitee = new EventDetails.Invitee()
           .setResponse(otherInvitee.getResponse());
       if (populatePhoneNumberData) {

@@ -116,12 +116,6 @@ public class HomeActivity extends AppCompatActivity {
     LocalStore localStore = LocalStore.getInstance(this);
     userId = localStore.getUserId();
     setContentView(R.layout.activity_home);
-    final Button showMapButton = (Button) findViewById(R.id.show_map);
-    showMapButton.setOnClickListener(new View.OnClickListener() {
-      @Override public void onClick(View v) {
-        startActivity(new Intent(HomeActivity.this, MapsActivity.class));
-      }
-    });
     final Button createEventButton = (Button) findViewById(R.id.new_event_button);
     createEventButton.setOnClickListener(new View.OnClickListener() {
       public void onClick(View v) {

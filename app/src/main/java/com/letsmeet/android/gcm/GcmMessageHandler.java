@@ -14,6 +14,7 @@ import android.text.format.DateFormat;
 import com.google.android.gms.gcm.GcmListenerService;
 import com.google.common.base.Strings;
 import com.letsmeet.android.activity.EventDetailsActivity;
+import com.letsmeet.android.common.DateTimeUtils;
 import com.letsmeet.android.config.Constants;
 
 import java.util.Calendar;
@@ -84,9 +85,7 @@ public class GcmMessageHandler extends GcmListenerService {
     if (eventTimeMillis > 0) {
       Calendar eventTime = Calendar.getInstance(TimeZone.getDefault());
       eventTime.setTimeInMillis(eventTimeMillis);
-      String eventDateString = DateFormat.getDateFormat(this).format(eventTime.getTime());
-      String eventTimeString = DateFormat.getTimeFormat(this).format(eventTime.getTime());
-      String eventTimeLine = eventDateString + " " + eventTimeString;
+      String eventTimeLine = DateTimeUtils.getDisplayDateTime(this, eventTime);
       style.addLine(eventTimeLine);
       notificationBuilder.setContentText(eventTimeLine);
     }

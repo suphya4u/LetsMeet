@@ -20,6 +20,7 @@ public class EventDetails {
   private long ownerId;
   private boolean isOwner;
   private String ownerPhoneNumber;
+  private Invites.Response myResponse;
 
   public EventDetails() {
     invitees = Lists.newArrayList();
@@ -102,6 +103,15 @@ public class EventDetails {
 
   public EventDetails setLocation(EventLocation location) {
     this.location = location;
+    return this;
+  }
+
+  public Invites.Response getMyResponse() {
+    return myResponse;
+  }
+
+  public EventDetails setMyResponse(Invites.Response myResponse) {
+    this.myResponse = myResponse;
     return this;
   }
 
