@@ -18,12 +18,22 @@
         android:visibility="gone"/>
 
     <TextView
-        android:id="@+id/event_name"
+        android:id="@+id/event_details_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"/>
 
     <TextView
-        android:id="@+id/event_notes"
+        android:id="@+id/event_details_notes"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+    <TextView
+        android:id="@+id/event_details_date_time"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+    <TextView
+        android:id="@+id/event_details_location"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
 
@@ -32,15 +42,5 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
     </ListView>
-
-    <TextView
-        android:id="@+id/event_time"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
-
-    <TextView
-        android:id="@+id/event_place"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
 
 </LinearLayout>

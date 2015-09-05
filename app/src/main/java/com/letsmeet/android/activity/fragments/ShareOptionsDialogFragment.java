@@ -42,8 +42,11 @@ public class ShareOptionsDialogFragment extends DialogFragment {
         .setPositiveButton(R.string.share_by_sms, new DialogInterface.OnClickListener() {
           @Override
           public void onClick(DialogInterface dialog, int id) {
+            ProgressDialog progressDialog = new ProgressDialog(getActivity());
+            progressDialog.show();
             Toast.makeText(getActivity(), "Sharing by Sms", Toast.LENGTH_LONG).show();
             new ShareInvitation().sendInvitationSms(usersNotRegistered, eventDetails);
+            progressDialog.dismiss();
             getActivity().finish();
           }
         })

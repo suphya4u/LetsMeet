@@ -14,6 +14,7 @@ import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.common.GooglePlayServicesRepairableException;
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.ui.PlacePicker;
+import com.google.common.base.Function;
 import com.letsmeet.android.R;
 import android.view.View;
 import android.widget.Button;
@@ -41,7 +42,10 @@ import com.letsmeet.server.eventService.model.EventLocation;
 import com.letsmeet.server.eventService.model.Invitee;
 
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.List;
+
+import javax.annotation.Nullable;
 
 public class CreateEventActivity extends FragmentActivity {
 
@@ -89,7 +93,6 @@ public class CreateEventActivity extends FragmentActivity {
       }
     });
 
-    final TextView selectedDateTime = (TextView) findViewById(R.id.selected_date_time);
     final Button pickTimeButton = (Button) findViewById(R.id.pick_time_button);
     pickTimeButton.setOnClickListener(new View.OnClickListener() {
       @Override public void onClick(View v) {
@@ -98,9 +101,7 @@ public class CreateEventActivity extends FragmentActivity {
         dateTimePicker.setDateTimeSetListener(new DateTimePicker.OnDateTimeSetListener() {
           @Override public void onDateTimeSet(Calendar timeSelected) {
             setEventTime(timeSelected);
-            selectedDateTime.setText(DateTimeUtils.getDisplayDateTime(
-                CreateEventActivity.this, timeSelected));
-            pickTimeButton.setText(R.string.change_date_time_button);
+            dateTimeSelected(timeSelected.getTimeInMillis());
           }
         });
         dateTimePicker.show();
@@ -221,9 +222,24 @@ public class CreateEventActivity extends FragmentActivity {
     this.eventDetails = eventDetails;
     EditText nameEditText = (EditText) findViewById(R.id.create_event_name);
     EditText notesEditText = (EditText) findViewById(R.id.create_event_notes);
+    EditText locationEditText = (EditText) findViewById(R.id.place_autocomplete);
+    dateTimeSelected(eventDetails.getEventTimeMillis());
+    SelectContactFragment contactFragment = (SelectContactFragment)
+        getFragmentManager().findFragmentById(R.id.select_contact_fragment);
 
     nameEditText.setText(eventDetails.getName());
     notesEditText.setText(eventDetails.getNotes());
+    if (eventDetails.getLocation() != null) {
+      locationEditText.setText(eventDetails.getLocation().getPlaceAddress());
+    }
+    if (eventDetails.getInviteePhoneNumbers() != null
+        && !eventDetails.getInviteePhoneNumbers().isEmpty()) {
+      // Ignoring owner phone number as assumption is that only owner will of the event will be in
+      // this code path.
+      contactFragment.setSelectedContacts(
+          transformToContactInfos(eventDetails.getOwnerPhoneNumber(),
+              eventDetails.getInviteePhoneNumbers()));
+    }
 
     setTitle(R.string.edit_event_title);
 
@@ -245,5 +261,30 @@ public class CreateEventActivity extends FragmentActivity {
         Toast.makeText(this, "Place picked: " + place.getAddress(), Toast.LENGTH_LONG).show();
       }
     }
+  }
+
+  private void dateTimeSelected(long timeInMillis) {
+    final TextView selectedDateTime = (TextView) findViewById(R.id.selected_date_time);
+    final Button pickTimeButton = (Button) findViewById(R.id.pick_time_button);
+    selectedDateTime.setText(DateTimeUtils.getDisplayDateTime(
+        CreateEventActivity.this, timeInMillis));
+    pickTimeButton.setText(R.string.change_date_time_button);
+  }
+
+  private List<ContactInfo> transformToContactInfos(final String ignoreNumber,
+      List<Invitee> invitees) {
+    List<ContactInfo> contactInfos = Lists.transform(
+        invitees, new Function<Invitee, ContactInfo>() {
+          @Nullable @Override public ContactInfo apply(Invitee invitee) {
+            if (invitee.getPhoneNumber().equals(ignoreNumber)) {
+              return null;
+            }
+            return new ContactInfo()
+                .setPhoneNumber(invitee.getPhoneNumber());
+            // TODO(suhas): Get name and thumbnail urls.
+          }
+        });
+    contactInfos.removeAll(Collections.<ContactInfo>singleton(null));
+    return contactInfos;
   }
 }

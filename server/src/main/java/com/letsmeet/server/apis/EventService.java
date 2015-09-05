@@ -96,8 +96,7 @@ public class EventService {
       // Possible options to handle country code -
       // Assume phone number does not contain country code - assume owners country.
     }
-    List<Invites> invitesList = createInvitesList(eventId, invitedUsers);
-    ofy().save().entities(invitesList).now();
+    updateInvites(eventId, eventDetails.getOwnerId(), invitedUsers);
 
     // TODO(suhas): Do this in background and not in user request.
     eventDetails.setEventId(eventId);
@@ -105,11 +104,11 @@ public class EventService {
     return response.setEventId(eventId);
   }
 
-  private List<Invites> createInvitesList(long eventId, Set<Long> invitedUsers) {
+  private void updateInvites(long eventId, long ownerId, Set<Long> invitedUsers) {
     // Make sure invite is added only once for each event.
     List<Invites> existingInvites = ofy().load().type(Invites.class)
         .filter("eventId", eventId).list();
-    List<Long> existedInvitedUsers = Lists.transform(
+    List<Long> existingInvitedUsers = Lists.transform(
         existingInvites, new Function<Invites, Long>() {
           @Nullable @Override public Long apply(Invites input) {
             return input.getUserId();
@@ -117,11 +116,26 @@ public class EventService {
         });
     List<Invites> invitesList = Lists.newArrayList();
     for (long userId : invitedUsers) {
-      if (!existedInvitedUsers.contains(userId)) {
-        invitesList.add(new Invites(eventId, userId));
+      if (!existingInvitedUsers.contains(userId)) {
+        if (userId == ownerId) {
+          // Set owner response as "YES" by default.
+          invitesList.add(new Invites(eventId, userId)
+              .setResponse(Invites.Response.YES));
+        } else {
+          invitesList.add(new Invites(eventId, userId));
+        }
       }
     }
-    return invitesList;
+    ofy().save().entities(invitesList).now();
+
+    // Delete the invites that do not exist in invitedUsers (for edit event case).
+    List<Invites> tobeDeleted = Lists.newArrayList();
+    for (Invites invite: existingInvites) {
+      if (!invitedUsers.contains(invite.getUserId())) {
+        tobeDeleted.add(invite);
+      }
+    }
+    ofy().delete().entities(tobeDeleted).now();
   }
 
   @ApiMethod(name = "eventsForUser")
@@ -147,7 +161,7 @@ public class EventService {
   // TODO(suhas): Not using API names starting with Get, List etc. If failed for some random reason.
   // Not sure if Name really matter.
   @ApiMethod(name = "fetchEventDetails")
-  public FetchEventDetailsResponse FetchEventDetails(FetchEventDetailsRequest request) {
+  public FetchEventDetailsResponse fetchEventDetails(FetchEventDetailsRequest request) {
     EventDetails eventDetails = getEventDetails(request.getEventId(),
         request.getUserId(),
         true /* populatePhoneNumberData */);

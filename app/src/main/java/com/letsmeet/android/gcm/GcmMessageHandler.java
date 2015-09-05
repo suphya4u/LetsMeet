@@ -83,9 +83,7 @@ public class GcmMessageHandler extends GcmListenerService {
     style.setBuilder(notificationBuilder);
     style.setBigContentTitle(eventName);
     if (eventTimeMillis > 0) {
-      Calendar eventTime = Calendar.getInstance(TimeZone.getDefault());
-      eventTime.setTimeInMillis(eventTimeMillis);
-      String eventTimeLine = DateTimeUtils.getDisplayDateTime(this, eventTime);
+      String eventTimeLine = DateTimeUtils.getDisplayDateTime(this, eventTimeMillis);
       style.addLine(eventTimeLine);
       notificationBuilder.setContentText(eventTimeLine);
     }

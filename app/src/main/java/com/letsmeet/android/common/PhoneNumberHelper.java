@@ -25,6 +25,9 @@ public class PhoneNumberHelper {
   }
 
   public String formatPhoneNumber(String phoneNumber) {
+    // Replace leading zero.
+    // TODO(suhas): Do we want to handle numbers starting with 00?
+    phoneNumber = phoneNumber.replaceFirst("^0", "");
     String countryCode = getCountryCode();
     String formattedNumber;
     try {

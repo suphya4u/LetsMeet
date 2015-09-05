@@ -36,6 +36,13 @@ public class SelectedContactsAdapter
     return ImmutableList.copyOf(selectedContacts);
   }
 
+  public void setSelectedContacts(List<ContactInfo> selectedContacts) {
+    if (selectedContacts != null) {
+      this.selectedContacts = selectedContacts;
+      notifyDataSetChanged();
+    }
+  }
+
   public void addContact(ContactInfo contactInfo) {
     selectedContacts.add(contactInfo);
     notifyDataSetChanged();

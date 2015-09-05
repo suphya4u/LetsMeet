@@ -110,10 +110,8 @@ public class EventListRecyclerAdapter
         eventLocationView.setText(eventDetails.getLocation().getPlaceAddress());
       }
       myResponseView.setText("My Response: " + eventDetails.getMyResponse());
-
-      Calendar eventTime = Calendar.getInstance(TimeZone.getDefault());
-      eventTime.setTimeInMillis(eventDetails.getEventTimeMillis());
-      eventTimeView.setText(DateTimeUtils.getDisplayDateTime(itemView.getContext(), eventTime));
+      eventTimeView.setText(DateTimeUtils.getDisplayDateTime(itemView.getContext(),
+          eventDetails.getEventTimeMillis()));
     }
 
     public void onClick(View view) {

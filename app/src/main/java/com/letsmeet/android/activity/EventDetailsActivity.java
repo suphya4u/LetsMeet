@@ -12,6 +12,7 @@ import android.widget.Toast;
 
 import com.google.common.base.Strings;
 import com.letsmeet.android.apiclient.EventServiceClient;
+import com.letsmeet.android.common.DateTimeUtils;
 import com.letsmeet.android.config.Constants;
 import com.letsmeet.android.storage.LocalStore;
 import com.letsmeet.server.eventService.model.EventDetails;
@@ -58,11 +59,20 @@ public class EventDetailsActivity extends AppCompatActivity {
   }
 
   private void populateEventData() {
-    TextView eventNameView = (TextView) findViewById(R.id.event_name);
+    TextView eventNameView = (TextView) findViewById(R.id.event_details_name);
     eventNameView.setText(eventDetails.getName());
 
-    TextView eventNotesView = (TextView) findViewById(R.id.event_notes);
+    TextView eventNotesView = (TextView) findViewById(R.id.event_details_notes);
     eventNotesView.setText(eventDetails.getNotes());
+
+    if (eventDetails.getLocation() != null) {
+      TextView eventLocationView = (TextView) findViewById(R.id.event_details_location);
+      eventLocationView.setText(eventDetails.getLocation().getPlaceAddress());
+    }
+
+    TextView eventDateTimeView = (TextView) findViewById(R.id.event_details_date_time);
+    eventDateTimeView.setText(DateTimeUtils.getDisplayDateTime(
+        this, eventDetails.getEventTimeMillis()));
 
     if (eventDetails.getIsOwner()) {
       Button editEventButton = (Button) findViewById(R.id.edit_event_button);

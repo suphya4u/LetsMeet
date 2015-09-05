@@ -64,4 +64,8 @@ public class SelectContactFragment extends Fragment {
   public List<ContactInfo> getSelectedContacts() {
     return selectedContactAdapter.getSelectedContacts();
   }
+
+  public void setSelectedContacts(List<ContactInfo> contactInfos) {
+    selectedContactAdapter.setSelectedContacts(contactInfos);
+  }
 }
