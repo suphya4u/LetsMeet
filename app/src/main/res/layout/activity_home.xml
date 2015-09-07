@@ -15,8 +15,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"/>
     <Button
-        android:id="@+id/show_map"
-        android:text="Show map"
+        android:id="@+id/show_new_home"
+        android:text="Open home screen"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"/>
 

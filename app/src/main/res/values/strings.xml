@@ -8,9 +8,8 @@
     <string name="register_button">Register</string>
     <string name="title_activity_home">Lets Meet</string>
 
-    <string name="title_section1">Section 1</string>
-    <string name="title_section2">Section 2</string>
-    <string name="title_section3">Section 3</string>
+    <string name="drawer_menu_title_upcoming_events">Upcoming Events</string>
+    <string name="drawer_menu_title_all_events">All Events</string>
     <string name="create_event">Create Event</string>
     <string name="create_event_name">Give some name to event</string>
     <string name="title_activity_create_event">Create Event</string>
@@ -39,5 +38,11 @@
     <string name="rsvp_yes">Yes</string>
     <string name="rsvp_maybe">Maybe</string>
     <string name="rsvp_no">No</string>
+    <string name="title_activity_main">MainActivity</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="action_example">Example action</string>
 
 </resources>
