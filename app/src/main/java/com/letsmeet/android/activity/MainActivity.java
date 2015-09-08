@@ -40,6 +40,10 @@ public class MainActivity extends AppCompatActivity
   public void onNavigationDrawerItemSelected(EventListType eventListType) {
     // update the main content by replacing fragments
     FragmentManager fragmentManager = getSupportFragmentManager();
+    setTitle(eventListType.equals(EventListType.UPCOMING)
+        ? R.string.drawer_menu_title_upcoming_events
+        : R.string.drawer_menu_title_all_events);
+
     fragmentManager.beginTransaction()
         .replace(R.id.container, fragmentMap.get(eventListType))
         .commit();

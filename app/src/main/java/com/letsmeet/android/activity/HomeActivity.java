@@ -5,34 +5,24 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.Button;
 import com.letsmeet.android.R;
 import android.widget.Toast;
 
-import com.letsmeet.android.activity.adapter.EventListRecyclerAdapter;
-import com.letsmeet.android.apiclient.EventServiceClient;
 import com.letsmeet.android.config.Constants;
 import com.letsmeet.android.storage.LocalStore;
-import com.letsmeet.server.eventService.model.ListEventsForUserResponse;
 
 public class HomeActivity extends AppCompatActivity {
-
-  private RecyclerView eventListView;
 
   private BroadcastReceiver verificationCompleteReceiver = new BroadcastReceiver() {
     @Override public void onReceive(Context context, Intent intent) {
       Toast.makeText(HomeActivity.this, "Verification complete", Toast.LENGTH_LONG).show();
-      renderEventList();
+      renderHomeScreen();
     }
   };
-
-  private long userId;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -57,16 +47,7 @@ public class HomeActivity extends AppCompatActivity {
       return;
     }
 
-    renderEventList();
-  }
-
-  @Override
-  protected void onResume() {
-    super.onResume();
-    // TODO(suhas): Prefer caching than fetching events on every resume.
-    if (eventListView != null) {
-      listEvents();
-    }
+    renderHomeScreen();
   }
 
   @Override protected void onStop() {
@@ -88,9 +69,7 @@ public class HomeActivity extends AppCompatActivity {
     });
   }
 
-  private void renderEventList() {
-    LocalStore localStore = LocalStore.getInstance(this);
-    userId = localStore.getUserId();
+  private void renderHomeScreen() {
     setContentView(R.layout.activity_home);
     final Button createEventButton = (Button) findViewById(R.id.new_event_button);
     createEventButton.setOnClickListener(new View.OnClickListener() {
@@ -112,27 +91,6 @@ public class HomeActivity extends AppCompatActivity {
         startActivity(new Intent(HomeActivity.this, EventListActivity.class));
       }
     });
-
-    eventListView = (RecyclerView) findViewById(R.id.events_list);
-    final LinearLayoutManager layoutManager = new LinearLayoutManager(this);
-    layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
-    eventListView.setLayoutManager(layoutManager);
-    listEvents();
-  }
-
-  // TODO(suhas): Fetching event list code should be moved to ApiClient.
-  private void listEvents() {
-    new AsyncTask<Long, Void, ListEventsForUserResponse>() {
-
-      @Override protected ListEventsForUserResponse doInBackground(Long... params) {
-        return EventServiceClient.getInstance().listEvents(userId);
-      }
-
-      @Override protected void onPostExecute(ListEventsForUserResponse response) {
-        // TODO(suhas): Do not create new adapter everytime. Update list in same adapter instead.
-        eventListView.setAdapter(new EventListRecyclerAdapter(response.getEventsList()));
-      }
-    }.execute();
   }
 
   private void navigateToRegistration() {
