@@ -54,7 +54,7 @@ public class EventListFragment extends Fragment {
     userId = localStore.getUserId();
 
     TextView placeholder = (TextView) view.findViewById(R.id.placeholder);
-    placeholder.setText("New update: " + eventListType.name());
+    placeholder.setText("Event list type: " + eventListType.name());
 
     eventListView = (RecyclerView) view.findViewById(R.id.events_list);
     final LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
@@ -67,7 +67,8 @@ public class EventListFragment extends Fragment {
     new AsyncTask<Long, Void, ListEventsForUserResponse>() {
 
       @Override protected ListEventsForUserResponse doInBackground(Long... params) {
-        return EventServiceClient.getInstance().listEvents(userId);
+        return EventServiceClient.getInstance().listEvents(userId,
+            eventListType.equals(EventListType.UPCOMING) /* ignorePastEvents */);
       }
 
       @Override protected void onPostExecute(ListEventsForUserResponse response) {

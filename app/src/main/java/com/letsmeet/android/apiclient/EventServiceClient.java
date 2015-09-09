@@ -44,10 +44,11 @@ public class EventServiceClient {
     }
   }
 
-  public ListEventsForUserResponse listEvents(long userId) {
+  public ListEventsForUserResponse listEvents(long userId, boolean ignorePastEvents) {
     try {
       EventService service = getService();
       ListEventsForUserRequest request = new ListEventsForUserRequest()
+          .setIgnorePastEvents(ignorePastEvents)
           .setUserId(userId);
       return service.eventsForUser(request).execute();
     } catch (IOException e) {

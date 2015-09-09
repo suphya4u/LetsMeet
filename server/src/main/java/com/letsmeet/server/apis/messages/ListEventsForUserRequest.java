@@ -6,6 +6,7 @@ package com.letsmeet.server.apis.messages;
 public class ListEventsForUserRequest {
 
   private long userId;
+  private boolean ignorePastEvents;
 
   public long getUserId() {
     return userId;
@@ -13,6 +14,15 @@ public class ListEventsForUserRequest {
 
   public ListEventsForUserRequest setUserId(long userId) {
     this.userId = userId;
+    return this;
+  }
+
+  public boolean getIgnorePastEvents() {
+    return ignorePastEvents;
+  }
+
+  public ListEventsForUserRequest setIgnorePastEvents(boolean ignorePastEvents) {
+    this.ignorePastEvents = ignorePastEvents;
     return this;
   }
 }
