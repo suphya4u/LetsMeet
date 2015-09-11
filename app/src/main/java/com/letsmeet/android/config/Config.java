@@ -13,7 +13,7 @@ public class Config {
   public static final String LOCAL_SERVER_FOR_REAL_DEVICE = "http://192.168.1.3:8080/_ah/api/";
   public static final boolean IS_EMULATOR = true;
 
-  public static final boolean IS_VERIFICATION_REQUIRED_FOR_EMULATOR = false;
+  public static final boolean IS_VERIFICATION_REQUIRED_FOR_EMULATOR = true;
 
   // TODO(suhas): Update this when server project id finalizes.
   private static final String GCM_SENDER_ID = "291490378971";
