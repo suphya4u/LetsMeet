@@ -7,6 +7,7 @@ import com.google.common.base.Function;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import com.googlecode.objectify.cmd.Query;
 import com.letsmeet.server.apis.messages.CreateOrEditEventRequest;
 import com.letsmeet.server.apis.messages.CreateOrEditEventResponse;
 import com.letsmeet.server.apis.messages.EventDetails;
@@ -98,7 +99,8 @@ public class EventService {
       // Possible options to handle country code -
       // Assume phone number does not contain country code - assume owners country.
     }
-    updateInvites(eventId, eventDetails.getOwnerId(), invitedUsers);
+    updateInvites(eventId, eventDetails.getOwnerId(), eventDetails.getEventTimeMillis(),
+        invitedUsers);
 
     // TODO(suhas): Do this in background and not in user request.
     eventDetails.setEventId(eventId);
@@ -106,7 +108,7 @@ public class EventService {
     return response.setEventId(eventId);
   }
 
-  private void updateInvites(long eventId, long ownerId, Set<Long> invitedUsers) {
+  private void updateInvites(long eventId, long ownerId, long eventTime, Set<Long> invitedUsers) {
     // Make sure invite is added only once for each event.
     List<Invites> existingInvites = ofy().load().type(Invites.class)
         .filter("eventId", eventId).list();
@@ -119,13 +121,12 @@ public class EventService {
     List<Invites> invitesList = Lists.newArrayList();
     for (long userId : invitedUsers) {
       if (!existingInvitedUsers.contains(userId)) {
+        Invites newInvite = new Invites(eventId, userId, eventTime);
         if (userId == ownerId) {
           // Set owner response as "YES" by default.
-          invitesList.add(new Invites(eventId, userId)
-              .setResponse(Invites.Response.YES));
-        } else {
-          invitesList.add(new Invites(eventId, userId));
+          newInvite.setResponse(Invites.Response.YES);
         }
+        invitesList.add(newInvite);
       }
     }
     ofy().save().entities(invitesList).now();
@@ -145,22 +146,21 @@ public class EventService {
     ListEventsForUserResponse response = new ListEventsForUserResponse();
 
     // TODO(suhas): Add event time in invites so that it can be sorted and/or ignore past events.
-    List<Invites> userInvites = ofy().load().type(Invites.class)
-        .filter("userId", request.getUserId()).list();
+    Query<Invites> query = ofy().load().type(Invites.class)
+        .filter("userId", request.getUserId())
+        .order("eventTime");
+    if (request.getIgnorePastEvents()) {
+      long currentTime = Calendar.getInstance().getTimeInMillis();
+      long cutoffTime = currentTime - UPCOMING_EVENT_BUFFER_MS;
+      query = query.filter("eventTime >", cutoffTime);
+    }
+    List<Invites> userInvites = query.list();
 
     // TODO(suhas): Add more checks like user does not exist / event or user or invite missing few
     // fields. Handle all error cases.
     for (Invites userInvite : userInvites) {
       EventRecord eventRecord = ofy().load().type(EventRecord.class)
           .id(userInvite.getEventId()).now();
-      if (request.getIgnorePastEvents()) {
-        long currentTime = Calendar.getInstance().getTimeInMillis();
-        long cutoffTime = currentTime - UPCOMING_EVENT_BUFFER_MS;
-        if (eventRecord.getEventTimeMillis() < cutoffTime) {
-          continue;
-        }
-      }
-
       EventDetails eventDetails = toEventDetails(eventRecord,
           request.getUserId(),
           false /* populatePhoneNumberData */);  // No phone numbers populated for list view.

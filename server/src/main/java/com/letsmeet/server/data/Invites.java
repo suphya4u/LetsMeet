@@ -20,21 +20,22 @@ public class Invites {
 
   @Id
   Long id;
-
   @Index
   private long eventId;
-
   @Index
   private long userId;
+  @Index
+  private long eventTime;
 
   private Response response;
 
   // This is required for OfyService. It fails with no suitable constructor found if this does not exist.
   public Invites() {}
 
-  public Invites(long eventId, long userId) {
+  public Invites(long eventId, long userId, long eventTime) {
     this.eventId = eventId;
     this.userId = userId;
+    this.eventTime = eventTime;
     this.response = Response.NO_RESPONSE;
   }
 
@@ -62,6 +63,15 @@ public class Invites {
 
   public Invites setResponse(Response response) {
     this.response = response;
+    return this;
+  }
+
+  public long getEventTime() {
+    return eventTime;
+  }
+
+  public Invites setEventTime(long eventTime) {
+    this.eventTime = eventTime;
     return this;
   }
 
