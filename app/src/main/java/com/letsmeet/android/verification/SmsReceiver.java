@@ -61,12 +61,6 @@ public class SmsReceiver extends BroadcastReceiver {
         .setPhoneNumber(phoneNumber)
         .setRegId(registrationId);
     registerUser(registrationRequest, context);
-
-    // Verification complete. Broadcast.
-    Intent broadcast = new Intent();
-    broadcast.setAction(Constants.VERIFICATION_COMPLETE_BROADCAST);
-    context.sendBroadcast(broadcast);
-    disableSmsReceiver(context);
   }
 
   private boolean isVerificationMessage(Context context, String sender, String smsBody) {
@@ -82,15 +76,25 @@ public class SmsReceiver extends BroadcastReceiver {
   }
 
   private void registerUser(final RegistrationRequest registrationRequest, final Context context) {
-    new AsyncTask<Void, Void, Void>() {
+    new AsyncTask<Void, Void, RegistrationResponse>() {
 
-      @Override protected Void doInBackground(Void... params) {
-        RegistrationResponse response = RegistrationServiceClient.getInstance()
+      @Override protected RegistrationResponse doInBackground(Void... params) {
+        return RegistrationServiceClient.getInstance()
             .registerUser(registrationRequest);
+      }
+
+      @Override protected void onPostExecute(RegistrationResponse registrationResponse) {
+        super.onPostExecute(registrationResponse);
+
         LocalStore localStore = LocalStore.getInstance(context);
-        localStore.saveUserId(response.getUserId());
+        localStore.saveUserId(registrationResponse.getUserId());
         localStore.setVerificationComplete();
-        return null;
+
+        // Verification complete. Broadcast.
+        Intent broadcast = new Intent();
+        broadcast.setAction(Constants.VERIFICATION_COMPLETE_BROADCAST);
+        context.sendBroadcast(broadcast);
+        disableSmsReceiver(context);
       }
     }.execute();
   }
