@@ -12,6 +12,7 @@ import android.support.v4.widget.DrawerLayout;
 import com.google.common.collect.Maps;
 import com.letsmeet.android.R;
 import com.letsmeet.android.activity.fragments.EventListFragment;
+import com.letsmeet.android.activity.fragments.NavigationDrawerFragment;
 import com.letsmeet.android.common.EventListType;
 import com.letsmeet.android.storage.LocalStore;
 

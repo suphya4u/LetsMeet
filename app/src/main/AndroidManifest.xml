@@ -97,10 +97,10 @@
         <activity
             android:name=".activity.EventDetailsActivity"
             android:label="@string/title_activity_event_details"
-            android:parentActivityName=".activity.HomeActivity" >
+            android:parentActivityName=".activity.MainActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.letsmeet.android.activity.HomeActivity" />
+                android:value="com.letsmeet.android.activity.MainActivity" />
         </activity>
 
         <meta-data

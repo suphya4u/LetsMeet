@@ -1,4 +1,4 @@
-package com.letsmeet.android.activity;
+package com.letsmeet.android.activity.fragments;
 
 import android.support.v4.app.Fragment;
 import android.support.v4.view.GravityCompat;
