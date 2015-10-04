@@ -9,16 +9,12 @@ import com.letsmeet.android.R;
 import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.TaskStackBuilder;
-import android.text.format.DateFormat;
 
 import com.google.android.gms.gcm.GcmListenerService;
 import com.google.common.base.Strings;
 import com.letsmeet.android.activity.EventDetailsActivity;
 import com.letsmeet.android.common.DateTimeUtils;
 import com.letsmeet.android.config.Constants;
-
-import java.util.Calendar;
-import java.util.TimeZone;
 
 public class GcmMessageHandler extends GcmListenerService {
 

@@ -2,7 +2,6 @@ package com.letsmeet.android.verification;
 
 import android.telephony.SmsManager;
 
-import com.letsmeet.android.config.Constants;
 import com.letsmeet.server.eventService.model.EventDetails;
 
 import java.util.List;

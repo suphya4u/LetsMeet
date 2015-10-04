@@ -7,8 +7,6 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.provider.ContactsContract;
-import android.support.v4.content.ContextCompat;
 import android.telephony.SmsMessage;
 import android.widget.Toast;
 

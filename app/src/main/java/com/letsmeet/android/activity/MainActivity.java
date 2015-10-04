@@ -8,6 +8,8 @@ import android.support.v4.app.FragmentManager;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v4.widget.DrawerLayout;
+import android.view.View;
+import android.widget.Button;
 
 import com.google.common.collect.Maps;
 import com.letsmeet.android.R;
@@ -49,6 +51,13 @@ public class MainActivity extends AppCompatActivity
     fragmentMap.put(EventListType.UPCOMING, EventListFragment.newInstance(EventListType.UPCOMING));
     fragmentMap.put(EventListType.ALL, EventListFragment.newInstance(EventListType.ALL));
     setContentView(R.layout.activity_main);
+
+    final Button createEventButton = (Button) findViewById(R.id.new_event_button);
+    createEventButton.setOnClickListener(new View.OnClickListener() {
+      public void onClick(View v) {
+        startActivity(new Intent(MainActivity.this, CreateEventActivity.class));
+      }
+    });
 
     // Fragment managing the behaviors, interactions and presentation of the navigation drawer.
     NavigationDrawerFragment mNavigationDrawerFragment = (NavigationDrawerFragment)

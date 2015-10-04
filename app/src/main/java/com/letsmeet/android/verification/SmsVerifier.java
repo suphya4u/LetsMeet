@@ -1,13 +1,9 @@
 package com.letsmeet.android.verification;
 
-import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.telephony.SmsManager;
-import android.widget.Toast;
 
 import com.letsmeet.android.config.Config;
 import com.letsmeet.android.config.Constants;
