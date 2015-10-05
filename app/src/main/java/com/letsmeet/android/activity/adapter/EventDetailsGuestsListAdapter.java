@@ -55,7 +55,7 @@ public class EventDetailsGuestsListAdapter
     }
 
     public void setGuest(Pair<ContactInfo, String> contactInfoWithResponse) {
-      phoneNumberView.setText(contactInfoWithResponse.first.getPhoneNumber());
+      phoneNumberView.setText(contactInfoWithResponse.first.getDisplayName());
       responseView.setText(contactInfoWithResponse.second);
     }
   }

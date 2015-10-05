@@ -5,16 +5,20 @@ import android.app.Dialog;
 import android.app.DialogFragment;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
+
+import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
 import com.letsmeet.android.R;
 import android.os.Bundle;
-import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.letsmeet.android.storage.cache.ContactFetcher;
 import com.letsmeet.android.verification.ShareInvitation;
+import com.letsmeet.android.widgets.contactselect.ContactInfo;
 import com.letsmeet.server.eventService.model.EventDetails;
 
 import java.util.List;
@@ -58,9 +62,16 @@ public class ShareOptionsDialogFragment extends DialogFragment {
         });
 
     if (usersNotRegistered != null) {
+      List<String> displayNames = Lists.newArrayList();
+      for (String phone : usersNotRegistered) {
+        ContactInfo contactInfo = ContactFetcher.getInstance().getContactInfoByNumber(phone, getActivity());
+        String displayName = Strings.isNullOrEmpty(contactInfo.getDisplayName()) ?
+            phone : contactInfo.getDisplayName();
+        displayNames.add(displayName);
+      }
       ListView userList = (ListView) rootView.findViewById(R.id.not_registered_users_list);
       userList.setAdapter(new ArrayAdapter<>(getActivity(), android.R.layout.simple_list_item_1,
-          usersNotRegistered));
+          displayNames));
     }
 
     return builder.create();

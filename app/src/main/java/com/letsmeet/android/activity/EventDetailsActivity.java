@@ -22,10 +22,10 @@ import com.letsmeet.android.apiclient.EventServiceClient;
 import com.letsmeet.android.common.DateTimeUtils;
 import com.letsmeet.android.config.Constants;
 import com.letsmeet.android.storage.LocalStore;
+import com.letsmeet.android.storage.cache.ContactFetcher;
 import com.letsmeet.android.widgets.contactselect.ContactInfo;
 import com.letsmeet.server.eventService.model.EventDetails;
 import com.letsmeet.server.eventService.model.Invitee;
-import com.letsmeet.server.eventService.model.RsvpResponse;
 
 import java.util.List;
 
@@ -114,8 +114,11 @@ public class EventDetailsActivity extends AppCompatActivity {
       List<Invitee> invitees) {
     return Lists.transform(invitees, new Function<Invitee, Pair<ContactInfo, String>>() {
       @Nullable @Override public Pair<ContactInfo, String> apply(Invitee invitee) {
-        ContactInfo contactInfo = new ContactInfo()
-            .setPhoneNumber(invitee.getPhoneNumber());
+        ContactInfo contactInfo = ContactFetcher.getInstance()
+            .getContactInfoByNumber(invitee.getPhoneNumber(), EventDetailsActivity.this);
+        if (Strings.isNullOrEmpty(contactInfo.getDisplayName())) {
+          contactInfo.setDisplayName(invitee.getPhoneNumber());
+        }
         return Pair.create(contactInfo, invitee.getResponse());
       }
     });

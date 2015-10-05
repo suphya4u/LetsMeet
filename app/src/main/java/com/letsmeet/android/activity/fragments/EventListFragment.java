@@ -22,7 +22,7 @@ import com.letsmeet.server.eventService.model.ListEventsForUserResponse;
  */
 public class EventListFragment extends Fragment {
 
-  private EventListType eventListType;
+  private EventListType eventListType = EventListType.UPCOMING;
   private RecyclerView eventListView;
   private long userId;
 
