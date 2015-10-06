@@ -49,7 +49,7 @@ public class ShareOptionsDialogFragment extends DialogFragment {
             ProgressDialog progressDialog = new ProgressDialog(getActivity());
             progressDialog.show();
             Toast.makeText(getActivity(), "Sharing by Sms", Toast.LENGTH_LONG).show();
-            new ShareInvitation().sendInvitationSms(usersNotRegistered, eventDetails);
+            new ShareInvitation().sendInvitationSms(getActivity(), usersNotRegistered, eventDetails);
             progressDialog.dismiss();
             getActivity().finish();
           }

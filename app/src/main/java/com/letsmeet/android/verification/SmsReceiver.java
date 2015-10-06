@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.telephony.PhoneNumberUtils;
 import android.telephony.SmsMessage;
 import android.widget.Toast;
 
@@ -23,7 +24,6 @@ public class SmsReceiver extends BroadcastReceiver {
 
   public static final String SMS_BUNDLE = "pdus";
 
-  // TODO(suhas): Stop receiver once phone number is verified.
   @Override public void onReceive(Context context, Intent intent) {
     Toast.makeText(context, "Sms Received", Toast.LENGTH_LONG).show();
     LocalStore localStore = LocalStore.getInstance(context);
@@ -35,13 +35,15 @@ public class SmsReceiver extends BroadcastReceiver {
       return;
     }
     Object[] smsObjects = (Object[]) intentExtras.get(SMS_BUNDLE);
-    for (Object sms : smsObjects) {
-      SmsMessage smsMessage = SmsMessage.createFromPdu((byte[]) sms);
+    if (smsObjects != null) {
+      for (Object sms : smsObjects) {
+        SmsMessage smsMessage = SmsMessage.createFromPdu((byte[]) sms);
 
-      String smsBody = smsMessage.getMessageBody();
-      String address = smsMessage.getOriginatingAddress();
-      if (isVerificationMessage(context, address, smsBody)) {
-        verificationComplete(localStore, context);
+        String smsBody = smsMessage.getMessageBody();
+        String address = smsMessage.getOriginatingAddress();
+        if (isVerificationMessage(context, address, smsBody)) {
+          verificationComplete(localStore, context);
+        }
       }
     }
   }
@@ -66,9 +68,8 @@ public class SmsReceiver extends BroadcastReceiver {
     long verificationCode = localStore.getVerificationCode();
     if (smsBody.contains(Constants.SMS_TEXT_PREFIX)
         && smsBody.contains(String.valueOf(verificationCode))) {
-      // TODO(suhas): Verify sender of message matches the phone number in record
-      // (maybe without country code).
-      return true;
+      String userPhoneNumber = localStore.getUserPhoneNumber();
+      return PhoneNumberUtils.compare(userPhoneNumber, sender);
     }
     return false;
   }
