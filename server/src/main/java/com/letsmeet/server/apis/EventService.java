@@ -145,7 +145,6 @@ public class EventService {
   public ListEventsForUserResponse eventsForUser(ListEventsForUserRequest request) {
     ListEventsForUserResponse response = new ListEventsForUserResponse();
 
-    // TODO(suhas): Add event time in invites so that it can be sorted and/or ignore past events.
     Query<Invites> query = ofy().load().type(Invites.class)
         .filter("userId", request.getUserId())
         .order("eventTime");

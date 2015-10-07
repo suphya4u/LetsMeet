@@ -4,6 +4,7 @@ import com.googlecode.objectify.Objectify;
 import com.googlecode.objectify.ObjectifyFactory;
 import com.googlecode.objectify.ObjectifyService;
 import com.letsmeet.server.data.EventRecord;
+import com.letsmeet.server.data.FeedbackRecord;
 import com.letsmeet.server.data.Invites;
 import com.letsmeet.server.data.UserRecord;
 
@@ -17,6 +18,7 @@ public class OfyService {
     ObjectifyService.register(UserRecord.class);
     ObjectifyService.register(EventRecord.class);
     ObjectifyService.register(Invites.class);
+    ObjectifyService.register(FeedbackRecord.class);
   }
 
   public static Objectify ofy() {
