@@ -13,7 +13,7 @@ import android.widget.TextView;
 import com.letsmeet.android.R;
 import com.letsmeet.android.activity.adapter.EventListRecyclerAdapter;
 import com.letsmeet.android.apiclient.EventServiceClient;
-import com.letsmeet.android.common.EventListType;
+import com.letsmeet.android.common.MainContentFragmentSelector;
 import com.letsmeet.android.storage.LocalStore;
 import com.letsmeet.server.eventService.model.ListEventsForUserResponse;
 
@@ -22,13 +22,13 @@ import com.letsmeet.server.eventService.model.ListEventsForUserResponse;
  */
 public class EventListFragment extends Fragment {
 
-  private EventListType eventListType = EventListType.UPCOMING;
+  private MainContentFragmentSelector mainContentFragmentSelector = MainContentFragmentSelector.UPCOMING_EVENTS;
   private RecyclerView eventListView;
   private long userId;
 
-  public static EventListFragment newInstance(EventListType eventListType) {
+  public static EventListFragment newInstance(MainContentFragmentSelector mainContentFragmentSelector) {
     EventListFragment fragment = new EventListFragment();
-    fragment.eventListType = eventListType;
+    fragment.mainContentFragmentSelector = mainContentFragmentSelector;
     return fragment;
   }
 
@@ -54,7 +54,7 @@ public class EventListFragment extends Fragment {
     userId = localStore.getUserId();
 
     TextView placeholder = (TextView) view.findViewById(R.id.placeholder);
-    placeholder.setText("Event list type: " + eventListType.name());
+    placeholder.setText("Event list type: " + mainContentFragmentSelector.name());
 
     eventListView = (RecyclerView) view.findViewById(R.id.events_list);
     final LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
@@ -68,7 +68,7 @@ public class EventListFragment extends Fragment {
 
       @Override protected ListEventsForUserResponse doInBackground(Long... params) {
         return EventServiceClient.getInstance().listEvents(userId,
-            eventListType.equals(EventListType.UPCOMING) /* ignorePastEvents */);
+            mainContentFragmentSelector.equals(MainContentFragmentSelector.UPCOMING_EVENTS) /* ignorePastEvents */);
       }
 
       @Override protected void onPostExecute(ListEventsForUserResponse response) {

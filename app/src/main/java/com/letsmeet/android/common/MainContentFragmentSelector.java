@@ -3,14 +3,15 @@ package com.letsmeet.android.common;
 /**
  * Enum list used to identify event list type.
  */
-public enum EventListType {
+public enum MainContentFragmentSelector {
 
-  UPCOMING(1),
-  ALL(2);
+  UPCOMING_EVENTS(1),
+  ALL_EVENTS(2),
+  SEND_FEEDBACK(3);
 
   private final int id;
 
-  EventListType(int id) {
+  MainContentFragmentSelector(int id) {
     this.id = id;
   }
 }

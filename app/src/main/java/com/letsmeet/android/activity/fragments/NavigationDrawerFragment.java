@@ -23,7 +23,7 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import com.letsmeet.android.R;
-import com.letsmeet.android.common.EventListType;
+import com.letsmeet.android.common.MainContentFragmentSelector;
 
 /**
  * Fragment used for managing interactions for and presentation of a navigation drawer.
@@ -48,7 +48,11 @@ public class NavigationDrawerFragment extends Fragment {
    */
   private NavigationDrawerCallbacks mCallbacks;
 
-  private final EventListType[] eventLists = {EventListType.UPCOMING, EventListType.ALL};
+  private final MainContentFragmentSelector[] navigationOptions = {
+      MainContentFragmentSelector.UPCOMING_EVENTS,
+      MainContentFragmentSelector.ALL_EVENTS,
+      MainContentFragmentSelector.SEND_FEEDBACK
+  };
 
   /**
    * Helper component that ties the action bar to the navigation drawer.
@@ -109,6 +113,7 @@ public class NavigationDrawerFragment extends Fragment {
         new String[]{
             getString(R.string.drawer_menu_title_upcoming_events),
             getString(R.string.drawer_menu_title_all_events),
+            getString(R.string.drawer_menu_title_send_feedback)
         }));
     mDrawerListView.setItemChecked(mCurrentSelectedPosition, true);
     return mDrawerListView;
@@ -200,7 +205,7 @@ public class NavigationDrawerFragment extends Fragment {
       mDrawerLayout.closeDrawer(mFragmentContainerView);
     }
     if (mCallbacks != null) {
-      mCallbacks.onNavigationDrawerItemSelected(eventLists[position]);
+      mCallbacks.onNavigationDrawerItemSelected(navigationOptions[position]);
     }
   }
 
@@ -246,16 +251,7 @@ public class NavigationDrawerFragment extends Fragment {
 
   @Override
   public boolean onOptionsItemSelected(MenuItem item) {
-    if (mDrawerToggle.onOptionsItemSelected(item)) {
-      return true;
-    }
-
-    if (item.getItemId() == R.id.action_example) {
-      Toast.makeText(getActivity(), "Example action.", Toast.LENGTH_SHORT).show();
-      return true;
-    }
-
-    return super.onOptionsItemSelected(item);
+    return mDrawerToggle.onOptionsItemSelected(item) || super.onOptionsItemSelected(item);
   }
 
   /**
@@ -276,10 +272,10 @@ public class NavigationDrawerFragment extends Fragment {
   /**
    * Callbacks interface that all activities using this fragment must implement.
    */
-  public static interface NavigationDrawerCallbacks {
+  public interface NavigationDrawerCallbacks {
     /**
      * Called when an item in the navigation drawer is selected.
      */
-    void onNavigationDrawerItemSelected(EventListType eventListType);
+    void onNavigationDrawerItemSelected(MainContentFragmentSelector mainContentFragmentSelector);
   }
 }

@@ -1,25 +1,19 @@
 <resources>
     <string name="app_name">Lets Meet</string>
-
     <string name="hello_world">Device registered successfully</string>
     <string name="action_settings">Settings</string>
     <string name="registration_name_input">Name</string>
     <string name="registration_phone_input">Phone</string>
     <string name="register_button">Register</string>
-    <string name="title_activity_home">Lets Meet</string>
-
     <string name="drawer_menu_title_upcoming_events">Upcoming Events</string>
     <string name="drawer_menu_title_all_events">All Events</string>
     <string name="create_event">Create Event</string>
     <string name="create_event_name">Give some name to event</string>
     <string name="title_activity_create_event">Create Event</string>
     <string name="new_event">Create New Event</string>
-
     <string name="create_event_notes">Notes / Details</string>
     <string name="contact_autocomplete">Invite Others</string>
     <string name="place_autocomplete">Select Place</string>
-
-<!-- TODO: Remove or change this placeholder text -->
     <string name="pending_verification_info">We are still trying to verify your phone number. If you would like change the number please retry registration again ..</string>
     <string name="register_again_button">Register again</string>
     <string name="list_events">View Events</string>
@@ -39,10 +33,10 @@
     <string name="rsvp_maybe">Maybe</string>
     <string name="rsvp_no">No</string>
     <string name="title_activity_main">MainActivity</string>
-
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
-
-    <string name="action_example">Example action</string>
+    <string name="drawer_menu_title_send_feedback">Send Feedback</string>
+    <string name="send_feedback_edittext">Feedback</string>
+    <string name="send_feedback_button">Send</string>
 
 </resources>

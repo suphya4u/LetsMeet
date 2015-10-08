@@ -15,7 +15,8 @@ import com.google.common.collect.Maps;
 import com.letsmeet.android.R;
 import com.letsmeet.android.activity.fragments.EventListFragment;
 import com.letsmeet.android.activity.fragments.NavigationDrawerFragment;
-import com.letsmeet.android.common.EventListType;
+import com.letsmeet.android.activity.fragments.SendFeedbackFragment;
+import com.letsmeet.android.common.MainContentFragmentSelector;
 import com.letsmeet.android.storage.LocalStore;
 
 import java.util.Map;
@@ -23,7 +24,7 @@ import java.util.Map;
 public class MainActivity extends AppCompatActivity
     implements NavigationDrawerFragment.NavigationDrawerCallbacks {
 
-  private Map<EventListType, Fragment> fragmentMap;
+  private Map<MainContentFragmentSelector, Fragment> fragmentMap;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -48,8 +49,10 @@ public class MainActivity extends AppCompatActivity
 
   private void renderEventsList() {
     fragmentMap = Maps.newHashMap();
-    fragmentMap.put(EventListType.UPCOMING, EventListFragment.newInstance(EventListType.UPCOMING));
-    fragmentMap.put(EventListType.ALL, EventListFragment.newInstance(EventListType.ALL));
+    fragmentMap.put(MainContentFragmentSelector.UPCOMING_EVENTS, EventListFragment.newInstance(
+        MainContentFragmentSelector.UPCOMING_EVENTS));
+    fragmentMap.put(
+        MainContentFragmentSelector.ALL_EVENTS, EventListFragment.newInstance(MainContentFragmentSelector.ALL_EVENTS));
     setContentView(R.layout.activity_main);
 
     final Button createEventButton = (Button) findViewById(R.id.new_event_button);
@@ -70,15 +73,30 @@ public class MainActivity extends AppCompatActivity
   }
 
   @Override
-  public void onNavigationDrawerItemSelected(EventListType eventListType) {
+  public void onNavigationDrawerItemSelected(
+      MainContentFragmentSelector mainContentFragmentSelector) {
     // update the main content by replacing fragments
     FragmentManager fragmentManager = getSupportFragmentManager();
-    setTitle(eventListType.equals(EventListType.UPCOMING)
-        ? R.string.drawer_menu_title_upcoming_events
-        : R.string.drawer_menu_title_all_events);
+    Fragment selectedFragment = fragmentMap.get(MainContentFragmentSelector.UPCOMING_EVENTS);
+    int titleId = R.string.app_name;
+    switch (mainContentFragmentSelector) {
+      case SEND_FEEDBACK:
+        titleId = R.string.drawer_menu_title_send_feedback;
+        selectedFragment = new SendFeedbackFragment();
+        break;
+      case ALL_EVENTS:
+        titleId = R.string.drawer_menu_title_upcoming_events;
+        selectedFragment = fragmentMap.get(MainContentFragmentSelector.UPCOMING_EVENTS);
+        break;
+      case UPCOMING_EVENTS:
+      default:
+        titleId = R.string.drawer_menu_title_upcoming_events;
+        break;
+    }
 
+    setTitle(titleId);
     fragmentManager.beginTransaction()
-        .replace(R.id.container, fragmentMap.get(eventListType))
+        .replace(R.id.container, selectedFragment)
         .commit();
   }
 
