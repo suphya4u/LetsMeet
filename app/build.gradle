@@ -1,11 +1,13 @@
 apply plugin: 'com.android.application'
+// Adding line below fails with play services version confilict.
+//apply plugin: 'com.google.gms.google-services'
 
 android {
     compileSdkVersion 22
     buildToolsVersion "22.0.1"
 
     defaultConfig {
-        applicationId "android.letsmeet.com.letsmeet"
+        applicationId "com.letsmeet.android"
         minSdkVersion 15
         targetSdkVersion 22
         versionCode 1

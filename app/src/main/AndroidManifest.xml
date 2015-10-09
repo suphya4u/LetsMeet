@@ -11,6 +11,7 @@
     <uses-permission android:name="android.permission.RECEIVE_SMS" />
     <uses-permission android:name="android.permission.READ_SMS" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
 
     <permission
         android:name="com.letsmeet.android.permission.C2D_MESSAGE"
@@ -87,7 +88,7 @@
             android:parentActivityName=".activity.MainActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.letsmeet.android.activity.MainActivity" />
+                android:value=".activity.MainActivity" />
         </activity>
 
         <meta-data

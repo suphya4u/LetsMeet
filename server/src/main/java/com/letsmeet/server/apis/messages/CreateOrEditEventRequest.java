@@ -11,7 +11,7 @@ public class CreateOrEditEventRequest {
     return eventDetails;
   }
 
-  public CreateOrEditEventRequest setEvent(EventDetails eventDetails) {
+  public CreateOrEditEventRequest setEventDetails(EventDetails eventDetails) {
     this.eventDetails = eventDetails;
     return this;
   }

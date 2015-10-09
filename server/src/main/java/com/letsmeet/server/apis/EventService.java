@@ -233,10 +233,10 @@ public class EventService {
         // TODO(suhas): Cache userId to phoneNumber mapping.
         UserRecord inviteeUserRecord = ofy().load().type(UserRecord.class)
             .id(otherInvitee.getUserId()).now();
-        if (invitee != null) {
+        if (inviteeUserRecord != null) {
           invitee.setPhoneNumber(inviteeUserRecord.getPhoneNumber());
           if (otherInvitee.getUserId() == eventRecord.getOwnerId()) {
-            eventDetails.setOwnerPhoneNumber(invitee.getPhoneNumber());
+            eventDetails.setOwnerPhoneNumber(inviteeUserRecord.getPhoneNumber());
           }
         }
       }

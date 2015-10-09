@@ -85,13 +85,12 @@ public class MainActivity extends AppCompatActivity
         selectedFragment = new SendFeedbackFragment();
         break;
       case ALL_EVENTS:
-        titleId = R.string.drawer_menu_title_upcoming_events;
-        selectedFragment = fragmentMap.get(MainContentFragmentSelector.UPCOMING_EVENTS);
+        titleId = R.string.drawer_menu_title_all_events;
+        selectedFragment = fragmentMap.get(MainContentFragmentSelector.ALL_EVENTS);
         break;
       case UPCOMING_EVENTS:
       default:
         titleId = R.string.drawer_menu_title_upcoming_events;
-        break;
     }
 
     setTitle(titleId);
