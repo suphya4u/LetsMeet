@@ -27,6 +27,7 @@ import com.letsmeet.android.widgets.contactselect.ContactInfo;
 import com.letsmeet.server.eventService.model.EventDetails;
 import com.letsmeet.server.eventService.model.Invitee;
 
+import java.io.IOException;
 import java.util.List;
 
 import javax.annotation.Nullable;
@@ -51,6 +52,7 @@ public class EventDetailsActivity extends AppCompatActivity {
           eventId = Long.parseLong(eventIdString);
         }
       } catch (NumberFormatException e) {
+        // Log to analytics.
       }
       if (eventId == 0) {
         Toast.makeText(this, "Could not event id. Returning.", Toast.LENGTH_LONG).show();
@@ -125,14 +127,24 @@ public class EventDetailsActivity extends AppCompatActivity {
   }
 
   private void fetchEvent(final long eventId, final long userId) {
-    new AsyncTask<Void, Void, Void>() {
-      @Override protected Void doInBackground(Void... params) {
-        eventDetails = EventServiceClient.getInstance().GetEventDetails(eventId, userId);
-        return null;
+    new AsyncTask<Void, Void, EventDetails>() {
+      @Override protected EventDetails doInBackground(Void... params) {
+        try {
+          eventDetails = EventServiceClient.getInstance().GetEventDetails(eventId, userId);
+        } catch (IOException e) {
+          // Log to analytics.
+        }
+        return eventDetails;
       }
 
-      @Override protected void onPostExecute(Void aVoid) {
-        populateEventData();
+      @Override protected void onPostExecute(EventDetails serverResponse) {
+        if (serverResponse == null) {
+          Toast.makeText(EventDetailsActivity.this,
+              "Failed to connect server. Please check your network connection",
+              Toast.LENGTH_SHORT).show();
+        } else {
+          populateEventData();
+        }
       }
     }.execute();
   }

@@ -6,12 +6,16 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.widget.Toast;
 
 import com.google.api.client.repackaged.com.google.common.base.Strings;
 import com.letsmeet.android.apiclient.EventServiceClient;
 import com.letsmeet.android.config.Constants;
 import com.letsmeet.android.storage.LocalStore;
 import com.letsmeet.server.eventService.model.RsvpRequest;
+import com.letsmeet.server.eventService.model.RsvpResponse;
+
+import java.io.IOException;
 
 /**
  * Receiver for rsvp events from notification.
@@ -28,22 +32,35 @@ public class RsvpBroadcastReceiver extends BroadcastReceiver {
       return;
     }
     LocalStore localStore = LocalStore.getInstance(context);
-    setRsvpResponse(localStore.getUserId(), eventId, rsvpResponse);
+    setRsvpResponse(localStore.getUserId(), eventId, rsvpResponse, context);
 
     NotificationManager notificationManager =
         (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
     notificationManager.cancelAll();
   }
 
-  private void setRsvpResponse(final long userId, final long eventId, final String rsvpResponse) {
-    new AsyncTask<Void, Void, Void>() {
-      @Override protected Void doInBackground(Void... params) {
+  private void setRsvpResponse(final long userId, final long eventId, final String rsvpResponse,
+      final Context context) {
+    new AsyncTask<Void, Void, RsvpResponse>() {
+      @Override protected RsvpResponse doInBackground(Void... params) {
         RsvpRequest request = new RsvpRequest()
             .setUserId(userId)
             .setEventId(eventId)
             .setResponse(rsvpResponse);
-        EventServiceClient.getInstance().rsvpEvent(request);
+        try {
+          return EventServiceClient.getInstance().rsvpEvent(request);
+        } catch (IOException e) {
+          // Log to analytics
+        }
         return null;
+      }
+
+      @Override protected void onPostExecute(RsvpResponse serverResponse) {
+        if (serverResponse == null) {
+          Toast.makeText(context,
+              "Failed to connect server. Please check your network connection",
+              Toast.LENGTH_SHORT).show();
+        }
       }
     }.execute();
   }

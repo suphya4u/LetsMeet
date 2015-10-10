@@ -19,7 +19,7 @@ public class RegistrationServiceClient {
   private static RegistrationServiceClient selfInstance;
   private static Registration registrationService;
 
-  private RegistrationServiceClient() {};
+  private RegistrationServiceClient() {}
 
   public static RegistrationServiceClient getInstance() {
     if (selfInstance == null) {
@@ -28,13 +28,8 @@ public class RegistrationServiceClient {
     return selfInstance;
   }
 
-  public RegistrationResponse registerUser(RegistrationRequest request) {
-    try {
-      return getService().register(request).execute();
-    } catch (IOException e) {
-      // TODO(suhas) Handle gracefully?
-      throw new RuntimeException(e);
-    }
+  public RegistrationResponse registerUser(RegistrationRequest request) throws IOException {
+    return getService().register(request).execute();
   }
 
   private Registration getService() {

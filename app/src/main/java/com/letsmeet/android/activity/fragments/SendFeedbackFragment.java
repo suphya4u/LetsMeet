@@ -1,7 +1,6 @@
 package com.letsmeet.android.activity.fragments;
 
 import android.app.ProgressDialog;
-import android.content.DialogInterface;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.AsyncTask;
@@ -12,10 +11,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.letsmeet.android.R;
 import com.letsmeet.android.apiclient.FeedbackServiceClient;
 import com.letsmeet.android.storage.LocalStore;
+import com.letsmeet.server.feedbackService.model.SendFeedbackResponse;
+
+import java.io.IOException;
 
 /**
  * Fragment to send feedback.
@@ -63,14 +66,24 @@ public class SendFeedbackFragment extends Fragment {
     progressDialog.setCancelable(false);
     progressDialog.show();
 
-    new AsyncTask<Void, Void, Void>() {
-      @Override protected Void doInBackground(Void... params) {
-        FeedbackServiceClient.getInstance().sendFeedback(userId, feedback, appVersion);
+    new AsyncTask<Void, Void, SendFeedbackResponse>() {
+      @Override protected SendFeedbackResponse doInBackground(Void... params) {
+        try {
+          return FeedbackServiceClient.getInstance().sendFeedback(userId, feedback, appVersion);
+        } catch (IOException e) {
+          // Log to analytics.
+        }
         return null;
       }
 
-      @Override protected void onPostExecute(Void aVoid) {
+      @Override protected void onPostExecute(SendFeedbackResponse serverResponse) {
         progressDialog.dismiss();
+        if (serverResponse == null) {
+          Toast.makeText(getContext(),
+              "Failed to connect server. Please check your network connection",
+              Toast.LENGTH_SHORT).show();
+        }
+
         // TODO: Show your feedback received successfully message.
         // Hide edittext and send feedback button. Unhide it in createView method and hide the
         // message there.

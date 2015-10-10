@@ -19,7 +19,7 @@ public class FeedbackServiceClient {
   private static FeedbackServiceClient selfInstance;
   private static FeedbackService feedbackService;
 
-  private FeedbackServiceClient() {};
+  private FeedbackServiceClient() {}
 
   public static FeedbackServiceClient getInstance() {
     if (selfInstance == null) {
@@ -28,16 +28,13 @@ public class FeedbackServiceClient {
     return selfInstance;
   }
 
-  public SendFeedbackResponse sendFeedback(long userId, String feedback, String appVersionId) {
+  public SendFeedbackResponse sendFeedback(long userId, String feedback, String appVersionId)
+      throws IOException {
     SendFeedbackRequest request = new SendFeedbackRequest()
         .setUserId(userId)
         .setFeedback(feedback)
         .setAppVersion(appVersionId);
-    try {
-      return getService().sendFeedback(request).execute();
-    } catch (IOException e) {
-      throw new RuntimeException(e);
-    }
+    return getService().sendFeedback(request).execute();
   }
 
   private FeedbackService getService() {

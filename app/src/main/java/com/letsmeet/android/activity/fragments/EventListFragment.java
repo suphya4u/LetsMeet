@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.letsmeet.android.R;
 import com.letsmeet.android.activity.adapter.EventListRecyclerAdapter;
@@ -16,6 +17,8 @@ import com.letsmeet.android.apiclient.EventServiceClient;
 import com.letsmeet.android.common.MainContentFragmentSelector;
 import com.letsmeet.android.storage.LocalStore;
 import com.letsmeet.server.eventService.model.ListEventsForUserResponse;
+
+import java.io.IOException;
 
 /**
  * Fragment to render events list.
@@ -67,11 +70,22 @@ public class EventListFragment extends Fragment {
     new AsyncTask<Long, Void, ListEventsForUserResponse>() {
 
       @Override protected ListEventsForUserResponse doInBackground(Long... params) {
-        return EventServiceClient.getInstance().listEvents(userId,
-            mainContentFragmentSelector.equals(MainContentFragmentSelector.UPCOMING_EVENTS) /* ignorePastEvents */);
+        try {
+          return EventServiceClient.getInstance().listEvents(userId,
+              mainContentFragmentSelector.equals(MainContentFragmentSelector.UPCOMING_EVENTS) /* ignorePastEvents */);
+        } catch (IOException e) {
+          // TODO: Log to analytics.
+        }
+        return null;
       }
 
       @Override protected void onPostExecute(ListEventsForUserResponse response) {
+        if (response == null) {
+          Toast.makeText(getContext(),
+              "Failed to connect server. Please check your network connection",
+              Toast.LENGTH_SHORT).show();
+          return;
+        }
         // TODO(suhas): Do not create new adapter everytime. Update list in same adapter instead.
         eventListView.setAdapter(new EventListRecyclerAdapter(response.getEventsList()));
       }

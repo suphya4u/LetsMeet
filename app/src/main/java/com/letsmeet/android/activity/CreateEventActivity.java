@@ -41,6 +41,7 @@ import com.letsmeet.server.eventService.model.EventDetails;
 import com.letsmeet.server.eventService.model.EventLocation;
 import com.letsmeet.server.eventService.model.Invitee;
 
+import java.io.IOException;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
@@ -66,6 +67,7 @@ public class CreateEventActivity extends FragmentActivity {
         eventId = Long.parseLong(eventIdString);
       }
     } catch (NumberFormatException e) {
+      // Log to analytics.
     }
     if (eventId != 0) {
       // We are in edit mode. Fetch event and pre-populate all fields.
@@ -183,10 +185,23 @@ public class CreateEventActivity extends FragmentActivity {
     new AsyncTask<CreateOrEditEventRequest, Void, CreateOrEditEventResponse>() {
       @Override protected CreateOrEditEventResponse doInBackground(
           CreateOrEditEventRequest... params) {
-        return  EventServiceClient.getInstance().createEvent(request);
+        try {
+          return  EventServiceClient.getInstance().createEvent(request);
+        } catch (IOException e) {
+          // Log to analytics
+        }
+        return null;
       }
 
       @Override protected void onPostExecute(CreateOrEditEventResponse response) {
+        if (response == null) {
+          Toast.makeText(CreateEventActivity.this,
+              "Failed to connect server. Please check your network connection",
+              Toast.LENGTH_SHORT).show();
+          finish();
+          return;
+        }
+
         List<String> phoneNumbersNotYetRegistered = response.getPhoneNumbersNotYetRegistered();
         if (phoneNumbersNotYetRegistered != null && !phoneNumbersNotYetRegistered.isEmpty()) {
           ShareOptionsDialogFragment dialog = new ShareOptionsDialogFragment();
@@ -208,11 +223,22 @@ public class CreateEventActivity extends FragmentActivity {
     new AsyncTask<Void, Void, EventDetails>() {
 
       @Override protected EventDetails doInBackground(Void... params) {
-        return EventServiceClient.getInstance().GetEventDetails(eventId, userId);
+        try {
+          return EventServiceClient.getInstance().GetEventDetails(eventId, userId);
+        } catch (IOException e) {
+          // Log to analytics.
+        }
+        return null;
       }
 
       @Override protected void onPostExecute(EventDetails eventDetails) {
-        populateEventDetails(eventDetails);
+        if (eventDetails == null) {
+          Toast.makeText(CreateEventActivity.this,
+              "Failed to connect server. Please check your network connection",
+              Toast.LENGTH_SHORT).show();
+        } else {
+          populateEventDetails(eventDetails);
+        }
         progressDialog.dismiss();
       }
     }.execute();

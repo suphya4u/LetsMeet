@@ -1,16 +1,17 @@
 package com.letsmeet.android.activity.adapter;
 
+import android.content.Context;
 import android.content.Intent;
 import com.letsmeet.android.R;
 
 import android.os.AsyncTask;
 import android.support.v7.widget.RecyclerView;
-import android.text.format.DateFormat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.letsmeet.android.activity.EventDetailsActivity;
 import com.letsmeet.android.apiclient.EventServiceClient;
@@ -19,10 +20,10 @@ import com.letsmeet.android.config.Constants;
 import com.letsmeet.android.storage.LocalStore;
 import com.letsmeet.server.eventService.model.EventDetails;
 import com.letsmeet.server.eventService.model.RsvpRequest;
+import com.letsmeet.server.eventService.model.RsvpResponse;
 
-import java.util.Calendar;
+import java.io.IOException;
 import java.util.List;
-import java.util.TimeZone;
 
 /**
  * Recycle view adapter for events list.
@@ -72,7 +73,7 @@ public class EventListRecyclerAdapter
     private TextView eventLocationView;
     private TextView myResponseView;
 
-    public EventCompactViewHolder(View itemView) {
+    public EventCompactViewHolder(final View itemView) {
       super(itemView);
       nameView = (TextView) itemView.findViewById(R.id.event_name);
       notesView = (TextView) itemView.findViewById(R.id.event_notes);
@@ -83,21 +84,21 @@ public class EventListRecyclerAdapter
       Button rsvpYesButton = (Button) itemView.findViewById(R.id.rsvp_yes);
       rsvpYesButton.setOnClickListener(new View.OnClickListener() {
         @Override public void onClick(View v) {
-          rsvp("YES");
+          rsvp(itemView.getContext(), "YES");
         }
       });
 
       Button rsvpMaybeButton = (Button) itemView.findViewById(R.id.rsvp_maybe);
       rsvpMaybeButton.setOnClickListener(new View.OnClickListener() {
         @Override public void onClick(View v) {
-          rsvp("MAYBE");
+          rsvp(itemView.getContext(), "MAYBE");
         }
       });
 
       Button rsvpNoButton = (Button) itemView.findViewById(R.id.rsvp_no);
       rsvpNoButton.setOnClickListener(new View.OnClickListener() {
         @Override public void onClick(View v) {
-          rsvp("NO");
+          rsvp(itemView.getContext(), "NO");
         }
       });
     }
@@ -120,17 +121,29 @@ public class EventListRecyclerAdapter
       view.getContext().startActivity(intent);
     }
 
-    private void rsvp(final String response) {
+    private void rsvp(final Context context, final String response) {
       LocalStore localStore = LocalStore.getInstance(itemView.getContext());
       final long userId = localStore.getUserId();
-      new AsyncTask<Void, Void, Void>() {
-        @Override protected Void doInBackground(Void... params) {
+      new AsyncTask<Void, Void, RsvpResponse>() {
+        @Override protected RsvpResponse doInBackground(Void... params) {
           RsvpRequest request = new RsvpRequest()
               .setUserId(userId)
               .setEventId(eventId)
               .setResponse(response);
-          EventServiceClient.getInstance().rsvpEvent(request);
+          try {
+            return EventServiceClient.getInstance().rsvpEvent(request);
+          } catch (IOException e) {
+            // Long to analytics.
+          }
           return null;
+        }
+
+        @Override protected void onPostExecute(RsvpResponse serverResponse) {
+          if (serverResponse == null) {
+            Toast.makeText(context,
+                "Failed to connect server. Please check your network connection",
+                Toast.LENGTH_SHORT).show();
+          }
         }
       }.execute();
     }

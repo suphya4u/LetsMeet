@@ -26,7 +26,7 @@ public class EventServiceClient {
   private static EventServiceClient selfInstance;
   private static EventService eventService;
 
-  private EventServiceClient() {};
+  private EventServiceClient() {}
 
   public static EventServiceClient getInstance() {
     if (selfInstance == null) {
@@ -35,46 +35,32 @@ public class EventServiceClient {
     return selfInstance;
   }
 
-  public CreateOrEditEventResponse createEvent(CreateOrEditEventRequest request) {
-    try {
-      EventService service = getService();
-      return service.createOrEditEvent(request).execute();
-    } catch (IOException e) {
-      throw new RuntimeException(e);
-    }
+  public CreateOrEditEventResponse createEvent(CreateOrEditEventRequest request)
+      throws IOException {
+    EventService service = getService();
+    return service.createOrEditEvent(request).execute();
   }
 
-  public ListEventsForUserResponse listEvents(long userId, boolean ignorePastEvents) {
-    try {
-      EventService service = getService();
-      ListEventsForUserRequest request = new ListEventsForUserRequest()
-          .setIgnorePastEvents(ignorePastEvents)
-          .setUserId(userId);
-      return service.eventsForUser(request).execute();
-    } catch (IOException e) {
-      throw new RuntimeException(e);
-    }
+  public ListEventsForUserResponse listEvents(long userId, boolean ignorePastEvents)
+      throws IOException {
+    EventService service = getService();
+    ListEventsForUserRequest request = new ListEventsForUserRequest()
+        .setIgnorePastEvents(ignorePastEvents)
+        .setUserId(userId);
+    return service.eventsForUser(request).execute();
   }
 
-  public EventDetails GetEventDetails(long eventId, long userId) {
-    try {
-      FetchEventDetailsRequest request = new FetchEventDetailsRequest()
-          .setEventId(eventId)
-          .setUserId(userId);
-      FetchEventDetailsResponse response = getService().fetchEventDetails(request).execute();
-      return response.getEventDetails();
-    } catch (IOException e) {
-      throw new RuntimeException(e);
-    }
+  public EventDetails GetEventDetails(long eventId, long userId) throws IOException {
+    FetchEventDetailsRequest request = new FetchEventDetailsRequest()
+        .setEventId(eventId)
+        .setUserId(userId);
+    FetchEventDetailsResponse response = getService().fetchEventDetails(request).execute();
+    return response.getEventDetails();
   }
 
-  public RsvpResponse rsvpEvent(RsvpRequest request) {
-    try {
-      EventService service = getService();
-      return service.rsvpEvent(request).execute();
-    } catch (IOException e) {
-      throw new RuntimeException(e);
-    }
+  public RsvpResponse rsvpEvent(RsvpRequest request) throws IOException {
+    EventService service = getService();
+    return service.rsvpEvent(request).execute();
   }
 
   private EventService getService() {

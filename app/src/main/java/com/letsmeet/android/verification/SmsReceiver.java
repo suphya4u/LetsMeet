@@ -17,6 +17,8 @@ import com.letsmeet.android.storage.LocalStore;
 import com.letsmeet.server.registration.model.RegistrationRequest;
 import com.letsmeet.server.registration.model.RegistrationResponse;
 
+import java.io.IOException;
+
 /**
  * Receive sms for verification.
  */
@@ -78,12 +80,31 @@ public class SmsReceiver extends BroadcastReceiver {
     new AsyncTask<Void, Void, RegistrationResponse>() {
 
       @Override protected RegistrationResponse doInBackground(Void... params) {
-        return RegistrationServiceClient.getInstance()
-            .registerUser(registrationRequest);
+        try {
+          return RegistrationServiceClient.getInstance()
+              .registerUser(registrationRequest);
+        } catch (IOException e) {
+          // Log to analytics.
+        }
+        return null;
       }
 
       @Override protected void onPostExecute(RegistrationResponse registrationResponse) {
         super.onPostExecute(registrationResponse);
+
+        if (registrationResponse == null) {
+          // TODO: Registration failed here. But verification message is already received.
+          // So phone number is verified. We need a new status as phone verified but server
+          // registration pending. So maybe de-couple these to tasks.
+          // Main Actvity should check server registration complete or not and registration activity
+          // should take appropriate steps based on status.
+          // TODO: Also fix the toast message when this is fixed.
+          Toast.makeText(context,
+              "Failed to connect server. Please check your network connection. " +
+                  "You may need to register again.",
+              Toast.LENGTH_SHORT).show();
+          return;
+        }
 
         LocalStore localStore = LocalStore.getInstance(context);
         localStore.saveUserId(registrationResponse.getUserId());
