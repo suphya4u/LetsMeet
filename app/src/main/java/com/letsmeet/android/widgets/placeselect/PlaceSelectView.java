@@ -1,6 +1,7 @@
 package com.letsmeet.android.widgets.placeselect;
 
 import android.content.Context;
+import android.location.Location;
 import android.support.v4.app.FragmentActivity;
 import android.util.AttributeSet;
 import android.view.View;
@@ -10,6 +11,7 @@ import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.places.Places;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
@@ -23,9 +25,9 @@ public class PlaceSelectView extends AutoCompleteTextView {
   private PlaceAutocompleteAdapter placeAdapter;
   private PlaceInfo selectedPlace;
 
-  // TODO(suhas): Get actual bounds for address bias.
-  private static final LatLngBounds BOUNDS_GREATER_SYDNEY = new LatLngBounds(
-      new LatLng(-34.041458, 150.790100), new LatLng(-33.682247, 151.383362));
+  // Pune.
+  private static final LatLngBounds DEFAULT_BOUNDS = new LatLngBounds(
+      new LatLng(18.441577, 73.749196), new LatLng(18.622241, 73.978536));
 
   public PlaceSelectView(Context context, AttributeSet attrs) {
     super(context, attrs);
@@ -35,10 +37,20 @@ public class PlaceSelectView extends AutoCompleteTextView {
     GoogleApiClient googleApiClient = new GoogleApiClient.Builder(getContext())
         .enableAutoManage(activity, 0 /* clientId */, new ConnectionFailedHandler())
         .addApi(Places.GEO_DATA_API)
+        .addApi(LocationServices.API)
         .build();
+    Location lastLocation = LocationServices.FusedLocationApi.getLastLocation(googleApiClient);
+    LatLngBounds lastLocationBounds = DEFAULT_BOUNDS;
+    if (lastLocation != null) {
+      // Include current location +1 and -1 latitudes - approx +69 miles, - 69 miles.
+      lastLocationBounds = new LatLngBounds.Builder()
+          .include(new LatLng(lastLocation.getLatitude() - 1, lastLocation.getLongitude()))
+          .include(new LatLng(lastLocation.getLatitude() + 1, lastLocation.getLongitude()))
+          .build();
+    }
     placeAdapter = new PlaceAutocompleteAdapter(getContext(),
         android.R.layout.simple_list_item_1,
-        googleApiClient, BOUNDS_GREATER_SYDNEY, null);
+        googleApiClient, lastLocationBounds, null);
     setAdapter(placeAdapter);
 
     setOnItemClickListener(new ItemClickListener());
