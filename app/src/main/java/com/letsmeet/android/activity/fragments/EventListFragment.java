@@ -71,8 +71,9 @@ public class EventListFragment extends Fragment {
 
       @Override protected ListEventsForUserResponse doInBackground(Long... params) {
         try {
-          return EventServiceClient.getInstance().listEvents(userId,
-              mainContentFragmentSelector.equals(MainContentFragmentSelector.UPCOMING_EVENTS) /* ignorePastEvents */);
+          ListEventsForUserResponse response = EventServiceClient.getInstance().listEvents(userId,
+              mainContentFragmentSelector.equals(
+                  MainContentFragmentSelector.UPCOMING_EVENTS) /* ignorePastEvents */);
         } catch (IOException e) {
           // TODO: Log to analytics.
         }

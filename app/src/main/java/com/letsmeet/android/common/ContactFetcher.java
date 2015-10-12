@@ -1,4 +1,4 @@
-package com.letsmeet.android.storage.cache;
+package com.letsmeet.android.common;
 
 import android.content.Context;
 import android.database.Cursor;

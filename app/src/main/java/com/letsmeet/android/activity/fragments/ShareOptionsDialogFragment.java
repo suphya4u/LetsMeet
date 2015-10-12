@@ -16,7 +16,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import com.letsmeet.android.storage.cache.ContactFetcher;
+import com.letsmeet.android.common.ContactFetcher;
 import com.letsmeet.android.verification.ShareInvitation;
 import com.letsmeet.android.widgets.contactselect.ContactInfo;
 import com.letsmeet.server.eventService.model.EventDetails;

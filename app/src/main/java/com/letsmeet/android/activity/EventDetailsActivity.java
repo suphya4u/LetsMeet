@@ -22,7 +22,7 @@ import com.letsmeet.android.apiclient.EventServiceClient;
 import com.letsmeet.android.common.DateTimeUtils;
 import com.letsmeet.android.config.Constants;
 import com.letsmeet.android.storage.LocalStore;
-import com.letsmeet.android.storage.cache.ContactFetcher;
+import com.letsmeet.android.common.ContactFetcher;
 import com.letsmeet.android.widgets.contactselect.ContactInfo;
 import com.letsmeet.server.eventService.model.EventDetails;
 import com.letsmeet.server.eventService.model.Invitee;
