@@ -2,6 +2,8 @@ package com.letsmeet.android.apiclient.cache;
 
 import android.content.Context;
 
+import com.google.api.client.extensions.android.json.AndroidJsonFactory;
+import com.google.api.client.json.JsonFactory;
 import com.google.gson.Gson;
 import com.letsmeet.server.eventService.model.ListEventsForUserResponse;
 
@@ -16,6 +18,7 @@ import java.io.IOException;
 public class EventListCache {
 
   private static final String FILE_NAME = "event_list_cache";
+  private static final JsonFactory JSON_FACTORY = new AndroidJsonFactory();
 
   public void cacheData(Context context, ListEventsForUserResponse data) {
     FileOutputStream fos = null;
@@ -25,9 +28,8 @@ public class EventListCache {
       // File not found.
       return;
     }
-    Gson gson = new Gson();
     try {
-      fos.write(gson.toJson(data).getBytes());
+      fos.write(JSON_FACTORY.toByteArray(data));
       fos.close();
     } catch (IOException e) {
       // Failed to write.
@@ -43,15 +45,10 @@ public class EventListCache {
       return null;
     }
 
-    StringBuilder strBuffer = new StringBuilder();
-    int content;
     try {
-      while ((content = fis.read()) != -1) {
-        strBuffer.append((char) content);
-      }
+      ListEventsForUserResponse res = JSON_FACTORY.fromInputStream(fis, ListEventsForUserResponse.class);
       fis.close();
-      Gson gson = new Gson();
-      return gson.fromJson(strBuffer.toString(), ListEventsForUserResponse.class);
+      return res;
     } catch (IOException e) {
       // Exception while reading file.
       return null;
