@@ -2,56 +2,32 @@ package com.letsmeet.android.apiclient.cache;
 
 import android.content.Context;
 
-import com.google.api.client.extensions.android.json.AndroidJsonFactory;
-import com.google.api.client.json.JsonFactory;
-import com.google.gson.Gson;
+import com.letsmeet.android.apiclient.EventServiceClient;
+import com.letsmeet.android.storage.LocalStore;
+import com.letsmeet.android.storage.cache.Cache;
 import com.letsmeet.server.eventService.model.ListEventsForUserResponse;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 
 /**
- * Caches events list response.
+ * Cache for events list.
  */
-public class EventListCache {
+public class EventListCache extends Cache<ListEventsForUserResponse> {
 
-  private static final String FILE_NAME = "event_list_cache";
-  private static final JsonFactory JSON_FACTORY = new AndroidJsonFactory();
+  private static final String UPCOMING_EVENTS_KEY = "upcoming_events_list";
+  private static final String ALL_EVENTS_KEY = "all_events_list";
 
-  public void cacheData(Context context, ListEventsForUserResponse data) {
-    FileOutputStream fos = null;
-    try {
-      fos = context.openFileOutput(FILE_NAME, Context.MODE_PRIVATE);
-    } catch (FileNotFoundException e) {
-      // File not found.
-      return;
-    }
-    try {
-      fos.write(JSON_FACTORY.toByteArray(data));
-      fos.close();
-    } catch (IOException e) {
-      // Failed to write.
-    }
+  public EventListCache(Context context) {
+    super(context, ListEventsForUserResponse.class);
   }
 
-  public ListEventsForUserResponse getEventsList(Context context) {
-    FileInputStream fis = null;
-    try {
-      fis = context.openFileInput(FILE_NAME);
-    } catch (FileNotFoundException e) {
-      // File not found.
-      return null;
-    }
+  public ListEventsForUserResponse getEvents(boolean ignorePastEvents) throws IOException {
+    return get(ignorePastEvents ? UPCOMING_EVENTS_KEY : ALL_EVENTS_KEY);
+  }
 
-    try {
-      ListEventsForUserResponse res = JSON_FACTORY.fromInputStream(fis, ListEventsForUserResponse.class);
-      fis.close();
-      return res;
-    } catch (IOException e) {
-      // Exception while reading file.
-      return null;
-    }
+  @Override protected ListEventsForUserResponse fetchData(String key) throws IOException {
+    LocalStore localStore = LocalStore.getInstance(context);
+    return EventServiceClient.getInstance().listEvents(localStore.getUserId(),
+        key.equals(UPCOMING_EVENTS_KEY));
   }
 }

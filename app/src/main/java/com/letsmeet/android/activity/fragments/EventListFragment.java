@@ -13,7 +13,7 @@ import android.widget.Toast;
 
 import com.letsmeet.android.R;
 import com.letsmeet.android.activity.adapter.EventListRecyclerAdapter;
-import com.letsmeet.android.apiclient.EventServiceClient;
+import com.letsmeet.android.apiclient.cache.EventListCache;
 import com.letsmeet.android.common.MainContentFragmentSelector;
 import com.letsmeet.android.storage.LocalStore;
 import com.letsmeet.server.eventService.model.ListEventsForUserResponse;
@@ -71,8 +71,8 @@ public class EventListFragment extends Fragment {
 
       @Override protected ListEventsForUserResponse doInBackground(Long... params) {
         try {
-          return EventServiceClient.getInstance().listEvents(userId,
-              mainContentFragmentSelector.equals(
+          EventListCache eventListCache = new EventListCache(getContext());
+          return eventListCache.getEvents(mainContentFragmentSelector.equals(
                   MainContentFragmentSelector.UPCOMING_EVENTS) /* ignorePastEvents */);
         } catch (IOException e) {
           // TODO: Log to analytics.
