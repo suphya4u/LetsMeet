@@ -1,9 +1,13 @@
 package com.letsmeet.android.apiclient;
 
+import android.content.Context;
+
 import com.google.api.client.extensions.android.http.AndroidHttp;
 import com.google.api.client.extensions.android.json.AndroidJsonFactory;
 import com.google.api.client.googleapis.services.AbstractGoogleClientRequest;
 import com.google.api.client.googleapis.services.GoogleClientRequestInitializer;
+import com.letsmeet.android.apiclient.cache.EventDetailsCache;
+import com.letsmeet.android.apiclient.cache.EventListCache;
 import com.letsmeet.android.config.Config;
 import com.letsmeet.server.eventService.EventService;
 import com.letsmeet.server.eventService.model.CreateOrEditEventRequest;
@@ -21,16 +25,21 @@ import java.io.IOException;
 /**
  * Client for Event APIs.
  */
+// TODO: Caching should in a wrapper over ServiceClient than including it in here.
 public class EventServiceClient {
 
   private static EventServiceClient selfInstance;
   private static EventService eventService;
 
-  private EventServiceClient() {}
+  private final Context context;
 
-  public static EventServiceClient getInstance() {
+  private EventServiceClient(Context context) {
+    this.context = context;
+  }
+
+  public static EventServiceClient getInstance(Context context) {
     if (selfInstance == null) {
-      selfInstance = new EventServiceClient();
+      selfInstance = new EventServiceClient(context);
     }
     return selfInstance;
   }
@@ -38,10 +47,22 @@ public class EventServiceClient {
   public CreateOrEditEventResponse createEvent(CreateOrEditEventRequest request)
       throws IOException {
     EventService service = getService();
-    return service.createOrEditEvent(request).execute();
+    CreateOrEditEventResponse response = service.createOrEditEvent(request).execute();
+    invalidateEventListCache();
+    return response;
   }
 
-  public ListEventsForUserResponse listEvents(long userId, boolean ignorePastEvents)
+  // TODO: These two methods are not actually required if caching is moved to a wrapper. See top.
+  public ListEventsForUserResponse listEventsWithCaching(long userId, boolean ignorePastEvents)
+      throws IOException {
+    return new EventListCache(context).getEvents(ignorePastEvents);
+  }
+
+  public EventDetails getEventDetailsWithCaching(long eventId, long userId) throws IOException {
+    return new EventDetailsCache(context).getEventDetails(eventId);
+  }
+
+  public ListEventsForUserResponse fetchEventsList(long userId, boolean ignorePastEvents)
       throws IOException {
     EventService service = getService();
     ListEventsForUserRequest request = new ListEventsForUserRequest()
@@ -50,7 +71,7 @@ public class EventServiceClient {
     return service.eventsForUser(request).execute();
   }
 
-  public EventDetails GetEventDetails(long eventId, long userId) throws IOException {
+  public EventDetails fetchEventDetails(long eventId, long userId) throws IOException {
     FetchEventDetailsRequest request = new FetchEventDetailsRequest()
         .setEventId(eventId)
         .setUserId(userId);
@@ -60,7 +81,18 @@ public class EventServiceClient {
 
   public RsvpResponse rsvpEvent(RsvpRequest request) throws IOException {
     EventService service = getService();
-    return service.rsvpEvent(request).execute();
+    RsvpResponse response = service.rsvpEvent(request).execute();
+    invalidateEventDetailsCache(request.getEventId());
+    invalidateEventListCache();
+    return response;
+  }
+
+  private void invalidateEventListCache() {
+    new EventListCache(context).invalidateAll();
+  }
+
+  private void invalidateEventDetailsCache(long eventId) {
+    new EventDetailsCache(context).invalidate(eventId);
   }
 
   private EventService getService() {

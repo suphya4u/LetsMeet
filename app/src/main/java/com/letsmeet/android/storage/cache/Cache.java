@@ -1,5 +1,6 @@
 package com.letsmeet.android.storage.cache;
 
+import android.app.Activity;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.widget.Toast;
@@ -21,7 +22,7 @@ public abstract class Cache<T extends GenericJson> {
 
   private final CacheStore<T> cacheStore;
 
-  public Cache(Context context, Class<T> type) {
+  protected Cache(Context context, Class<T> type) {
     this.context = context;
     this.cacheStore = new CacheStore<>(context, type);
   }
@@ -41,6 +42,10 @@ public abstract class Cache<T extends GenericJson> {
     }
 
     return fetchIfPossible(key);
+  }
+
+  protected void invalidate(String key) {
+    cacheStore.invalidate(key);
   }
 
   private T fetchIfPossible(String key) throws IOException {
@@ -95,7 +100,15 @@ public abstract class Cache<T extends GenericJson> {
   }
 
   private void showNetworkError() {
-    Toast.makeText(context, "Network Error, Please check your network", Toast.LENGTH_LONG)
-        .show();
+    // TODO: Show toast here using handler.
+    if (context instanceof Activity) {
+      Activity activityContext = (Activity) context;
+      activityContext.runOnUiThread(new Runnable() {
+        @Override public void run() {
+          Toast.makeText(context, "Network Error, Please check your network", Toast.LENGTH_LONG)
+              .show();
+        }
+      });
+    }
   }
 }

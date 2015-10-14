@@ -131,7 +131,7 @@ public class EventListRecyclerAdapter
               .setEventId(eventId)
               .setResponse(response);
           try {
-            return EventServiceClient.getInstance().rsvpEvent(request);
+            return EventServiceClient.getInstance(context).rsvpEvent(request);
           } catch (IOException e) {
             // Long to analytics.
           }

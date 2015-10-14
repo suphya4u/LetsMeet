@@ -25,9 +25,14 @@ public class EventListCache extends Cache<ListEventsForUserResponse> {
     return get(ignorePastEvents ? UPCOMING_EVENTS_KEY : ALL_EVENTS_KEY);
   }
 
+  public void invalidateAll() {
+    invalidate(UPCOMING_EVENTS_KEY);
+    invalidate(ALL_EVENTS_KEY);
+  }
+
   @Override protected ListEventsForUserResponse fetchData(String key) throws IOException {
     LocalStore localStore = LocalStore.getInstance(context);
-    return EventServiceClient.getInstance().listEvents(localStore.getUserId(),
+    return EventServiceClient.getInstance(context).fetchEventsList(localStore.getUserId(),
         key.equals(UPCOMING_EVENTS_KEY));
   }
 }

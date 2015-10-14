@@ -130,7 +130,8 @@ public class EventDetailsActivity extends AppCompatActivity {
     new AsyncTask<Void, Void, EventDetails>() {
       @Override protected EventDetails doInBackground(Void... params) {
         try {
-          eventDetails = EventServiceClient.getInstance().GetEventDetails(eventId, userId);
+          eventDetails = EventServiceClient.getInstance(EventDetailsActivity.this)
+              .getEventDetailsWithCaching(eventId, userId);
         } catch (IOException e) {
           // Log to analytics.
         }

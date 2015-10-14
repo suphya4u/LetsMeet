@@ -38,6 +38,11 @@ public class CacheStore<T extends GenericJson> {
     return file.lastModified();
   }
 
+  public void invalidate(String key) {
+    File file = new File(context.getFilesDir(), getFileName(key));
+    file.setLastModified(1L);
+  }
+
   public void writeData(String key, T data) {
     FileOutputStream fos = null;
     try {

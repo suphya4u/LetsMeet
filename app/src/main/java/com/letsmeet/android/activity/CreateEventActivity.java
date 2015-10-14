@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
-import android.text.format.DateFormat;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -186,7 +185,7 @@ public class CreateEventActivity extends FragmentActivity {
       @Override protected CreateOrEditEventResponse doInBackground(
           CreateOrEditEventRequest... params) {
         try {
-          return  EventServiceClient.getInstance().createEvent(request);
+          return  EventServiceClient.getInstance(CreateEventActivity.this).createEvent(request);
         } catch (IOException e) {
           // Log to analytics
         }
@@ -224,7 +223,8 @@ public class CreateEventActivity extends FragmentActivity {
 
       @Override protected EventDetails doInBackground(Void... params) {
         try {
-          return EventServiceClient.getInstance().GetEventDetails(eventId, userId);
+          return EventServiceClient.getInstance(CreateEventActivity.this)
+              .getEventDetailsWithCaching(eventId, userId);
         } catch (IOException e) {
           // Log to analytics.
         }

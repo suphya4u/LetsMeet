@@ -48,7 +48,7 @@ public class RsvpBroadcastReceiver extends BroadcastReceiver {
             .setEventId(eventId)
             .setResponse(rsvpResponse);
         try {
-          return EventServiceClient.getInstance().rsvpEvent(request);
+          return EventServiceClient.getInstance(context).rsvpEvent(request);
         } catch (IOException e) {
           // Log to analytics
         }
