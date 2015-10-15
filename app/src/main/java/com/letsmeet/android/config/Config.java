@@ -6,7 +6,7 @@ package com.letsmeet.android.config;
 public class Config {
 
   public static final boolean IS_SERVER_RUNNING_LOCALLY = true;
-  public static final String SERVER_URL = "";
+  public static final String SERVER_URL = "https://oval-botany-101702.appspot.com/_ah/api/";
   public static final String LOCAL_SERVER_FOR_EMULATOR = "http://10.0.2.2:8080/_ah/api/";
 
   // TODO(suhas): Find better way.

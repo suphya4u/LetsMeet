@@ -63,7 +63,6 @@ public class EventListFragment extends Fragment {
     final LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
     layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
     eventListView.setLayoutManager(layoutManager);
-    listEvents();
   }
 
   private void listEvents() {

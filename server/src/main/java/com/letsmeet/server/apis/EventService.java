@@ -3,6 +3,7 @@ package com.letsmeet.server.apis;
 import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.ApiNamespace;
+import com.google.appengine.api.users.User;
 import com.google.common.base.Function;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
@@ -36,6 +37,8 @@ import static com.letsmeet.server.OfyService.ofy;
  */
 @Api(name = "eventService",
     version = "v1",
+    clientIds = {Constants.ANDROID_CLIENT_ID, Constants.WEB_CLIENT_ID},
+    audiences = {Constants.WEB_CLIENT_ID},
     namespace = @ApiNamespace(ownerDomain = "server.letsmeet.com",
         ownerName = "server.letsmeet.com",
         packagePath = ""))
@@ -45,7 +48,8 @@ public class EventService {
   private static final long UPCOMING_EVENT_BUFFER_MS = 7200000 /* 2 hours */;
 
   @ApiMethod(name = "createOrEditEvent")
-  public CreateOrEditEventResponse createOrEditEvent(CreateOrEditEventRequest request) {
+  public CreateOrEditEventResponse createOrEditEvent(CreateOrEditEventRequest request,
+        User verifiedUser) {
     EventDetails eventDetails = request.getEventDetails();
     EventRecord event = new EventRecord();
     if (eventDetails.getEventId() != 0) {
@@ -108,6 +112,73 @@ public class EventService {
     return response.setEventId(eventId);
   }
 
+  @ApiMethod(name = "eventsForUser")
+  public ListEventsForUserResponse eventsForUser(ListEventsForUserRequest request,
+        User verifiedUser) {
+    ListEventsForUserResponse response = new ListEventsForUserResponse();
+
+    Query<Invites> query = ofy().load().type(Invites.class)
+        .filter("userId", request.getUserId())
+        .order("eventTime");
+    if (request.getIgnorePastEvents()) {
+      long currentTime = Calendar.getInstance().getTimeInMillis();
+      long cutoffTime = currentTime - UPCOMING_EVENT_BUFFER_MS;
+      query = query.filter("eventTime >", cutoffTime);
+    }
+    List<Invites> userInvites = query.list();
+
+    // TODO(suhas): Add more checks like user does not exist / event or user or invite missing few
+    // fields. Handle all error cases.
+    for (Invites userInvite : userInvites) {
+      EventRecord eventRecord = ofy().load().type(EventRecord.class)
+          .id(userInvite.getEventId()).now();
+      EventDetails eventDetails = toEventDetails(eventRecord,
+          request.getUserId(),
+          false /* populatePhoneNumberData */);  // No phone numbers populated for list view.
+
+      // TODO(suhas): Make sure each event is added only once. Currently there is no check on it.
+      response.addEvent(eventDetails);
+    }
+
+    return response;
+  }
+
+  // TODO(suhas): Not using API names starting with Get, List etc. If failed for some random reason.
+  // Not sure if Name really matter.
+  @ApiMethod(name = "fetchEventDetails")
+  public FetchEventDetailsResponse fetchEventDetails(FetchEventDetailsRequest request,
+        User verifiedUser) {
+    EventRecord eventRecord = ofy().load().type(EventRecord.class).id(request.getEventId()).now();
+    EventDetails eventDetails = toEventDetails(eventRecord,
+        request.getUserId(),
+        true /* populatePhoneNumberData */);
+    return new FetchEventDetailsResponse()
+        .setEventDetails(eventDetails);
+  }
+
+  @ApiMethod(name = "rsvpEvent")
+  public RsvpResponse rsvpEvent(RsvpRequest request, User verifiedUser) {
+    List<Invites> invitesList = ofy().load().type(Invites.class)
+        .filter("userId", request.getUserId())
+        .filter("eventId", request.getEventId())
+        .list();
+    if (invitesList.isEmpty()) {
+      log.severe("Empty invites list while RSVP request for user [" + request.getUserId()
+          + "] Event [" + request.getEventId() + "]");
+      return new RsvpResponse().setSuccess(false);
+    }
+
+    if (invitesList.size() > 1) {
+      log.severe("More than one invite for user [" + request.getUserId() + "] event ["
+          + request.getEventId() + "]");
+    }
+    Invites invite = invitesList.get(0);
+    invite.setFromRsvpRequestEnum(request.getResponse());
+    ofy().save().entity(invite).now();
+    return new RsvpResponse().setSuccess(true);
+  }
+
+
   private void updateInvites(long eventId, long ownerId, long eventTime, Set<Long> invitedUsers) {
     // Make sure invite is added only once for each event.
     List<Invites> existingInvites = ofy().load().type(Invites.class)
@@ -141,71 +212,8 @@ public class EventService {
     ofy().delete().entities(tobeDeleted).now();
   }
 
-  @ApiMethod(name = "eventsForUser")
-  public ListEventsForUserResponse eventsForUser(ListEventsForUserRequest request) {
-    ListEventsForUserResponse response = new ListEventsForUserResponse();
-
-    Query<Invites> query = ofy().load().type(Invites.class)
-        .filter("userId", request.getUserId())
-        .order("eventTime");
-    if (request.getIgnorePastEvents()) {
-      long currentTime = Calendar.getInstance().getTimeInMillis();
-      long cutoffTime = currentTime - UPCOMING_EVENT_BUFFER_MS;
-      query = query.filter("eventTime >", cutoffTime);
-    }
-    List<Invites> userInvites = query.list();
-
-    // TODO(suhas): Add more checks like user does not exist / event or user or invite missing few
-    // fields. Handle all error cases.
-    for (Invites userInvite : userInvites) {
-      EventRecord eventRecord = ofy().load().type(EventRecord.class)
-          .id(userInvite.getEventId()).now();
-      EventDetails eventDetails = toEventDetails(eventRecord,
-          request.getUserId(),
-          false /* populatePhoneNumberData */);  // No phone numbers populated for list view.
-
-      // TODO(suhas): Make sure each event is added only once. Currently there is no check on it.
-      response.addEvent(eventDetails);
-    }
-
-    return response;
-  }
-
-  // TODO(suhas): Not using API names starting with Get, List etc. If failed for some random reason.
-  // Not sure if Name really matter.
-  @ApiMethod(name = "fetchEventDetails")
-  public FetchEventDetailsResponse fetchEventDetails(FetchEventDetailsRequest request) {
-    EventRecord eventRecord = ofy().load().type(EventRecord.class).id(request.getEventId()).now();
-    EventDetails eventDetails = toEventDetails(eventRecord,
-        request.getUserId(),
-        true /* populatePhoneNumberData */);
-    return new FetchEventDetailsResponse()
-        .setEventDetails(eventDetails);
-  }
-
-  @ApiMethod(name = "rsvpEvent")
-  public RsvpResponse rsvpEvent(RsvpRequest request) {
-    List<Invites> invitesList = ofy().load().type(Invites.class)
-        .filter("userId", request.getUserId())
-        .filter("eventId", request.getEventId())
-        .list();
-    if (invitesList.isEmpty()) {
-      log.severe("Empty invites list while RSVP request for user [" + request.getUserId()
-          + "] Event [" + request.getEventId() + "]");
-      return new RsvpResponse().setSuccess(false);
-    }
-
-    if (invitesList.size() > 1) {
-      log.severe("More than one invite for user [" + request.getUserId() + "] event ["
-          + request.getEventId() + "]");
-    }
-    Invites invite = invitesList.get(0);
-    invite.setFromRsvpRequestEnum(request.getResponse());
-    ofy().save().entity(invite).now();
-    return new RsvpResponse().setSuccess(true);
-  }
-
-  private EventDetails toEventDetails(EventRecord eventRecord, long userId, boolean populatePhoneNumberData) {
+  private EventDetails toEventDetails(EventRecord eventRecord, long userId,
+        boolean populatePhoneNumberData) {
 
     // TODO(suhas): Move constructing EventDetails from EventRecord and other way round to
     // a common place. We might need this quite a lot.
