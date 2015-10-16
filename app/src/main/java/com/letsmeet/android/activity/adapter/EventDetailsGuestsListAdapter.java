@@ -9,7 +9,6 @@ import android.widget.TextView;
 
 import com.letsmeet.android.R;
 import com.letsmeet.android.widgets.contactselect.ContactInfo;
-import com.letsmeet.server.eventService.model.RsvpResponse;
 
 import java.util.List;
 

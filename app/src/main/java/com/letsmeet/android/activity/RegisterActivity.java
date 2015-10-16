@@ -90,40 +90,6 @@ public class RegisterActivity extends AppCompatActivity {
     });
   }
 
-  @Override
-  public boolean onCreateOptionsMenu(Menu menu) {
-    // Inflate the menu; this adds items to the action bar if it is present.
-    getMenuInflater().inflate(R.menu.menu_home, menu);
-    return true;
-  }
-
-  @Override
-  public boolean onOptionsItemSelected(MenuItem item) {
-    // Handle action bar item clicks here. The action bar will
-    // automatically handle clicks on the Home/Up button, so long
-    // as you specify a parent activity in AndroidManifest.xml.
-    int id = item.getItemId();
-
-    //noinspection SimplifiableIfStatement
-    if (id == R.id.action_settings) {
-      return true;
-    }
-
-    return super.onOptionsItemSelected(item);
-  }
-
-  private boolean isInputValid(String name, String phone) {
-    if (name.equals("")) {
-      Toast.makeText(this, "Please enter name", Toast.LENGTH_LONG).show();
-      return false;
-    }
-    if (phone.equals("")) {
-      Toast.makeText(this, "Please enter phone", Toast.LENGTH_LONG).show();
-      return false;
-    }
-    return true;
-  }
-
   private void registerUser(final String name, final String phone) {
     final ProgressDialog progressDialog = new ProgressDialog(RegisterActivity.this);
     progressDialog.setCancelable(false);

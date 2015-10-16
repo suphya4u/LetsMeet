@@ -76,4 +76,9 @@ public class PlaceSelectView extends AutoCompleteTextView {
     }
     return new PlaceInfo().setAddress(getText().toString());
   }
+
+  public void setSelectedPlace(PlaceInfo selectedPlace) {
+    this.selectedPlace = selectedPlace;
+    setText(selectedPlace.getAddress());
+  }
 }

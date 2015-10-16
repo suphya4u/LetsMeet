@@ -222,6 +222,14 @@ public class EventService {
         .setName(eventRecord.getName())
         .setNotes(eventRecord.getNotes())
         .setEventTimeMillis(eventRecord.getEventTimeMillis());
+
+    EventDetails.EventLocation location = new EventDetails.EventLocation()
+        .setPlaceAddress(eventRecord.getEventLocationAddress())
+        .setPlaceId(eventRecord.getEventLocationGoogleMapPlaceId())
+        .setPlaceName(eventRecord.getEventLocationName());
+
+    eventDetails.setLocation(location);
+
     List<Invites> otherInvitees = ofy().load().type(Invites.class)
         .filter("eventId", eventRecord.getId()).list();
     if (userId == eventRecord.getOwnerId()) {

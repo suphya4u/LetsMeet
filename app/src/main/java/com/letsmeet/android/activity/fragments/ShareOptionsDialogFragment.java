@@ -54,9 +54,8 @@ public class ShareOptionsDialogFragment extends DialogFragment {
             getActivity().finish();
           }
         })
-        .setNegativeButton(R.string.share_other_channel, new DialogInterface.OnClickListener() {
+        .setNegativeButton(R.string.skip_button, new DialogInterface.OnClickListener() {
           @Override public void onClick(DialogInterface dialog, int which) {
-            Toast.makeText(getActivity(), "Sharing on other channels", Toast.LENGTH_LONG).show();
             getActivity().finish();
           }
         });

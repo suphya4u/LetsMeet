@@ -5,15 +5,29 @@
               android:orientation="vertical"
               tools:context="com.letsmeet.android.activity.fragments.SendFeedbackFragment">
 
-    <EditText
-        android:id="@+id/send_feedback_text"
+    <LinearLayout
+        android:id="@+id/feedback_form"
         android:layout_width="match_parent"
-        android:layout_height="120dp"
-        android:hint="@string/send_feedback_edittext"/>
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
-    <Button
-        android:id="@+id/send_feedback_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/send_feedback_button"/>
+        <EditText
+            android:id="@+id/send_feedback_text"
+            android:layout_width="match_parent"
+            android:layout_height="120dp"
+            android:hint="@string/send_feedback_edittext"/>
+
+        <Button
+            android:id="@+id/send_feedback_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/send_feedback_button"/>
+
+    </LinearLayout>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/thank_you_note"
+        android:text="@string/thank_you_for_feedback_text"/>
 </LinearLayout>

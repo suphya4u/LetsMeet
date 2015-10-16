@@ -2,17 +2,10 @@ package com.letsmeet.android.activity;
 
 import android.app.FragmentManager;
 import android.app.ProgressDialog;
-import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
-import android.view.Menu;
-import android.view.MenuItem;
 
-import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
-import com.google.android.gms.common.GooglePlayServicesRepairableException;
-import com.google.android.gms.location.places.Place;
-import com.google.android.gms.location.places.ui.PlacePicker;
 import com.google.common.base.Function;
 import com.letsmeet.android.R;
 import android.view.View;
@@ -24,6 +17,7 @@ import android.widget.Toast;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.letsmeet.android.activity.fragments.ShareOptionsDialogFragment;
+import com.letsmeet.android.common.ContactFetcher;
 import com.letsmeet.android.common.DateTimeUtils;
 import com.letsmeet.android.config.Constants;
 import com.letsmeet.android.widgets.datetime.DateTimePicker;
@@ -48,8 +42,6 @@ import java.util.List;
 import javax.annotation.Nullable;
 
 public class CreateEventActivity extends FragmentActivity {
-
-  private static final int PLACE_PICKER_REQUEST_CODE = 1;
 
   private long eventTimeSelected = 0;
   private EventDetails eventDetails;
@@ -77,22 +69,6 @@ public class CreateEventActivity extends FragmentActivity {
 
     final PlaceSelectView placeSelectView = (PlaceSelectView) findViewById(R.id.place_autocomplete);
     placeSelectView.init(this);
-
-    final Button pickAPlaceButton = (Button) findViewById(R.id.place_picker_button);
-    pickAPlaceButton.setOnClickListener(new View.OnClickListener() {
-      @Override public void onClick(View v) {
-        Intent placePickerIntent;
-        try {
-          placePickerIntent = new PlacePicker.IntentBuilder().build(CreateEventActivity.this);
-        } catch (GooglePlayServicesRepairableException
-            | GooglePlayServicesNotAvailableException e) {
-          Toast.makeText(CreateEventActivity.this, "PlaceService exception", Toast.LENGTH_SHORT)
-              .show();
-          return;
-        }
-        startActivityForResult(placePickerIntent, PLACE_PICKER_REQUEST_CODE);
-      }
-    });
 
     final Button pickTimeButton = (Button) findViewById(R.id.pick_time_button);
     pickTimeButton.setOnClickListener(new View.OnClickListener() {
@@ -134,7 +110,6 @@ public class CreateEventActivity extends FragmentActivity {
 
         // EventDetails#setInviteePhoneNumbers is deleted and replaced with addInviteePhoneNumber.
         // However client lib is somehow not updated. So continue using set.
-        // TODO(suhas): Investigate and fix.
         List<Invitee> inviteePhoneNumbers = Lists.newArrayList();
         PhoneNumberHelper phoneNumberHelper = new PhoneNumberHelper(CreateEventActivity.this);
         for (ContactInfo contact : selectedContacts) {
@@ -154,30 +129,6 @@ public class CreateEventActivity extends FragmentActivity {
     });
   }
 
-  @Override
-  public boolean onCreateOptionsMenu(Menu menu) {
-    // Inflate the menu; this adds items to the action bar if it is present.
-    getMenuInflater().inflate(R.menu.menu_create_event, menu);
-    return true;
-  }
-
-  @Override
-  public boolean onOptionsItemSelected(MenuItem item) {
-    // Handle action bar item clicks here. The action bar will
-    // automatically handle clicks on the Home/Up button, so long
-    // as you specify a parent activity in AndroidManifest.xml.
-    int id = item.getItemId();
-
-    //noinspection SimplifiableIfStatement
-    if (id == R.id.action_settings) {
-      return true;
-    }
-
-    return super.onOptionsItemSelected(item);
-  }
-
-
-  // TODO(suhas): This piece of code should be in the ApiClient.
   private void createEvent(final EventDetails eventDetails) {
     final CreateOrEditEventRequest request =
         new CreateOrEditEventRequest().setEventDetails(eventDetails);
@@ -204,7 +155,6 @@ public class CreateEventActivity extends FragmentActivity {
         List<String> phoneNumbersNotYetRegistered = response.getPhoneNumbersNotYetRegistered();
         if (phoneNumbersNotYetRegistered != null && !phoneNumbersNotYetRegistered.isEmpty()) {
           ShareOptionsDialogFragment dialog = new ShareOptionsDialogFragment();
-          // TODO(suhas): Show names instead of phone numbers in dialog.
           dialog.setSharingDetails(phoneNumbersNotYetRegistered, eventDetails);
           dialog.show(getFragmentManager(), "ShareOptionsDialogFragment");
         } else {
@@ -248,7 +198,7 @@ public class CreateEventActivity extends FragmentActivity {
     this.eventDetails = eventDetails;
     EditText nameEditText = (EditText) findViewById(R.id.create_event_name);
     EditText notesEditText = (EditText) findViewById(R.id.create_event_notes);
-    EditText locationEditText = (EditText) findViewById(R.id.place_autocomplete);
+    final PlaceSelectView placeSelectView = (PlaceSelectView) findViewById(R.id.place_autocomplete);
     dateTimeSelected(eventDetails.getEventTimeMillis());
     SelectContactFragment contactFragment = (SelectContactFragment)
         getFragmentManager().findFragmentById(R.id.select_contact_fragment);
@@ -256,11 +206,14 @@ public class CreateEventActivity extends FragmentActivity {
     nameEditText.setText(eventDetails.getName());
     notesEditText.setText(eventDetails.getNotes());
     if (eventDetails.getLocation() != null) {
-      locationEditText.setText(eventDetails.getLocation().getPlaceAddress());
+      PlaceInfo placeInfo = new PlaceInfo()
+          .setPlaceId(eventDetails.getLocation().getPlaceId())
+          .setAddress(eventDetails.getLocation().getPlaceAddress());
+      placeSelectView.setSelectedPlace(placeInfo);
     }
     if (eventDetails.getInviteePhoneNumbers() != null
         && !eventDetails.getInviteePhoneNumbers().isEmpty()) {
-      // Ignoring owner phone number as assumption is that only owner will of the event will be in
+      // Ignoring owner phone number as assumption is that only owner of the event will be in
       // this code path.
       contactFragment.setSelectedContacts(
           transformToContactInfos(eventDetails.getOwnerPhoneNumber(),
@@ -271,22 +224,10 @@ public class CreateEventActivity extends FragmentActivity {
 
     final Button createEventButton = (Button) findViewById(R.id.create_event_button);
     createEventButton.setText(R.string.edit_event_button);
-
-    // TODO(suhas): Populate all details.
   }
 
   private void setEventTime(Calendar timeSelected) {
     eventTimeSelected = timeSelected.getTimeInMillis();
-  }
-
-  @Override protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-    super.onActivityResult(requestCode, resultCode, data);
-    if (PLACE_PICKER_REQUEST_CODE == requestCode) {
-      if (resultCode == RESULT_OK) {
-        Place place = PlacePicker.getPlace(data, this);
-        Toast.makeText(this, "Place picked: " + place.getAddress(), Toast.LENGTH_LONG).show();
-      }
-    }
   }
 
   private void dateTimeSelected(long timeInMillis) {
@@ -305,9 +246,8 @@ public class CreateEventActivity extends FragmentActivity {
             if (invitee.getPhoneNumber().equals(ignoreNumber)) {
               return null;
             }
-            return new ContactInfo()
-                .setPhoneNumber(invitee.getPhoneNumber());
-            // TODO(suhas): Get name and thumbnail urls.
+            return ContactFetcher.getInstance().getContactInfoByNumber(
+                invitee.getPhoneNumber(), CreateEventActivity.this);
           }
         });
     contactInfos.removeAll(Collections.<ContactInfo>singleton(null));

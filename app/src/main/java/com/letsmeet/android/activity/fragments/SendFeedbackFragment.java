@@ -61,6 +61,20 @@ public class SendFeedbackFragment extends Fragment {
     return rootView;
   }
 
+  @Override public void onResume() {
+    switchToFeedbackMode();
+  }
+
+  private void switchToFeedbackMode() {
+    getActivity().findViewById(R.id.send_feedback_text).setVisibility(View.GONE);
+    getActivity().findViewById(R.id.feedback_form).setVisibility(View.VISIBLE);
+  }
+
+  private void switchToThankYouNote() {
+    getActivity().findViewById(R.id.send_feedback_text).setVisibility(View.VISIBLE);
+    getActivity().findViewById(R.id.feedback_form).setVisibility(View.GONE);
+  }
+
   private void sendFeedback(final long userId, final String feedback, final String appVersion) {
     final ProgressDialog progressDialog = new ProgressDialog(getActivity());
     progressDialog.setCancelable(false);
@@ -83,11 +97,7 @@ public class SendFeedbackFragment extends Fragment {
               "Failed to connect server. Please check your network connection",
               Toast.LENGTH_SHORT).show();
         }
-
-        // TODO: Show your feedback received successfully message.
-        // Hide edittext and send feedback button. Unhide it in createView method and hide the
-        // message there.
-
+        switchToThankYouNote();
       }
     }.execute();
   }

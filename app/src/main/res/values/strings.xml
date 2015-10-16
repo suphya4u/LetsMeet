@@ -38,5 +38,8 @@
     <string name="drawer_menu_title_send_feedback">Send Feedback</string>
     <string name="send_feedback_edittext">Feedback</string>
     <string name="send_feedback_button">Send</string>
+    <string name="thank_you_for_feedback_text">Thank you for your feedback. .. More here ..</string>
+    <string name="cancel_button">Skip</string>
+    <string name="skip_button">skip</string>
 
 </resources>

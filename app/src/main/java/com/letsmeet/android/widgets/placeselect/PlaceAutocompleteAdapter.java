@@ -97,7 +97,7 @@ public class PlaceAutocompleteAdapter
    */
   @Override
   public Filter getFilter() {
-    Filter filter = new Filter() {
+    return new Filter() {
       @Override
       protected FilterResults performFiltering(CharSequence constraint) {
         FilterResults results = new FilterResults();
@@ -125,7 +125,6 @@ public class PlaceAutocompleteAdapter
         }
       }
     };
-    return filter;
   }
 
   /**
@@ -170,7 +169,7 @@ public class PlaceAutocompleteAdapter
       // AutocompletePrediction objects encapsulate the API response (place ID and description).
 
       Iterator<AutocompletePrediction> iterator = autocompletePredictions.iterator();
-      ArrayList resultList = new ArrayList<>(autocompletePredictions.getCount());
+      ArrayList<PlaceInfo> resultList = new ArrayList<>(autocompletePredictions.getCount());
       while (iterator.hasNext()) {
         AutocompletePrediction prediction = iterator.next();
         // Get the details of this prediction and copy it into a new PlaceAutocomplete object.
