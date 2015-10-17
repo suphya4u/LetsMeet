@@ -62,16 +62,17 @@ public class SendFeedbackFragment extends Fragment {
   }
 
   @Override public void onResume() {
+    super.onResume();
     switchToFeedbackMode();
   }
 
   private void switchToFeedbackMode() {
-    getActivity().findViewById(R.id.send_feedback_text).setVisibility(View.GONE);
+    getActivity().findViewById(R.id.thank_you_note).setVisibility(View.GONE);
     getActivity().findViewById(R.id.feedback_form).setVisibility(View.VISIBLE);
   }
 
   private void switchToThankYouNote() {
-    getActivity().findViewById(R.id.send_feedback_text).setVisibility(View.VISIBLE);
+    getActivity().findViewById(R.id.thank_you_note).setVisibility(View.VISIBLE);
     getActivity().findViewById(R.id.feedback_form).setVisibility(View.GONE);
   }
 

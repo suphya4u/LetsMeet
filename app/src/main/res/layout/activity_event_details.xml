@@ -37,7 +37,11 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
 
-    <!-- TODO: Move rsvp buttons to a widget and add it here -->
+    <com.letsmeet.android.widgets.rsvp.RsvpButtonsView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/rsvp_buttons">
+    </com.letsmeet.android.widgets.rsvp.RsvpButtonsView>
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/guests_list"
