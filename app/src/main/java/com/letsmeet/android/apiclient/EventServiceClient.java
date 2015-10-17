@@ -53,9 +53,16 @@ public class EventServiceClient {
   }
 
   // TODO: These two methods are not actually required if caching is moved to a wrapper. See top.
-  public ListEventsForUserResponse listEventsWithCaching(long userId, boolean ignorePastEvents)
+  public ListEventsForUserResponse listEventsFromCache(long userId, boolean ignorePastEvents)
       throws IOException {
     return new EventListCache(context).getEvents(ignorePastEvents);
+  }
+
+  public ListEventsForUserResponse listFreshEvents(long userId, boolean ignorePastEvents)
+      throws IOException {
+    EventListCache cache = new EventListCache(context);
+    cache.invalidateAll();
+    return cache.getEvents(ignorePastEvents);
   }
 
   public EventDetails getEventDetailsWithCaching(long eventId, long userId) throws IOException {

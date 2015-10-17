@@ -3,6 +3,7 @@ package com.letsmeet.android.activity.fragments;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -27,6 +28,7 @@ public class EventListFragment extends Fragment {
 
   private MainContentFragmentSelector mainContentFragmentSelector = MainContentFragmentSelector.UPCOMING_EVENTS;
   private RecyclerView eventListView;
+  private SwipeRefreshLayout swipeRefresh;
   private long userId;
 
   public static EventListFragment newInstance(MainContentFragmentSelector mainContentFragmentSelector) {
@@ -46,9 +48,7 @@ public class EventListFragment extends Fragment {
   @Override public void onResume() {
     super.onResume();
     if (eventListView != null) {
-      // Refresh event list on resume.
-      // TODO(suhas): Add scroll down to refresh action and periodic refresh instead of on resume.
-      listEvents();
+      listEvents(true /* useCached */);
     }
   }
 
@@ -62,17 +62,30 @@ public class EventListFragment extends Fragment {
     eventListView = (RecyclerView) view.findViewById(R.id.events_list);
     final LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
     layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+
+    swipeRefresh = (SwipeRefreshLayout) view.findViewById(R.id.swipe_refresh);
+    swipeRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+      @Override public void onRefresh() {
+        listEvents(true /* useCached */);
+      }
+    });
     eventListView.setLayoutManager(layoutManager);
   }
 
-  private void listEvents() {
+  private void listEvents(final boolean useCached) {
     new AsyncTask<Long, Void, ListEventsForUserResponse>() {
 
       @Override protected ListEventsForUserResponse doInBackground(Long... params) {
         try {
-          return EventServiceClient.getInstance(getActivity()).listEventsWithCaching(userId,
-              mainContentFragmentSelector.equals(
-                  MainContentFragmentSelector.UPCOMING_EVENTS) /* ignorePastEvents */);
+          boolean shouldIgnorePastEvents = mainContentFragmentSelector.equals(
+              MainContentFragmentSelector.UPCOMING_EVENTS);
+          if (useCached) {
+            return EventServiceClient.getInstance(getActivity()).listEventsFromCache(userId,
+                shouldIgnorePastEvents);
+          } else {
+            return EventServiceClient.getInstance(getActivity()).listFreshEvents(userId,
+                shouldIgnorePastEvents);
+          }
         } catch (IOException e) {
           // TODO: Log to analytics.
         }
@@ -84,10 +97,22 @@ public class EventListFragment extends Fragment {
           Toast.makeText(getContext(),
               "Failed to connect server. Please check your network connection",
               Toast.LENGTH_SHORT).show();
+          if (swipeRefresh != null) {
+            swipeRefresh.setRefreshing(false);
+          }
           return;
         }
-        // TODO(suhas): Do not create new adapter everytime. Update list in same adapter instead.
-        eventListView.setAdapter(new EventListRecyclerAdapter(response.getEventsList()));
+
+        RecyclerView.Adapter adapter = eventListView.getAdapter();
+        if (adapter != null && adapter instanceof EventListRecyclerAdapter) {
+          EventListRecyclerAdapter eventListAdapter = (EventListRecyclerAdapter) adapter;
+          eventListAdapter.updateEventList(response.getEventsList());
+        } else {
+          eventListView.setAdapter(new EventListRecyclerAdapter(response.getEventsList()));
+        }
+        if (swipeRefresh != null) {
+          swipeRefresh.setRefreshing(false);
+        }
       }
     }.execute();
   }

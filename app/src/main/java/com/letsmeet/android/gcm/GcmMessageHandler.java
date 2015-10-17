@@ -13,6 +13,7 @@ import android.support.v4.app.TaskStackBuilder;
 import com.google.android.gms.gcm.GcmListenerService;
 import com.google.common.base.Strings;
 import com.letsmeet.android.activity.EventDetailsActivity;
+import com.letsmeet.android.apiclient.cache.EventListCache;
 import com.letsmeet.android.common.DateTimeUtils;
 import com.letsmeet.android.config.Constants;
 
@@ -30,6 +31,8 @@ public class GcmMessageHandler extends GcmListenerService {
     if (Constants.NOTIFICATION_TYPE_NEW_EVENT.equals(
         data.getString(Constants.NOTIFICATION_TYPE_KEY))) {
       notification = createNewEventNotification(data);
+    } else {
+      return;
     }
     // TODO(suhas): Handle other notifications.
 
@@ -43,12 +46,24 @@ public class GcmMessageHandler extends GcmListenerService {
 
   private Notification createNewEventNotification(Bundle data) {
     long eventId = 0;
-    String eventName = "Invitation: " + data.getString(Constants.NOTIFICATION_EVENT_NAME_KEY);
+    String eventName = data.getString(Constants.NOTIFICATION_EVENT_NAME_KEY);
+    if (Strings.isNullOrEmpty(eventName)) {
+      eventName = "";
+    }
+    String eventTitle = "Invitation: " + eventName;
     String eventNotes = data.getString(Constants.NOTIFICATION_EVENT_DETAILS_KEY);
     long eventTimeMillis = 0;
     try {
-      eventId = Long.parseLong(data.getString(Constants.EVENT_ID_KEY));
-      eventTimeMillis = Long.parseLong(data.getString(Constants.NOTIFICATION_EVENT_TIME_KEY));
+      String eventIdString = data.getString(Constants.EVENT_ID_KEY);
+      if (Strings.isNullOrEmpty(eventIdString)) {
+        return null;
+      }
+      eventId = Long.parseLong(eventIdString);
+
+      String eventTimeString = data.getString(Constants.NOTIFICATION_EVENT_TIME_KEY);
+      if (!Strings.isNullOrEmpty(eventTimeString)) {
+        eventTimeMillis = Long.parseLong(eventTimeString);
+      }
     } catch (NumberFormatException ex) {
       // Failed to parse.
       // Log
@@ -69,7 +84,7 @@ public class GcmMessageHandler extends GcmListenerService {
     NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this)
         .setSmallIcon(R.mipmap.ic_launcher)
         .setAutoCancel(true)
-        .setContentTitle(eventName)
+        .setContentTitle(eventTitle)
         .setContentIntent(eventDetailsPendingIntent)
         .addAction(0, "Yes", rsvpYesIntent)
         .addAction(0, "No", rsvpNoIntent)
@@ -77,7 +92,7 @@ public class GcmMessageHandler extends GcmListenerService {
 
     NotificationCompat.InboxStyle style = new NotificationCompat.InboxStyle();
     style.setBuilder(notificationBuilder);
-    style.setBigContentTitle(eventName);
+    style.setBigContentTitle(eventTitle);
     if (eventTimeMillis > 0) {
       String eventTimeLine = DateTimeUtils.getDisplayDateTime(this, eventTimeMillis);
       style.addLine(eventTimeLine);
@@ -87,6 +102,9 @@ public class GcmMessageHandler extends GcmListenerService {
       style.addLine(eventNotes);
     }
     notificationBuilder.setStyle(style);
+
+    // New event received, invalidate event list cache.
+    new EventListCache(this).invalidateAll();
     return notificationBuilder.build();
   }
 

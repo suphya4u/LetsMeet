@@ -1,29 +1,20 @@
 package com.letsmeet.android.activity.adapter;
 
-import android.content.Context;
 import android.content.Intent;
 import com.letsmeet.android.R;
 
-import android.os.AsyncTask;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.letsmeet.android.activity.EventDetailsActivity;
-import com.letsmeet.android.apiclient.EventServiceClient;
 import com.letsmeet.android.common.DateTimeUtils;
 import com.letsmeet.android.config.Constants;
-import com.letsmeet.android.storage.LocalStore;
 import com.letsmeet.android.widgets.rsvp.RsvpButtonsView;
 import com.letsmeet.server.eventService.model.EventDetails;
-import com.letsmeet.server.eventService.model.RsvpRequest;
-import com.letsmeet.server.eventService.model.RsvpResponse;
 
-import java.io.IOException;
 import java.util.List;
 
 /**
@@ -32,10 +23,15 @@ import java.util.List;
 public class EventListRecyclerAdapter
     extends RecyclerView.Adapter<EventListRecyclerAdapter.EventCompactViewHolder> {
 
-  private final List<EventDetails> eventList;
+  private List<EventDetails> eventList;
 
   public EventListRecyclerAdapter(List<EventDetails> eventList) {
     this.eventList = eventList;
+  }
+
+  public void updateEventList(List<EventDetails> eventList) {
+    this.eventList = eventList;
+    notifyDataSetChanged();
   }
 
   @Override
