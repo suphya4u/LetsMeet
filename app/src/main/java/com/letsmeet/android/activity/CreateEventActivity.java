@@ -4,10 +4,11 @@ import android.app.FragmentManager;
 import android.app.ProgressDialog;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
 
 import com.google.common.base.Function;
 import com.letsmeet.android.R;
+
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -41,7 +42,7 @@ import java.util.List;
 
 import javax.annotation.Nullable;
 
-public class CreateEventActivity extends FragmentActivity {
+public class CreateEventActivity extends AppCompatActivity {
 
   private long eventTimeSelected = 0;
   private EventDetails eventDetails;

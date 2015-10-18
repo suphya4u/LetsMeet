@@ -8,6 +8,7 @@ import android.support.v4.app.FragmentManager;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v4.widget.DrawerLayout;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 
@@ -49,10 +50,6 @@ public class MainActivity extends AppCompatActivity
 
   private void renderEventsList() {
     fragmentMap = Maps.newHashMap();
-    fragmentMap.put(MainContentFragmentSelector.UPCOMING_EVENTS, EventListFragment.newInstance(
-        MainContentFragmentSelector.UPCOMING_EVENTS));
-    fragmentMap.put(
-        MainContentFragmentSelector.ALL_EVENTS, EventListFragment.newInstance(MainContentFragmentSelector.ALL_EVENTS));
     setContentView(R.layout.activity_main);
 
     final Button createEventButton = (Button) findViewById(R.id.new_event_button);
@@ -77,26 +74,27 @@ public class MainActivity extends AppCompatActivity
       MainContentFragmentSelector mainContentFragmentSelector) {
     // update the main content by replacing fragments
     FragmentManager fragmentManager = getSupportFragmentManager();
-    Fragment selectedFragment = fragmentMap.get(MainContentFragmentSelector.UPCOMING_EVENTS);
-    int titleId = R.string.app_name;
-    switch (mainContentFragmentSelector) {
-      case SEND_FEEDBACK:
-        titleId = R.string.drawer_menu_title_send_feedback;
-        selectedFragment = new SendFeedbackFragment();
-        break;
-      case ALL_EVENTS:
-        titleId = R.string.drawer_menu_title_all_events;
-        selectedFragment = fragmentMap.get(MainContentFragmentSelector.ALL_EVENTS);
-        break;
-      case UPCOMING_EVENTS:
-      default:
-        titleId = R.string.drawer_menu_title_upcoming_events;
-    }
 
-    setTitle(titleId);
     fragmentManager.beginTransaction()
-        .replace(R.id.container, selectedFragment)
+        .replace(R.id.container, getFragment(mainContentFragmentSelector))
         .commit();
+  }
+
+  private Fragment getFragment(MainContentFragmentSelector selector) {
+    Fragment fragment = fragmentMap.get(selector);
+    if (fragment == null) {
+      switch (selector) {
+        case SEND_FEEDBACK:
+          return new SendFeedbackFragment();
+        default:
+          selector = MainContentFragmentSelector.UPCOMING_EVENTS;
+        case UPCOMING_EVENTS:
+        case ALL_EVENTS:
+          fragment = EventListFragment.newInstance(selector);
+          fragmentMap.put(selector, fragment);
+      }
+    }
+    return fragment;
   }
 
   public void navigateToRegistration() {

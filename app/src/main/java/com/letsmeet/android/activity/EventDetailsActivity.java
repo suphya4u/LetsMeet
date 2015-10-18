@@ -10,7 +10,7 @@ import android.location.Location;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Pair;
@@ -39,7 +39,7 @@ import javax.annotation.Nullable;
 /**
  * Activity to show event details
  */
-public class EventDetailsActivity extends FragmentActivity {
+public class EventDetailsActivity extends AppCompatActivity {
 
   private EventDetails eventDetails;
 
