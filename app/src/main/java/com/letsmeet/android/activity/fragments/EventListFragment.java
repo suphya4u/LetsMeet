@@ -1,5 +1,6 @@
 package com.letsmeet.android.activity.fragments;
 
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -9,10 +10,12 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.letsmeet.android.R;
+import com.letsmeet.android.activity.CreateEventActivity;
 import com.letsmeet.android.activity.adapter.EventListRecyclerAdapter;
 import com.letsmeet.android.apiclient.EventServiceClient;
 import com.letsmeet.android.common.MainContentFragmentSelector;
@@ -56,8 +59,12 @@ public class EventListFragment extends Fragment {
     LocalStore localStore = LocalStore.getInstance(getContext());
     userId = localStore.getUserId();
 
-    TextView placeholder = (TextView) view.findViewById(R.id.placeholder);
-    placeholder.setText("Event list type: " + mainContentFragmentSelector.name());
+    final Button createEventButton = (Button) view.findViewById(R.id.new_event_button);
+    createEventButton.setOnClickListener(new View.OnClickListener() {
+      public void onClick(View v) {
+        startActivity(new Intent(getActivity(), CreateEventActivity.class));
+      }
+    });
 
     eventListView = (RecyclerView) view.findViewById(R.id.events_list);
     final LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());

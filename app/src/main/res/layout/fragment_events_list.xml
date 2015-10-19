@@ -10,11 +10,11 @@
     android:orientation="vertical"
     tools:context="com.letsmeet.android.activity.MainActivity$PlaceholderFragment">
 
-    <TextView
-        android:id="@+id/placeholder"
+    <Button
+        android:id="@+id/new_event_button"
+        android:text="@string/new_event"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Test upcoming event fragment"/>
+        android:layout_height="wrap_content"/>
 
     <android.support.v4.widget.SwipeRefreshLayout
         xmlns:android="http://schemas.android.com/apk/res/android"

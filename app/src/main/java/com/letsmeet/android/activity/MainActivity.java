@@ -52,13 +52,6 @@ public class MainActivity extends AppCompatActivity
     fragmentMap = Maps.newHashMap();
     setContentView(R.layout.activity_main);
 
-    final Button createEventButton = (Button) findViewById(R.id.new_event_button);
-    createEventButton.setOnClickListener(new View.OnClickListener() {
-      public void onClick(View v) {
-        startActivity(new Intent(MainActivity.this, CreateEventActivity.class));
-      }
-    });
-
     // Fragment managing the behaviors, interactions and presentation of the navigation drawer.
     NavigationDrawerFragment mNavigationDrawerFragment = (NavigationDrawerFragment)
         getSupportFragmentManager().findFragmentById(R.id.navigation_drawer);
