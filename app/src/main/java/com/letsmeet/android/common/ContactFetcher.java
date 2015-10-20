@@ -5,6 +5,7 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.provider.ContactsContract;
 
+import com.letsmeet.android.config.Constants;
 import com.letsmeet.android.widgets.contactselect.ContactInfo;
 
 /**
@@ -33,6 +34,9 @@ public class ContactFetcher {
           .setThumbnailUrl(cursor.getString(
               cursor.getColumnIndex(ContactsContract.PhoneLookup.PHOTO_THUMBNAIL_URI)));
       cursor.close();
+      if (contactInfo.getThumbnailUrl() == null) {
+        contactInfo.setThumbnailUrl(Constants.DEFAULT_CONTACT_IMAGE);
+      }
     }
     return contactInfo;
   }

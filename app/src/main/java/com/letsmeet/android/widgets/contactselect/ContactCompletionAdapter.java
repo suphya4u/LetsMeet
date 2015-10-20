@@ -2,10 +2,16 @@ package com.letsmeet.android.widgets.contactselect;
 
 import android.content.Context;
 import android.database.Cursor;
+
+import com.google.api.client.repackaged.com.google.common.base.Strings;
 import com.letsmeet.android.R;
+import com.letsmeet.android.config.Constants;
+
 import android.provider.BaseColumns;
 import android.provider.ContactsContract;
+import android.support.annotation.NonNull;
 import android.widget.FilterQueryProvider;
+import android.widget.ImageView;
 import android.widget.SimpleCursorAdapter;
 
 /**
@@ -51,14 +57,22 @@ public class ContactCompletionAdapter extends SimpleCursorAdapter {
               cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.PHOTO_THUMBNAIL_URI)))
           .setPhoneNumber(cursor.getString(
               cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER)));
+
+      if (contactInfo.getThumbnailUrl() == null) {
+        contactInfo.setThumbnailUrl(Constants.DEFAULT_CONTACT_IMAGE);
+      }
     }
     return contactInfo;
   }
 
   @Override
-  public CharSequence convertToString(Cursor cursor) {
+  public CharSequence convertToString(@NonNull Cursor cursor) {
     int index = cursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME);
     return cursor.getString(index);
+  }
+
+  @Override public void setViewImage(@NonNull ImageView v, String value) {
+    super.setViewImage(v, Strings.isNullOrEmpty(value) ? Constants.DEFAULT_CONTACT_IMAGE : value);
   }
 
   private Cursor getCursor(CharSequence str) {

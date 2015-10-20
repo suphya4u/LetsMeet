@@ -1,5 +1,7 @@
 package com.letsmeet.android.config;
 
+import com.letsmeet.android.R;
+
 /**
  * Constants used
  */
@@ -21,4 +23,6 @@ public class Constants {
   public static final java.lang.String EVENT_ID_KEY = "EVENT_ID";
 
   public static final String EVENT_ID_FOR_RSVP = "EVENT_ID_FOR_RSVP";
+
+  public static final String DEFAULT_CONTACT_IMAGE = String.valueOf(R.mipmap.ic_launcher);
 }
