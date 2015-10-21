@@ -5,4 +5,20 @@
         <!-- Customize your theme here. -->
     </style>
 
+    <style name="contact_item_content">
+        <item name="android:padding">8dp</item>
+    </style>
+
+    <style name="contact_item_contact_image">
+        <item name="android:layout_marginRight">8dp</item>
+    </style>
+
+    <style name="selected_contact_item_content">
+        <item name="android:padding">3dp</item>
+    </style>
+
+    <style name="contact_selection_selected_contacts">
+        <item name="android:paddingTop">10dp</item>
+    </style>
+
 </resources>

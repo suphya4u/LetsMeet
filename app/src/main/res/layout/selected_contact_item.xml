@@ -1,25 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent" >
-
-    <TextView
-        android:id="@+id/selected_contact_name"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
-
-    <TextView
-        android:id="@+id/selected_contact_number"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    style="@style/selected_contact_item_content"
+    xmlns:android="http://schemas.android.com/apk/res/android">
 
     <ImageView
         android:id="@+id/selected_contact_thumbnail"
-        android:layout_width="30dp"
-        android:layout_height="30dp"
-        android:contentDescription="Contact Image"/>
+        android:layout_width="35dp"
+        android:layout_height="35dp"
+        android:contentDescription="Contact Image"
+        style="@style/contact_item_contact_image"/>
+
+    <LinearLayout
+        android:layout_weight="1"
+        android:layout_width="0dp"
+        android:layout_height="fill_parent"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/selected_contact_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:id="@+id/selected_contact_number"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+    </LinearLayout>
 
     <Button
         android:id="@+id/remove_selected_contact"

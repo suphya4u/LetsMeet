@@ -12,7 +12,8 @@
         android:id="@+id/selected_contacts_list"
         android:layout_width="match_parent"
         android:layout_height="120dp"
-        android:scrollbars="vertical"/>
+        android:scrollbars="vertical"
+        style="@style/contact_selection_selected_contacts"/>
 
     <com.letsmeet.android.widgets.contactselect.SelectContactsView
         xmlns:android="http://schemas.android.com/apk/res/android"
