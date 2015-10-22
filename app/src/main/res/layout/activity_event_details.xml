@@ -38,9 +38,10 @@
         android:layout_height="wrap_content"/>
 
     <com.letsmeet.android.widgets.rsvp.RsvpButtonsView
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/rsvp_buttons">
+        android:id="@+id/rsvp_buttons"
+        android:layout_gravity="end">
     </com.letsmeet.android.widgets.rsvp.RsvpButtonsView>
 
     <android.support.v7.widget.RecyclerView

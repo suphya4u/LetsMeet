@@ -1,39 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:orientation="vertical"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent">
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    style="@style/event_list_item_content">
 
     <TextView
         android:id="@+id/event_name"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content"
+        android:ellipsize="end"
+        android:singleLine="true"
+        android:textStyle="bold"
+        style="@style/event_list_item_name"/>
 
     <TextView
-        android:id="@+id/event_notes"
+        android:id="@+id/event_location"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content"
+        android:ellipsize="end"
+        android:singleLine="true"/>
 
     <TextView
         android:id="@+id/event_time"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
 
-    <TextView
-        android:id="@+id/event_location"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
-
-    <TextView
-        android:id="@+id/event_my_response"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="My Response: "/>
-
     <com.letsmeet.android.widgets.rsvp.RsvpButtonsView
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/rsvp_buttons">
+        android:id="@+id/rsvp_buttons"
+        android:layout_gravity="end"
+        android:gravity="end">
     </com.letsmeet.android.widgets.rsvp.RsvpButtonsView>
 
 </LinearLayout>

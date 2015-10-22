@@ -65,30 +65,24 @@ public class EventListRecyclerAdapter
 
     private long eventId;
     private TextView nameView;
-    private TextView notesView;
     private TextView eventTimeView;
     private TextView eventLocationView;
-    private TextView myResponseView;
     private RsvpButtonsView rsvpButtonsView;
 
     public EventCompactViewHolder(final View itemView) {
       super(itemView);
       nameView = (TextView) itemView.findViewById(R.id.event_name);
-      notesView = (TextView) itemView.findViewById(R.id.event_notes);
       eventTimeView = (TextView) itemView.findViewById(R.id.event_time);
       eventLocationView = (TextView) itemView.findViewById(R.id.event_location);
-      myResponseView = (TextView) itemView.findViewById(R.id.event_my_response);
       rsvpButtonsView = (RsvpButtonsView) itemView.findViewById(R.id.rsvp_buttons);
     }
 
     public void setEvent(EventDetails eventDetails) {
       eventId = eventDetails.getEventId();
       nameView.setText(eventDetails.getName());
-      notesView.setText(eventDetails.getNotes());
       if (eventDetails.getLocation() != null) {
         eventLocationView.setText(eventDetails.getLocation().getPlaceAddress());
       }
-      myResponseView.setText("My Response: " + eventDetails.getMyResponse());
       eventTimeView.setText(DateTimeUtils.getDisplayDateTime(itemView.getContext(),
           eventDetails.getEventTimeMillis()));
       rsvpButtonsView.setEventId(eventId);

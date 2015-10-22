@@ -18,6 +18,7 @@ import com.letsmeet.android.R;
 import com.letsmeet.android.activity.CreateEventActivity;
 import com.letsmeet.android.activity.adapter.EventListRecyclerAdapter;
 import com.letsmeet.android.apiclient.EventServiceClient;
+import com.letsmeet.android.common.DividerItemDecoration;
 import com.letsmeet.android.common.MainContentFragmentSelector;
 import com.letsmeet.android.storage.LocalStore;
 import com.letsmeet.server.eventService.model.ListEventsForUserResponse;
@@ -77,6 +78,9 @@ public class EventListFragment extends Fragment {
       }
     });
     eventListView.setLayoutManager(layoutManager);
+    eventListView.setHasFixedSize(true);
+    eventListView.addItemDecoration(new DividerItemDecoration(getActivity(),
+        DividerItemDecoration.VERTICAL_LIST));
   }
 
   private void listEvents(final boolean useCached) {
