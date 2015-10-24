@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="selected_rsvp_button">#FF8A80</color>
+    <color name="unselected_rsvp_button">#AEAEAE</color>
+</resources>

@@ -28,6 +28,7 @@ import com.letsmeet.android.config.Constants;
 import com.letsmeet.android.storage.LocalStore;
 import com.letsmeet.android.common.ContactFetcher;
 import com.letsmeet.android.widgets.contactselect.ContactInfo;
+import com.letsmeet.android.widgets.rsvp.RsvpButtonsView;
 import com.letsmeet.server.eventService.model.EventDetails;
 import com.letsmeet.server.eventService.model.Invitee;
 
@@ -106,6 +107,10 @@ public class EventDetailsActivity extends AppCompatActivity {
         });
       }
     }
+
+    RsvpButtonsView rsvpButtonsView = (RsvpButtonsView) findViewById(R.id.rsvp_buttons);
+    rsvpButtonsView.setEventId(eventDetails.getEventId());
+    rsvpButtonsView.setSelection(eventDetails.getMyResponse());
 
     TextView eventDateTimeView = (TextView) findViewById(R.id.event_details_date_time);
     eventDateTimeView.setText(DateTimeUtils.getDisplayDateTime(

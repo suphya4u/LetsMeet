@@ -29,4 +29,8 @@
         <item name="android:paddingBottom">5dp</item>
     </style>
 
+    <style name="selected_rsvp_button">
+        <item name="colorButtonNormal">@color/selected_rsvp_button</item>
+    </style>
+
 </resources>

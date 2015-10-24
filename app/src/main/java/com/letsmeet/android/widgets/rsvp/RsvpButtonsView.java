@@ -22,6 +22,8 @@ import com.letsmeet.server.eventService.model.RsvpRequest;
 import com.letsmeet.server.eventService.model.RsvpResponse;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * View to render and handle rsvp buttons.
@@ -29,6 +31,7 @@ import java.io.IOException;
 public class RsvpButtonsView extends LinearLayout {
 
   private long eventId = 0;
+  private Map<String, Button> buttonMap = new HashMap<>();
 
   public RsvpButtonsView(Context context) {
     super(context);
@@ -58,6 +61,7 @@ public class RsvpButtonsView extends LinearLayout {
         rsvp(getContext(), "YES");
       }
     });
+    buttonMap.put("YES", rsvpYesButton);
 
     Button rsvpMaybeButton = (Button) findViewById(R.id.rsvp_maybe);
     rsvpMaybeButton.setOnClickListener(new View.OnClickListener() {
@@ -65,6 +69,7 @@ public class RsvpButtonsView extends LinearLayout {
         rsvp(getContext(), "MAYBE");
       }
     });
+    buttonMap.put("MAYBE", rsvpMaybeButton);
 
     Button rsvpNoButton = (Button) findViewById(R.id.rsvp_no);
     rsvpNoButton.setOnClickListener(new View.OnClickListener() {
@@ -72,6 +77,7 @@ public class RsvpButtonsView extends LinearLayout {
         rsvp(getContext(), "NO");
       }
     });
+    buttonMap.put("NO", rsvpNoButton);
   }
 
   private void rsvp(final Context context, final String response) {
@@ -97,7 +103,20 @@ public class RsvpButtonsView extends LinearLayout {
               "Failed to connect server. Please check your network connection",
               Toast.LENGTH_SHORT).show();
         }
+        setSelection(response);
       }
     }.execute();
+  }
+
+  public void setSelection(String response) {
+    for (Map.Entry<String, Button> buttonEntry : buttonMap.entrySet()) {
+      String responseVal = buttonEntry.getKey();
+      Button button = buttonEntry.getValue();
+      if (responseVal.equals(response)) {
+        button.setTextColor(getResources().getColor(R.color.selected_rsvp_button));
+      } else {
+        button.setTextColor(getResources().getColor(R.color.unselected_rsvp_button));
+      }
+    }
   }
 }

@@ -86,6 +86,7 @@ public class EventListRecyclerAdapter
       eventTimeView.setText(DateTimeUtils.getDisplayDateTime(itemView.getContext(),
           eventDetails.getEventTimeMillis()));
       rsvpButtonsView.setEventId(eventId);
+      rsvpButtonsView.setSelection(eventDetails.getMyResponse());
     }
 
     public void onClick(View view) {
