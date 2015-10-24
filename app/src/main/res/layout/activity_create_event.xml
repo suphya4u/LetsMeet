@@ -12,20 +12,32 @@
         android:hint="@string/create_event_name"
         android:inputType="textCapWords"
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content" />
-    <EditText
-        android:id="@+id/create_event_notes"
-        android:hint="@string/create_event_notes"
-        android:inputType="textAutoComplete|textCapSentences"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"/>
 
-    <fragment
-        android:name="com.letsmeet.android.widgets.contactselect.SelectContactFragment"
-        android:id="@+id/select_contact_fragment"
+    <!-- TODO: Move below layout to its own widget -->
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        tools:layout="@layout/fragment_select_contact"/>
+        android:orientation="horizontal">
+
+        <EditText
+            android:id="@+id/selected_date_time"
+            android:inputType="datetime"
+            android:hint="@string/pick_a_time"
+            android:layout_weight="2"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:enabled="false"
+            android:focusable="false"/>
+
+        <Button
+            android:id="@+id/pick_time_button"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="@string/pick_a_time"/>
+
+    </LinearLayout>
 
     <com.letsmeet.android.widgets.placeselect.PlaceSelectView
         xmlns:android="http://schemas.android.com/apk/res/android"
@@ -35,18 +47,19 @@
         android:layout_height="wrap_content"
         android:completionThreshold="1" />
 
-    <TextView
-        android:id="@+id/selected_date_time"
+    <fragment
+        android:name="com.letsmeet.android.widgets.contactselect.SelectContactFragment"
+        android:id="@+id/select_contact_fragment"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
-
-    <Button
-        android:id="@+id/pick_time_button"
-        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/pick_a_time"/>
+        tools:layout="@layout/fragment_select_contact"/>
 
-    <!-- TODO(suhas): Add more fields -->
+    <EditText
+        android:id="@+id/create_event_notes"
+        android:hint="@string/create_event_notes"
+        android:inputType="textAutoComplete|textCapSentences|textImeMultiLine"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"/>
 
     <Button
         android:id="@+id/create_event_button"

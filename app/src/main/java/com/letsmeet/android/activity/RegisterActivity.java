@@ -4,6 +4,8 @@ import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+
+import com.google.common.base.Strings;
 import com.letsmeet.android.R;
 
 import android.content.IntentFilter;
@@ -74,18 +76,29 @@ public class RegisterActivity extends AppCompatActivity {
     final Button button = (Button) findViewById(R.id.register_button);
     button.setOnClickListener(new View.OnClickListener() {
       public void onClick(View v) {
+        boolean hasErrors = false;
         EditText nameEditText = (EditText) findViewById(R.id.registration_name);
-        EditText phoneEditText = (EditText) findViewById(R.id.registration_phone);
         String name = nameEditText.getText().toString();
-        String formattedPhoneNumber;
-        if (Config.isEmulator()) {
-          formattedPhoneNumber = phoneEditText.getText().toString();
+        if (Strings.isNullOrEmpty(name)) {
+          hasErrors = true;
+          nameEditText.setError(getString(R.string.cannot_be_empty));
+        }
+
+        EditText phoneEditText = (EditText) findViewById(R.id.registration_phone);
+        String phoneString = phoneEditText.getText().toString();
+        String formattedPhoneNumber = "";
+        if (Strings.isNullOrEmpty(phoneString)) {
+          hasErrors = true;
+          phoneEditText.setError(getString(R.string.cannot_be_empty));
         } else {
           PhoneNumberHelper phoneNumberHelper = new PhoneNumberHelper(RegisterActivity.this);
           formattedPhoneNumber = phoneNumberHelper
               .formatPhoneNumber(phoneEditText.getText().toString());
         }
-        registerUser(name, formattedPhoneNumber);
+
+        if (!hasErrors) {
+          registerUser(name, formattedPhoneNumber);
+        }
       }
     });
   }

@@ -68,4 +68,11 @@ public class SelectContactFragment extends Fragment {
   public void setSelectedContacts(List<ContactInfo> contactInfos) {
     selectedContactAdapter.setSelectedContacts(contactInfos);
   }
+
+  public void setError(String error) {
+    SelectContactsView contactAutoComplete =
+        (SelectContactsView) getActivity().findViewById(R.id.contact_autocomplete);
+    contactAutoComplete.setError(error);
+
+  }
 }

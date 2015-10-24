@@ -90,14 +90,18 @@ public class CreateEventActivity extends AppCompatActivity {
     createEventButton.setOnClickListener(new View.OnClickListener() {
       public void onClick(View v) {
         // TODO(suhas): Too big click handler. re-factor.
+        boolean hasErrors = false;
+
         EditText nameEditText = (EditText) findViewById(R.id.create_event_name);
-        EditText notesEditText = (EditText) findViewById(R.id.create_event_notes);
-        FragmentManager fragmentManager = getFragmentManager();
-        SelectContactFragment contactFragment =
-            (SelectContactFragment) fragmentManager.findFragmentById(R.id.select_contact_fragment);
         String name = nameEditText.getText().toString();
+        if (Strings.isNullOrEmpty(name)) {
+          hasErrors = true;
+          nameEditText.setError(getString(R.string.cannot_be_empty));
+        }
+
+        EditText notesEditText = (EditText) findViewById(R.id.create_event_notes);
         String notes = notesEditText.getText().toString();
-        // TODO(suhas): Validate input.
+
         LocalStore localStore = LocalStore.getInstance(CreateEventActivity.this);
         long userId = localStore.getUserId();
         if (eventDetails == null) {
@@ -107,25 +111,37 @@ public class CreateEventActivity extends AppCompatActivity {
             .setName(name)
             .setNotes(notes)
             .setOwnerId(userId);
-        List<ContactInfo> selectedContacts = contactFragment.getSelectedContacts();
 
-        // EventDetails#setInviteePhoneNumbers is deleted and replaced with addInviteePhoneNumber.
-        // However client lib is somehow not updated. So continue using set.
-        List<Invitee> inviteePhoneNumbers = Lists.newArrayList();
-        PhoneNumberHelper phoneNumberHelper = new PhoneNumberHelper(CreateEventActivity.this);
-        for (ContactInfo contact : selectedContacts) {
-          String phoneNumber = phoneNumberHelper.formatPhoneNumber(contact.getPhoneNumber());
-          Invitee invitee = new Invitee().setPhoneNumber(phoneNumber);
-          inviteePhoneNumbers.add(invitee);
-        }
+        FragmentManager fragmentManager = getFragmentManager();
+        SelectContactFragment contactFragment =
+            (SelectContactFragment) fragmentManager.findFragmentById(R.id.select_contact_fragment);
+        List<Invitee> inviteePhoneNumbers = getInviteePhoneNumbers(contactFragment);
         eventDetails.setInviteePhoneNumbers(inviteePhoneNumbers);
+        if (inviteePhoneNumbers.isEmpty()) {
+          hasErrors = true;
+          contactFragment.setError(getString(R.string.must_add_guests));
+        }
+
+        TextView selectedDateTime = (TextView) findViewById(R.id.selected_date_time);
         eventDetails.setEventTimeMillis(eventTimeSelected);
+        if (eventTimeSelected == 0) {
+          hasErrors = true;
+          selectedDateTime.setError(getString(R.string.cannot_be_empty));
+        }
+
         PlaceInfo selectedPlace = placeSelectView.getSelectedPlace();
+        if (Strings.isNullOrEmpty(selectedPlace.getAddress())) {
+          hasErrors = true;
+          placeSelectView.setError(getString(R.string.cannot_be_empty));
+        }
         EventLocation location = new EventLocation()
             .setPlaceId(selectedPlace.getPlaceId())
             .setPlaceAddress(selectedPlace.getAddress());
         eventDetails.setLocation(location);
-        createEvent(eventDetails);
+
+        if (!hasErrors) {
+          createEvent(eventDetails);
+        }
       }
     });
   }
@@ -233,6 +249,7 @@ public class CreateEventActivity extends AppCompatActivity {
 
   private void dateTimeSelected(long timeInMillis) {
     final TextView selectedDateTime = (TextView) findViewById(R.id.selected_date_time);
+    selectedDateTime.setError(null);
     final Button pickTimeButton = (Button) findViewById(R.id.pick_time_button);
     selectedDateTime.setText(DateTimeUtils.getDisplayDateTime(
         CreateEventActivity.this, timeInMillis));
@@ -253,5 +270,20 @@ public class CreateEventActivity extends AppCompatActivity {
         });
     contactInfos.removeAll(Collections.<ContactInfo>singleton(null));
     return contactInfos;
+  }
+
+  private List<Invitee> getInviteePhoneNumbers(SelectContactFragment contactFragment) {
+    List<ContactInfo> selectedContacts = contactFragment.getSelectedContacts();
+
+    // EventDetails#setInviteePhoneNumbers is deleted and replaced with addInviteePhoneNumber.
+    // However client lib is somehow not updated. So continue using set.
+    List<Invitee> inviteePhoneNumbers = Lists.newArrayList();
+    PhoneNumberHelper phoneNumberHelper = new PhoneNumberHelper(CreateEventActivity.this);
+    for (ContactInfo contact : selectedContacts) {
+      String phoneNumber = phoneNumberHelper.formatPhoneNumber(contact.getPhoneNumber());
+      Invitee invitee = new Invitee().setPhoneNumber(phoneNumber);
+      inviteePhoneNumbers.add(invitee);
+    }
+    return inviteePhoneNumbers;
   }
 }
