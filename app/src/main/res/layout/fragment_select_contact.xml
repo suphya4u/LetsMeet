@@ -24,7 +24,9 @@
             android:layout_width="wrap_content"
             android:layout_height="fill_parent"
             android:src="@drawable/ic_people_black_24dp"
-            android:contentDescription="@string/pick_a_time"/>
+            android:tint="@color/material_icon_light"
+            android:contentDescription="@string/pick_a_time"
+            style="@style/material_icon" />
 
         <com.letsmeet.android.widgets.contactselect.SelectContactsView
             xmlns:android="http://schemas.android.com/apk/res/android"

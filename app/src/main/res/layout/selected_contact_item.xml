@@ -21,11 +21,13 @@
 
         <TextView
             android:id="@+id/selected_contact_name"
+            android:ellipsize="end"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
         <TextView
             android:id="@+id/selected_contact_number"
+            android:ellipsize="end"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 

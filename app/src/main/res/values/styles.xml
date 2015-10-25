@@ -19,6 +19,7 @@
 
     <style name="contact_selection_selected_contacts">
         <item name="android:paddingTop">10dp</item>
+        <item name="android:layout_marginLeft">34dp</item>
     </style>
 
     <style name="event_list_item_name">
@@ -31,6 +32,10 @@
 
     <style name="selected_rsvp_button">
         <item name="colorButtonNormal">@color/selected_rsvp_button</item>
+    </style>
+
+    <style name="material_icon">
+        <item name="android:paddingRight">10dp</item>
     </style>
 
 </resources>
