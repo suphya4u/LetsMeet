@@ -13,8 +13,11 @@
 
         <EditText
             android:id="@+id/send_feedback_text"
+            android:inputType="textAutoComplete|textCapSentences|textMultiLine"
             android:layout_width="match_parent"
-            android:layout_height="120dp"
+            android:layout_weight="1"
+            android:layout_height="0dp"
+            android:gravity="top"
             android:hint="@string/send_feedback_edittext"/>
 
         <Button

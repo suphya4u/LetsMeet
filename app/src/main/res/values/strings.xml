@@ -9,16 +9,16 @@
     <string name="drawer_menu_title_all_events">All Events</string>
     <string name="create_event">Create Event</string>
     <string name="create_event_name">What is it about?</string>
-    <string name="title_activity_create_event">Create Event</string>
+    <string name="title_activity_create_event">Create New Event</string>
     <string name="new_event">Create New Event</string>
     <string name="create_event_notes">More details</string>
     <string name="contact_autocomplete">Invite Others</string>
-    <string name="place_autocomplete">Select Place</string>
+    <string name="place_autocomplete">Where?</string>
     <string name="pending_verification_info">We are still trying to verify your phone number. If you would like change the number please retry registration again ..</string>
     <string name="register_again_button">Register again</string>
     <string name="list_events">View Events</string>
     <string name="title_activity_event_list">Upcoming Events</string>
-    <string name="pick_a_time">Pick date and time</string>
+    <string name="pick_a_time">Pick time</string>
     <string name="share_by_sms">Invite by SMS</string>
     <string name="share_other_channel">Share ..</string>
     <string name="users_not_registered_help_text">Following friends are not yet using Lets meet, invite them using sms?</string>
@@ -44,5 +44,6 @@
     <string name="rsvp_help">Going?</string>
     <string name="cannot_be_empty">Cannot be empty</string>
     <string name="must_add_guests">Add guests</string>
+    <string name="event_time_text">When?</string>
 
 </resources>

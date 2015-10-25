@@ -71,14 +71,13 @@ public class CreateEventActivity extends AppCompatActivity {
     final PlaceSelectView placeSelectView = (PlaceSelectView) findViewById(R.id.place_autocomplete);
     placeSelectView.init(this);
 
-    final Button pickTimeButton = (Button) findViewById(R.id.pick_time_button);
-    pickTimeButton.setOnClickListener(new View.OnClickListener() {
+    final TextView selectedDateTime = (TextView) findViewById(R.id.selected_date_time);
+    selectedDateTime.setOnClickListener(new View.OnClickListener() {
       @Override public void onClick(View v) {
         DateTimePicker dateTimePicker = new DateTimePicker(
             getFragmentManager(), "EventDateTimePicker");
         dateTimePicker.setDateTimeSetListener(new DateTimePicker.OnDateTimeSetListener() {
           @Override public void onDateTimeSet(Calendar timeSelected) {
-            setEventTime(timeSelected);
             dateTimeSelected(timeSelected.getTimeInMillis());
           }
         });
@@ -243,17 +242,12 @@ public class CreateEventActivity extends AppCompatActivity {
     createEventButton.setText(R.string.edit_event_button);
   }
 
-  private void setEventTime(Calendar timeSelected) {
-    eventTimeSelected = timeSelected.getTimeInMillis();
-  }
-
   private void dateTimeSelected(long timeInMillis) {
+    eventTimeSelected = timeInMillis;
     final TextView selectedDateTime = (TextView) findViewById(R.id.selected_date_time);
     selectedDateTime.setError(null);
-    final Button pickTimeButton = (Button) findViewById(R.id.pick_time_button);
     selectedDateTime.setText(DateTimeUtils.getDisplayDateTime(
         CreateEventActivity.this, timeInMillis));
-    pickTimeButton.setText(R.string.change_date_time_button);
   }
 
   private List<ContactInfo> transformToContactInfos(final String ignoreNumber,

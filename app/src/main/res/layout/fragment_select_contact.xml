@@ -15,12 +15,25 @@
         android:scrollbars="vertical"
         style="@style/contact_selection_selected_contacts"/>
 
-    <com.letsmeet.android.widgets.contactselect.SelectContactsView
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/contact_autocomplete"
-        android:hint="@string/contact_autocomplete"
-        android:layout_width="fill_parent"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:completionThreshold="1" />
+        android:orientation="horizontal">
 
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:src="@drawable/ic_people_black_24dp"
+            android:contentDescription="@string/pick_a_time"/>
+
+        <com.letsmeet.android.widgets.contactselect.SelectContactsView
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            android:id="@+id/contact_autocomplete"
+            android:hint="@string/contact_autocomplete"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:completionThreshold="1" />
+
+    </LinearLayout>
 </LinearLayout>

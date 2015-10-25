@@ -14,20 +14,26 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/rsvp_yes"
-        style="?android:attr/borderlessButtonStyle" />
+        style="?android:attr/borderlessButtonStyle"
+        android:minWidth="0dp"
+        android:minHeight="0dp"/>
 
     <Button
         android:id="@+id/rsvp_no"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/rsvp_no"
-        style="?android:attr/borderlessButtonStyle" />
+        style="?android:attr/borderlessButtonStyle"
+        android:minHeight="0dp"
+        android:minWidth="0dp"/>
 
     <Button
         android:id="@+id/rsvp_maybe"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/rsvp_maybe"
-        style="?android:attr/borderlessButtonStyle" />
+        style="?android:attr/borderlessButtonStyle"
+        android:minHeight="0dp"
+        android:minWidth="0dp"/>
 
 </LinearLayout>

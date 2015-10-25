@@ -14,57 +14,84 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"/>
 
-    <!-- TODO: Move below layout to its own widget -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal">
 
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:src="@drawable/ic_schedule_black_24dp"
+            android:contentDescription="@string/pick_a_time"/>
+
         <EditText
             android:id="@+id/selected_date_time"
             android:inputType="datetime"
-            android:hint="@string/pick_a_time"
-            android:layout_weight="2"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:enabled="false"
-            android:focusable="false"/>
-
-        <Button
-            android:id="@+id/pick_time_button"
+            android:hint="@string/event_time_text"
             android:layout_weight="1"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="@string/pick_a_time"/>
+            android:focusable="false"/>
 
     </LinearLayout>
 
-    <com.letsmeet.android.widgets.placeselect.PlaceSelectView
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/place_autocomplete"
-        android:hint="@string/place_autocomplete"
-        android:layout_width="fill_parent"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:completionThreshold="1" />
+        android:orientation="horizontal">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:src="@drawable/ic_place_black_24dp"
+            android:contentDescription="@string/pick_a_time"/>
+
+        <com.letsmeet.android.widgets.placeselect.PlaceSelectView
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            android:id="@+id/place_autocomplete"
+            android:hint="@string/place_autocomplete"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:completionThreshold="1" />
+
+    </LinearLayout>
 
     <fragment
         android:name="com.letsmeet.android.widgets.contactselect.SelectContactFragment"
         android:id="@+id/select_contact_fragment"
-        android:layout_width="match_parent"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         tools:layout="@layout/fragment_select_contact"/>
 
-    <EditText
-        android:id="@+id/create_event_notes"
-        android:hint="@string/create_event_notes"
-        android:inputType="textAutoComplete|textCapSentences|textImeMultiLine"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"/>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:src="@drawable/ic_event_note_black_24dp"
+            android:contentDescription="@string/pick_a_time"/>
+
+        <EditText
+            android:id="@+id/create_event_notes"
+            android:hint="@string/create_event_notes"
+            android:inputType="textAutoComplete|textCapSentences|textMultiLine"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:height="120dp"
+            android:isScrollContainer="true"/>
+
+    </LinearLayout>
 
     <Button
         android:id="@+id/create_event_button"
         android:text="@string/create_event"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content" />
 
 </LinearLayout>
