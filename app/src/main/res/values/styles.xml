@@ -38,4 +38,8 @@
         <item name="android:paddingRight">10dp</item>
     </style>
 
+    <style name="guests_list_content">
+        <item name="android:layout_marginLeft">34dp</item>
+    </style>
+
 </resources>

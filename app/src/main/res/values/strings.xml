@@ -45,5 +45,6 @@
     <string name="cannot_be_empty">Cannot be empty</string>
     <string name="must_add_guests">Add guests</string>
     <string name="event_time_text">When?</string>
+    <string name="guests_list_header">Guests</string>
 
 </resources>
