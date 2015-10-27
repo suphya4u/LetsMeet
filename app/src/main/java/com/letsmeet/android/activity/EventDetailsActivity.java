@@ -14,6 +14,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Pair;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -43,6 +45,7 @@ import javax.annotation.Nullable;
 public class EventDetailsActivity extends AppCompatActivity {
 
   private EventDetails eventDetails;
+  MenuItem editEventMenuItem;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -68,6 +71,26 @@ public class EventDetailsActivity extends AppCompatActivity {
     } else {
       populateEventData();
     }
+  }
+
+  @Override
+  public boolean onCreateOptionsMenu(Menu menu) {
+    getMenuInflater().inflate(R.menu.menu_event_details, menu);
+    editEventMenuItem = menu.findItem(R.id.action_edit_event);
+    editEventMenuItem.setVisible(false);
+    return super.onCreateOptionsMenu(menu);
+  }
+
+  @Override public boolean onOptionsItemSelected(MenuItem item) {
+    if (item.getItemId() == R.id.action_edit_event) {
+      if (eventDetails != null && eventDetails.getEventId() != 0) {
+        Intent editEventIntent = new Intent(EventDetailsActivity.this, CreateEventActivity.class);
+        editEventIntent.putExtra(Constants.EVENT_ID_KEY,
+            String.valueOf(eventDetails.getEventId()));
+        startActivity(editEventIntent);
+      }
+    }
+    return super.onOptionsItemSelected(item);
   }
 
   private void populateEventData() {
@@ -125,17 +148,12 @@ public class EventDetailsActivity extends AppCompatActivity {
     guestsListView.setAdapter(guestsListAdapter);
     populateGuestsList(guestsListAdapter, eventDetails.getInviteePhoneNumbers());
 
-    if (eventDetails.getIsOwner()) {
-      Button editEventButton = (Button) findViewById(R.id.edit_event_button);
-      editEventButton.setVisibility(View.VISIBLE);
-      editEventButton.setOnClickListener(new View.OnClickListener() {
-        @Override public void onClick(View v) {
-          Intent editEventIntent = new Intent(EventDetailsActivity.this, CreateEventActivity.class);
-          editEventIntent.putExtra(Constants.EVENT_ID_KEY,
-              String.valueOf(eventDetails.getEventId()));
-          startActivity(editEventIntent);
-        }
-      });
+    configureEditAction(eventDetails.getIsOwner());
+  }
+
+  private void configureEditAction(boolean isOwner) {
+    if (editEventMenuItem != null) {
+      editEventMenuItem.setVisible(isOwner);
     }
   }
 
