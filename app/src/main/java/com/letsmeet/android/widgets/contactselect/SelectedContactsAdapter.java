@@ -5,7 +5,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -21,10 +21,6 @@ import java.util.List;
  */
 public class SelectedContactsAdapter
     extends RecyclerView.Adapter<SelectedContactsAdapter.ContactInfoViewHolder> {
-
-  private interface RemoveContactListener {
-    void onContactRemove();
-  }
 
   List<ContactInfo> selectedContacts;
 
@@ -43,9 +39,10 @@ public class SelectedContactsAdapter
     }
   }
 
-  public void addContact(ContactInfo contactInfo) {
+  public int addContact(ContactInfo contactInfo) {
     selectedContacts.add(contactInfo);
     notifyDataSetChanged();
+    return selectedContacts.size() - 1;
   }
 
   @Override
@@ -74,28 +71,28 @@ public class SelectedContactsAdapter
   public class ContactInfoViewHolder extends RecyclerView.ViewHolder {
 
     private TextView nameView;
-    private TextView phoneNumberView;
     private ImageView thumbnailView;
-    private Button removeButton;
+    private ImageButton removeButton;
 
     public ContactInfoViewHolder(View itemView) {
       super(itemView);
       nameView = (TextView) itemView.findViewById(R.id.selected_contact_name);
-      phoneNumberView = (TextView) itemView.findViewById(R.id.selected_contact_number);
       thumbnailView = (ImageView) itemView.findViewById(R.id.selected_contact_thumbnail);
-      removeButton = (Button) itemView.findViewById(R.id.remove_selected_contact);
+      removeButton = (ImageButton) itemView.findViewById(R.id.remove_selected_contact);
     }
 
     public void setContactInfo(ContactInfo contactInfo, View.OnClickListener removeListener) {
-      nameView.setText(contactInfo.getDisplayName());
-      phoneNumberView.setText(contactInfo.getPhoneNumber());
+      String contactName = contactInfo.getDisplayName();
+      if (Strings.isNullOrEmpty(contactName)) {
+        contactName = contactInfo.getPhoneNumber();
+      }
+      nameView.setText(contactName);
       setViewImage(thumbnailView, contactInfo.getThumbnailUrl());
       removeButton.setOnClickListener(removeListener);
     }
 
     private void setViewImage(ImageView v, String value) {
       if (Strings.isNullOrEmpty(value)) {
-        // TODO(suhas): Set default image.
         v.setImageDrawable(null);
         return;
       }

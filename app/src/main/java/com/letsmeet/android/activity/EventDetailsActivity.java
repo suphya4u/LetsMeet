@@ -18,6 +18,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -45,7 +46,8 @@ import javax.annotation.Nullable;
 public class EventDetailsActivity extends AppCompatActivity {
 
   private EventDetails eventDetails;
-  MenuItem editEventMenuItem;
+  private MenuItem editEventMenuItem;
+  private boolean isOwner = false;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -77,7 +79,7 @@ public class EventDetailsActivity extends AppCompatActivity {
   public boolean onCreateOptionsMenu(Menu menu) {
     getMenuInflater().inflate(R.menu.menu_event_details, menu);
     editEventMenuItem = menu.findItem(R.id.action_edit_event);
-    editEventMenuItem.setVisible(false);
+    editEventMenuItem.setVisible(isOwner);
     return super.onCreateOptionsMenu(menu);
   }
 
@@ -94,50 +96,70 @@ public class EventDetailsActivity extends AppCompatActivity {
   }
 
   private void populateEventData() {
+    isOwner = eventDetails.getIsOwner();
+
     TextView eventNameView = (TextView) findViewById(R.id.event_details_name);
     eventNameView.setText(eventDetails.getName());
 
-    TextView eventNotesView = (TextView) findViewById(R.id.event_details_notes);
-    eventNotesView.setText(eventDetails.getNotes());
+    LinearLayout eventNotesContainer =
+        (LinearLayout) findViewById(R.id.event_details_notes_container);
+    if (Strings.isNullOrEmpty(eventDetails.getNotes())) {
+      eventNotesContainer.setVisibility(View.GONE);
+    } else {
+      eventNotesContainer.setVisibility(View.VISIBLE);
+      TextView eventNotesView = (TextView) findViewById(R.id.event_details_notes);
+      eventNotesView.setText(eventDetails.getNotes());
+    }
 
-    if (eventDetails.getLocation() != null) {
+    LinearLayout eventLocationContainer =
+        (LinearLayout) findViewById(R.id.event_details_location_container);
+    if (eventDetails.getLocation() != null
+        && !Strings.isNullOrEmpty(eventDetails.getLocation().getPlaceAddress())) {
+      eventLocationContainer.setVisibility(View.VISIBLE);
       TextView eventLocationView = (TextView) findViewById(R.id.event_details_location);
       eventLocationView.setText(eventDetails.getLocation().getPlaceAddress());
 
-      if (!Strings.isNullOrEmpty(eventDetails.getLocation().getPlaceAddress())) {
-        eventLocationView.setOnClickListener(new View.OnClickListener() {
-          @Override public void onClick(View v) {
-            GoogleApiHelper googleApiHelper = new GoogleApiHelper(EventDetailsActivity.this,
-                EventDetailsActivity.this, 1 /* clientId */);
-            Location lastLocation = googleApiHelper.getLastKnownLocation();
-            double latitude = 0.0;
-            double longitude = 0.0;
-            if (lastLocation != null) {
-              latitude = lastLocation.getLatitude();
-              longitude = lastLocation.getLongitude();
-            }
-
-            Uri gmmIntentUri = Uri.parse("geo:"
-                + latitude
-                + ","
-                + longitude
-                + "?q="
-                + eventDetails.getLocation().getPlaceAddress());
-            Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
-            mapIntent.setPackage("com.google.android.apps.maps");
-            startActivity(mapIntent);
+      eventLocationView.setOnClickListener(new View.OnClickListener() {
+        @Override public void onClick(View v) {
+          GoogleApiHelper googleApiHelper = new GoogleApiHelper(EventDetailsActivity.this,
+              EventDetailsActivity.this, 1 /* clientId */);
+          Location lastLocation = googleApiHelper.getLastKnownLocation();
+          double latitude = 0.0;
+          double longitude = 0.0;
+          if (lastLocation != null) {
+            latitude = lastLocation.getLatitude();
+            longitude = lastLocation.getLongitude();
           }
-        });
-      }
+
+          Uri gmmIntentUri = Uri.parse("geo:"
+              + latitude
+              + ","
+              + longitude
+              + "?q="
+              + eventDetails.getLocation().getPlaceAddress());
+          Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
+          mapIntent.setPackage("com.google.android.apps.maps");
+          startActivity(mapIntent);
+        }
+      });
+    } else {
+      eventLocationContainer.setVisibility(View.GONE);
     }
 
     RsvpButtonsView rsvpButtonsView = (RsvpButtonsView) findViewById(R.id.rsvp_buttons);
     rsvpButtonsView.setEventId(eventDetails.getEventId());
     rsvpButtonsView.setSelection(eventDetails.getMyResponse());
 
-    TextView eventDateTimeView = (TextView) findViewById(R.id.event_details_date_time);
-    eventDateTimeView.setText(DateTimeUtils.getDisplayDateTime(
-        this, eventDetails.getEventTimeMillis()));
+    LinearLayout eventDateTimeContainer =
+        (LinearLayout) findViewById(R.id.event_details_date_time_container);
+    if (eventDetails.getEventTimeMillis() == 0) {
+      eventDateTimeContainer.setVisibility(View.GONE);
+    } else {
+      eventDateTimeContainer.setVisibility(View.VISIBLE);
+      TextView eventDateTimeView = (TextView) findViewById(R.id.event_details_date_time);
+      eventDateTimeView.setText(DateTimeUtils.getDisplayDateTime(
+          this, eventDetails.getEventTimeMillis()));
+    }
 
     RecyclerView guestsListView = (RecyclerView) findViewById(R.id.guests_list);
     final LinearLayoutManager layoutManager = new LinearLayoutManager(this);
@@ -148,7 +170,7 @@ public class EventDetailsActivity extends AppCompatActivity {
     guestsListView.setAdapter(guestsListAdapter);
     populateGuestsList(guestsListAdapter, eventDetails.getInviteePhoneNumbers());
 
-    configureEditAction(eventDetails.getIsOwner());
+    configureEditAction(isOwner);
   }
 
   private void configureEditAction(boolean isOwner) {

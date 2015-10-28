@@ -47,5 +47,7 @@
     <string name="event_time_text">When?</string>
     <string name="guests_list_header">Guests</string>
     <string name="edit_event_action">Edit</string>
+    <string name="cancel_contact_selection_help">Cancel selection</string>
+    <string name="contact_image_help">Contact image</string>
 
 </resources>

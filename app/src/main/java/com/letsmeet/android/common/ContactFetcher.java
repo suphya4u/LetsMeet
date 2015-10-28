@@ -34,9 +34,9 @@ public class ContactFetcher {
           .setThumbnailUrl(cursor.getString(
               cursor.getColumnIndex(ContactsContract.PhoneLookup.PHOTO_THUMBNAIL_URI)));
       cursor.close();
-      if (contactInfo.getThumbnailUrl() == null) {
-        contactInfo.setThumbnailUrl(Constants.DEFAULT_CONTACT_IMAGE);
-      }
+    }
+    if (contactInfo.getThumbnailUrl() == null) {
+      contactInfo.setThumbnailUrl(Constants.DEFAULT_CONTACT_IMAGE);
     }
     return contactInfo;
   }

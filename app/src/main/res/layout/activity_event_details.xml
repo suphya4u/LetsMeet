@@ -13,9 +13,11 @@
     <TextView
         android:id="@+id/event_details_name"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content"
+        style="@style/event_details_event_name"/>
 
     <LinearLayout
+        android:id="@+id/event_details_date_time_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal">
@@ -37,6 +39,7 @@
     </LinearLayout>
 
     <LinearLayout
+        android:id="@+id/event_details_location_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal">
@@ -61,6 +64,7 @@
     </LinearLayout>
 
     <LinearLayout
+        android:id="@+id/event_details_notes_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal">
@@ -89,6 +93,8 @@
         android:id="@+id/rsvp_buttons"
         android:layout_gravity="end">
     </com.letsmeet.android.widgets.rsvp.RsvpButtonsView>
+
+    <View style="@style/divider" />
 
     <LinearLayout
         android:layout_width="match_parent"

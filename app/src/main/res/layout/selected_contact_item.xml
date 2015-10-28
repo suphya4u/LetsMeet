@@ -8,16 +8,18 @@
 
     <ImageView
         android:id="@+id/selected_contact_thumbnail"
-        android:layout_width="35dp"
-        android:layout_height="35dp"
-        android:contentDescription="Contact Image"
-        style="@style/contact_item_contact_image"/>
+        android:layout_width="18dp"
+        android:layout_height="18dp"
+        android:contentDescription="@string/contact_image_help"
+        style="@style/contact_item_contact_image"
+        android:layout_gravity="center_vertical" />
 
     <LinearLayout
         android:layout_weight="1"
         android:layout_width="0dp"
         android:layout_height="fill_parent"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:gravity="center_vertical" >
 
         <TextView
             android:id="@+id/selected_contact_name"
@@ -25,18 +27,16 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
-        <TextView
-            android:id="@+id/selected_contact_number"
-            android:ellipsize="end"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-
     </LinearLayout>
 
-    <Button
+    <ImageButton
         android:id="@+id/remove_selected_contact"
-        android:text="Remove"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_cancel_black_24dp"
+        android:contentDescription="@string/cancel_contact_selection_help"
+        android:layout_gravity="center_vertical"
+        android:background="@null"
+        android:tint="@color/material_icon_light"/>
 
 </LinearLayout>

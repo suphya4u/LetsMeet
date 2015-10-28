@@ -51,11 +51,13 @@ public class SelectContactFragment extends Fragment {
     selectedContactsListView.setLayoutManager(layoutManager);
     selectedContactsListView.setAdapter(selectedContactAdapter);
 
-    SelectContactsView contactAutoComplete =
+    final SelectContactsView contactAutoComplete =
         (SelectContactsView) rootView.findViewById(R.id.contact_autocomplete);
     contactAutoComplete.setOnContactSelectionCallback(new SelectContactsView.OnContactSelection() {
       @Override public void handleContactSelect(ContactInfo contact) {
-        selectedContactAdapter.addContact(contact);
+        int position = selectedContactAdapter.addContact(contact);
+        layoutManager.scrollToPosition(position);
+        contactAutoComplete.setText("");
       }
     });
     return rootView;
@@ -73,6 +75,5 @@ public class SelectContactFragment extends Fragment {
     SelectContactsView contactAutoComplete =
         (SelectContactsView) getActivity().findViewById(R.id.contact_autocomplete);
     contactAutoComplete.setError(error);
-
   }
 }

@@ -83,8 +83,10 @@ public class EventListRecyclerAdapter
       if (eventDetails.getLocation() != null) {
         eventLocationView.setText(eventDetails.getLocation().getPlaceAddress());
       }
-      eventTimeView.setText(DateTimeUtils.getDisplayDateTime(itemView.getContext(),
-          eventDetails.getEventTimeMillis()));
+      if (eventDetails.getEventTimeMillis() > 0) {
+        eventTimeView.setText(DateTimeUtils.getDisplayDateTime(itemView.getContext(),
+            eventDetails.getEventTimeMillis()));
+      }
       rsvpButtonsView.setEventId(eventId);
       rsvpButtonsView.setSelection(eventDetails.getMyResponse());
     }

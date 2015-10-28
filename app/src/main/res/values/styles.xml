@@ -42,4 +42,16 @@
         <item name="android:layout_marginLeft">34dp</item>
     </style>
 
+    <style name="divider">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:paddingTop">6dp</item>
+        <item name="android:paddingBottom">6dp</item>
+        <item name="android:layout_height">1dp</item>
+        <item name="android:background">?android:attr/listDivider</item>
+    </style>
+
+    <style name="event_details_event_name">
+        <item name="android:textSize">22sp</item>
+    </style>
+
 </resources>
