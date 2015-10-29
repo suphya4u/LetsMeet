@@ -8,6 +8,7 @@ import android.widget.AdapterView;
 import android.widget.AutoCompleteTextView;
 
 import com.google.android.gms.maps.model.LatLngBounds;
+import com.letsmeet.android.R;
 import com.letsmeet.android.common.GoogleApiHelper;
 
 /**
@@ -27,7 +28,6 @@ public class PlaceSelectView extends AutoCompleteTextView {
     GoogleApiHelper googleApiHelper = new GoogleApiHelper(getContext(), activity, 0 /* clientId */);
     LatLngBounds lastLocationBounds = googleApiHelper.getBoundsAroundLastKnownLocation();
     placeAdapter = new PlaceAutocompleteAdapter(getContext(),
-        android.R.layout.simple_list_item_1,
         googleApiHelper.getGoogleApiClient(), lastLocationBounds, null);
     setAdapter(placeAdapter);
 

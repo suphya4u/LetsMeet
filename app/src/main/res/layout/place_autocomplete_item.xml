@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:orientation="vertical"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content">
+
+    <TextView xmlns:android="http://schemas.android.com/apk/res/android"
+              android:id="@+id/place_autocomplete_address"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:gravity="center_vertical"
+              android:singleLine="true"
+              style="@style/place_autocomplete_address"/>
+
+    <ImageView
+        android:id="@+id/place_autocomplete_attribution"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="end"
+        android:visibility="gone"
+        android:src="@drawable/powered_by_google_on_non_white"
+        android:background="@color/button_material_dark"/>
+</LinearLayout>

@@ -8,8 +8,12 @@ import com.google.android.gms.location.places.AutocompletePrediction;
 import com.google.android.gms.location.places.AutocompletePredictionBuffer;
 import com.google.android.gms.location.places.Places;
 import com.google.android.gms.maps.model.LatLngBounds;
+import com.letsmeet.android.R;
 
 import android.content.Context;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Filter;
 import android.widget.Filterable;
@@ -36,6 +40,7 @@ public class PlaceAutocompleteAdapter
     extends ArrayAdapter<PlaceInfo> implements Filterable {
 
   private static final String TAG = "PlaceAutocompleteAdapter";
+  private static final String FOOTER_PLACE_ID = "FOOTER_PLACEHOLDER";
   /**
    * Current results returned by this adapter.
    */
@@ -61,9 +66,9 @@ public class PlaceAutocompleteAdapter
    *
    * @see android.widget.ArrayAdapter#ArrayAdapter(android.content.Context, int)
    */
-  public PlaceAutocompleteAdapter(Context context, int resource, GoogleApiClient googleApiClient,
+  public PlaceAutocompleteAdapter(Context context, GoogleApiClient googleApiClient,
                                   LatLngBounds bounds, AutocompleteFilter filter) {
-    super(context, resource);
+    super(context, R.layout.place_autocomplete_item, R.id.place_autocomplete_address);
     mGoogleApiClient = googleApiClient;
     mBounds = bounds;
     mPlaceFilter = filter;
@@ -92,6 +97,27 @@ public class PlaceAutocompleteAdapter
     return mResultList.get(position);
   }
 
+  @Override public View getView(int position, View convertView, ViewGroup parent) {
+    PlaceInfo placeInfo = getItem(position);
+    View view;
+
+    view = super.getView(position, convertView, parent);
+    View address = view.findViewById(R.id.place_autocomplete_address);
+    View attribution = view.findViewById(R.id.place_autocomplete_attribution);
+
+    if (FOOTER_PLACE_ID.equals(placeInfo.getPlaceId())) {
+      address.setVisibility(View.GONE);
+      attribution.setVisibility(View.VISIBLE);
+      attribution.setOnClickListener(null);
+      attribution.setEnabled(false);
+
+    } else {
+      address.setVisibility(View.VISIBLE);
+      attribution.setVisibility(View.GONE);
+    }
+    return view;
+  }
+
   /**
    * Returns the filter for the current set of autocomplete results.
    */
@@ -107,6 +133,9 @@ public class PlaceAutocompleteAdapter
           mResultList = getAutocomplete(constraint);
           if (mResultList != null) {
             // The API successfully returned results.
+            if (mResultList.size() > 0) {
+              mResultList.add(new PlaceInfo().setPlaceId(FOOTER_PLACE_ID));
+            }
             results.values = mResultList;
             results.count = mResultList.size();
           }
