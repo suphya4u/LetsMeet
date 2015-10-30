@@ -58,6 +58,7 @@
             android:layout_weight="1"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:maxHeight="60dp"
             android:completionThreshold="1" />
 
     </LinearLayout>
@@ -89,7 +90,7 @@
             android:layout_weight="1"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:height="120dp"
+            android:maxHeight="90dp"
             android:isScrollContainer="true"/>
 
     </LinearLayout>

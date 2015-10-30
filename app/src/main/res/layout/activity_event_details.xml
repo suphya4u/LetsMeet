@@ -20,7 +20,8 @@
         android:id="@+id/event_details_date_time_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        style="@style/event_details_field">
 
         <ImageView
             android:layout_width="wrap_content"
@@ -34,7 +35,7 @@
             android:id="@+id/event_details_date_time"
             android:layout_weight="1"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content" />
 
     </LinearLayout>
 
@@ -42,7 +43,8 @@
         android:id="@+id/event_details_location_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        style="@style/event_details_field">
 
         <ImageView
             android:layout_width="wrap_content"
@@ -58,8 +60,9 @@
             android:layout_weight="1"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:maxLines="4"
-            android:ellipsize="end"/>
+            android:maxLines="3"
+            android:ellipsize="end"
+            android:textStyle="italic"/>
 
     </LinearLayout>
 
@@ -67,7 +70,8 @@
         android:id="@+id/event_details_notes_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        style="@style/event_details_field">
 
         <ImageView
             android:layout_width="wrap_content"
@@ -128,6 +132,7 @@
         android:id="@+id/guests_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        style="@style/guests_list_content" />
+        style="@style/guests_list_content"
+        android:minHeight="350dp"/>
 
 </LinearLayout>

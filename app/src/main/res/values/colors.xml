@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="selected_rsvp_button">#FF8A80</color>
+    <color name="selected_rsvp_button">@color/accent_color</color>
     <color name="unselected_rsvp_button">#AEAEAE</color>
     <color name="material_icon_light">#ff9e9e9e</color>
+
+    <color name="link_color">@color/accent_color</color>
+
+    <color name="accent_color">#FF8A80</color>
 </resources>
