@@ -100,7 +100,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:paddingTop="10dp">
+        android:paddingTop="15dp"
+        android:paddingBottom="10dp">
 
         <ImageView
             android:layout_width="wrap_content"
@@ -115,6 +116,11 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:text="@string/guests_list_header"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/guests_list_attending_header"/>
 
     </LinearLayout>
 

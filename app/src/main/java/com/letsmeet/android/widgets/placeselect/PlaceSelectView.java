@@ -8,7 +8,6 @@ import android.widget.AdapterView;
 import android.widget.AutoCompleteTextView;
 
 import com.google.android.gms.maps.model.LatLngBounds;
-import com.letsmeet.android.R;
 import com.letsmeet.android.common.GoogleApiHelper;
 
 /**

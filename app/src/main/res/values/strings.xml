@@ -49,5 +49,6 @@
     <string name="edit_event_action">Edit</string>
     <string name="cancel_contact_selection_help">Cancel selection</string>
     <string name="contact_image_help">Contact image</string>
+    <string name="guests_list_attending_header">attending?</string>
 
 </resources>

@@ -3,6 +3,7 @@ package com.letsmeet.android.activity;
 import android.content.Intent;
 
 import com.google.common.base.Function;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.letsmeet.android.R;
 
@@ -13,6 +14,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.telephony.PhoneNumberUtils;
 import android.util.Pair;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -36,7 +38,11 @@ import com.letsmeet.server.eventService.model.EventDetails;
 import com.letsmeet.server.eventService.model.Invitee;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Nullable;
 
@@ -48,6 +54,14 @@ public class EventDetailsActivity extends AppCompatActivity {
   private EventDetails eventDetails;
   private MenuItem editEventMenuItem;
   private boolean isOwner = false;
+  private static final ImmutableMap<String, Integer> RESPONSE_WEIGHT =
+      ImmutableMap.<String, Integer>builder()
+          .put("YES", 4)
+          .put("MAYBE", 3)
+          .put("NO_RESPONSE", 2)
+          .put("NO", 1)
+          // TODO: Do we need not yet using Lets meet here?
+          .build();
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -168,7 +182,10 @@ public class EventDetailsActivity extends AppCompatActivity {
 
     EventDetailsGuestsListAdapter guestsListAdapter = new EventDetailsGuestsListAdapter();
     guestsListView.setAdapter(guestsListAdapter);
-    populateGuestsList(guestsListAdapter, eventDetails.getInviteePhoneNumbers());
+
+    LocalStore localStore = LocalStore.getInstance(this);
+    String userPhoneNumber = localStore.getUserPhoneNumber();
+    populateGuestsList(guestsListAdapter, eventDetails.getInviteePhoneNumbers(), userPhoneNumber);
 
     configureEditAction(isOwner);
   }
@@ -180,10 +197,10 @@ public class EventDetailsActivity extends AppCompatActivity {
   }
 
   private void populateGuestsList(final EventDetailsGuestsListAdapter guestsListAdapter,
-      final List<Invitee> inviteePhoneNumbers) {
+      final List<Invitee> inviteePhoneNumbers, final String userPhoneNumber) {
     new AsyncTask<Void, Void, List<Pair<ContactInfo, String>>>() {
       @Override protected List<Pair<ContactInfo, String>> doInBackground(Void... params) {
-        return getGuestsWithResponse(inviteePhoneNumbers);
+        return getGuestsWithResponse(inviteePhoneNumbers, userPhoneNumber);
       }
 
       @Override protected void onPostExecute(List<Pair<ContactInfo, String>> guestsList) {
@@ -193,17 +210,39 @@ public class EventDetailsActivity extends AppCompatActivity {
   }
 
   private List<Pair<ContactInfo, String>> getGuestsWithResponse(
-      List<Invitee> invitees) {
-    return Lists.transform(invitees, new Function<Invitee, Pair<ContactInfo, String>>() {
-      @Nullable @Override public Pair<ContactInfo, String> apply(Invitee invitee) {
-        ContactInfo contactInfo = ContactFetcher.getInstance()
-            .getContactInfoByNumber(invitee.getPhoneNumber(), EventDetailsActivity.this);
-        if (Strings.isNullOrEmpty(contactInfo.getDisplayName())) {
-          contactInfo.setDisplayName(invitee.getPhoneNumber());
+      List<Invitee> invitees, final String userPhoneNumber) {
+    List<Pair<ContactInfo, String>> guestsList = Lists.transform(invitees,
+        new Function<Invitee, Pair<ContactInfo, String>>() {
+          @Nullable @Override public Pair<ContactInfo, String> apply(Invitee invitee) {
+            if (PhoneNumberUtils.compare(invitee.getPhoneNumber(), userPhoneNumber)) {
+              // Ignoring user's phone number in guests list.
+              return null;
+            }
+            ContactInfo contactInfo = ContactFetcher.getInstance()
+                .getContactInfoByNumber(invitee.getPhoneNumber(), EventDetailsActivity.this);
+            if (Strings.isNullOrEmpty(contactInfo.getDisplayName())) {
+              contactInfo.setDisplayName(invitee.getPhoneNumber());
+            }
+            return Pair.create(contactInfo, invitee.getResponse());
+          }
+        });
+    guestsList.removeAll(Collections.<Pair<ContactInfo, String>>singleton(null));
+    List<Pair<ContactInfo, String>> filteredGuestsList = new ArrayList<>(guestsList);
+
+    Collections.sort(filteredGuestsList, new Comparator<Pair<ContactInfo, String>>() {
+      @Override public int compare(Pair<ContactInfo, String> lhs, Pair<ContactInfo, String> rhs) {
+        int lhsInt = 0;
+        if (RESPONSE_WEIGHT.containsKey(lhs.second)) {
+          lhsInt = RESPONSE_WEIGHT.get(lhs.second);
         }
-        return Pair.create(contactInfo, invitee.getResponse());
+        int rhsInt = 0;
+        if (RESPONSE_WEIGHT.containsKey(rhs.second)) {
+          lhsInt = RESPONSE_WEIGHT.get(rhs.second);
+        }
+        return lhsInt < rhsInt ? -1 : (lhsInt == rhsInt ? 0 : 1);
       }
     });
+    return filteredGuestsList;
   }
 
   private void fetchEvent(final long eventId, final long userId) {
