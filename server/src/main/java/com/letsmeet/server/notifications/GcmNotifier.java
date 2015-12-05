@@ -32,6 +32,7 @@ public class GcmNotifier {
   private static final java.lang.String NOTIFICATION_EVENT_ID_KEY = "EVENT_ID";
   private static final String NOTIFICATION_FROM_PHONE_KEY = "FROM_PHONE_NUMBER";
   private static final String NOTIFICATION_CHAT_TIME_KEY = "CHAT_MESSAGE_SENT_TIME";
+  private static final String NOTIFICATION_CHAT_MESSAGE = "CHAT_MESSAGE";
 
   private static GcmNotifier instance;
 
@@ -75,8 +76,8 @@ public class GcmNotifier {
         .addData(NOTIFICATION_TYPE, NEW_CHAT_NOTIFICATION)
         .addData(NOTIFICATION_EVENT_ID_KEY, String.valueOf(eventId))
         .addData(NOTIFICATION_CHAT_TIME_KEY,
-            // TODO(suhas): Use event time instead of current time.
             String.valueOf(Calendar.getInstance().getTimeInMillis()))
+        .addData(NOTIFICATION_CHAT_MESSAGE, chatMessage)
         .collapseKey("Chats available")
         .build();
     broadcast(users, message);
