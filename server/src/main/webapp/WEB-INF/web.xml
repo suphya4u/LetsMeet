@@ -13,10 +13,12 @@
         <servlet-class>com.google.api.server.spi.SystemServiceServlet</servlet-class>
         <init-param>
             <param-name>services</param-name>
-            <param-value>com.letsmeet.server.apis.RegistrationEndpoint,
-                com.letsmeet.server.apis.MessagingEndpoint,
+            <param-value>
+                com.letsmeet.server.apis.ChatService,
                 com.letsmeet.server.apis.EventService,
-                com.letsmeet.server.apis.FeedbackService
+                com.letsmeet.server.apis.FeedbackService,
+                com.letsmeet.server.apis.MessagingEndpoint,
+                com.letsmeet.server.apis.RegistrationEndpoint
             </param-value>
         </init-param>
     </servlet>

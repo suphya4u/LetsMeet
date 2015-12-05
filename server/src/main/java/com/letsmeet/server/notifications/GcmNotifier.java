@@ -28,7 +28,10 @@ public class GcmNotifier {
   private static final String NOTIFICATION_EVENT_DETAILS_KEY = "EVENT_DETAILS";
   private static final String NOTIFICATION_EVENT_TIME_KEY = "EVENT_TIME";
   private static final String NEW_EVENT_NOTIFICATION = "NEW_EVENT";
+  private static final String NEW_CHAT_NOTIFICATION = "NEW_CHAT";
   private static final java.lang.String NOTIFICATION_EVENT_ID_KEY = "EVENT_ID";
+  private static final String NOTIFICATION_FROM_PHONE_KEY = "FROM_PHONE_NUMBER";
+  private static final String NOTIFICATION_CHAT_TIME_KEY = "CHAT_MESSAGE_SENT_TIME";
 
   private static GcmNotifier instance;
 
@@ -50,16 +53,6 @@ public class GcmNotifier {
   }
 
   public void notifyNewEvent(List<UserRecord> users, EventDetails event) {
-    List<String> registrationIds = Lists.newArrayList();
-    for (UserRecord user : users) {
-      if (user != null && !Strings.isNullOrEmpty(user.getRegId())) {
-        registrationIds.add(user.getRegId());
-      }
-    }
-    if (registrationIds.isEmpty()) {
-      return;
-    }
-
     Message message = new Message.Builder()
         .timeToLive(3 * 60 * 60) // 3 hours
         .addData(NOTIFICATION_EVENT_ID_KEY, String.valueOf(event.getEventId()))
@@ -71,6 +64,34 @@ public class GcmNotifier {
             String.valueOf(Calendar.getInstance().getTimeInMillis()))
         .collapseKey("Invitations available")
         .build();
+    broadcast(users, message);
+  }
+
+  public void notifyNewChat(List<UserRecord> users, String chatMessage, String fromPhoneNumber,
+      long eventId) {
+    Message message = new Message.Builder()
+        .timeToLive(24 * 60 * 60) // 1 day
+        .addData(NOTIFICATION_FROM_PHONE_KEY, String.valueOf(fromPhoneNumber))
+        .addData(NOTIFICATION_TYPE, NEW_CHAT_NOTIFICATION)
+        .addData(NOTIFICATION_EVENT_ID_KEY, String.valueOf(eventId))
+        .addData(NOTIFICATION_CHAT_TIME_KEY,
+            // TODO(suhas): Use event time instead of current time.
+            String.valueOf(Calendar.getInstance().getTimeInMillis()))
+        .collapseKey("Chats available")
+        .build();
+    broadcast(users, message);
+  }
+
+  private void broadcast(List<UserRecord> users, Message message) {
+    List<String> registrationIds = Lists.newArrayList();
+    for (UserRecord user : users) {
+      if (user != null && !Strings.isNullOrEmpty(user.getRegId())) {
+        registrationIds.add(user.getRegId());
+      }
+    }
+    if (registrationIds.isEmpty()) {
+      return;
+    }
 
     MulticastResult multicastResult = null;
     try {
