@@ -10,129 +10,153 @@
     android:orientation="vertical"
     tools:context="android.letsmeet.com.letsmeet.EventDetailsActivity">
 
-    <TextView
-        android:id="@+id/event_details_name"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        style="@style/event_details_event_name"/>
-
     <LinearLayout
-        android:id="@+id/event_details_date_time_container"
-        android:layout_width="match_parent"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        style="@style/event_details_field">
-
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="fill_parent"
-            android:src="@drawable/ic_schedule_black_24dp"
-            android:tint="@color/material_icon_light"
-            android:contentDescription="@string/pick_a_time"
-            style="@style/material_icon"/>
+        android:orientation="vertical">
 
         <TextView
-            android:id="@+id/event_details_date_time"
-            android:layout_weight="1"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content" />
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/event_details_location_container"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        style="@style/event_details_field">
-
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="fill_parent"
-            android:src="@drawable/ic_place_black_24dp"
-            android:tint="@color/material_icon_light"
-            android:contentDescription="@string/pick_a_time"
-            style="@style/material_icon"/>
-
-
-        <TextView
-            android:id="@+id/event_details_location"
-            android:layout_weight="1"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:maxLines="3"
-            android:ellipsize="end"
-            android:textStyle="italic"/>
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/event_details_notes_container"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        style="@style/event_details_field">
-
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="fill_parent"
-            android:src="@drawable/ic_event_note_black_24dp"
-            android:tint="@color/material_icon_light"
-            android:contentDescription="@string/pick_a_time"
-            style="@style/material_icon"/>
-
-        <TextView
-            android:id="@+id/event_details_notes"
-            android:layout_weight="1"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:maxLines="4"
-            android:ellipsize="end"/>
-
-    </LinearLayout>
-
-    <com.letsmeet.android.widgets.rsvp.RsvpButtonsView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/rsvp_buttons"
-        android:layout_gravity="end">
-    </com.letsmeet.android.widgets.rsvp.RsvpButtonsView>
-
-    <View style="@style/divider" />
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:paddingTop="15dp"
-        android:paddingBottom="10dp">
-
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="fill_parent"
-            android:src="@drawable/ic_people_black_24dp"
-            android:tint="@color/material_icon_light"
-            android:contentDescription="@string/pick_a_time"
-            style="@style/material_icon"/>
-
-        <TextView
-            android:layout_weight="1"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:text="@string/guests_list_header"/>
-
-        <TextView
+            android:id="@+id/event_details_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/guests_list_attending_header"/>
+            style="@style/event_details_event_name"/>
+
+        <LinearLayout
+            android:id="@+id/event_details_date_time_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            style="@style/event_details_field">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="fill_parent"
+                android:src="@drawable/ic_schedule_black_24dp"
+                android:tint="@color/material_icon_light"
+                android:contentDescription="@string/pick_a_time"
+                style="@style/material_icon"/>
+
+            <TextView
+                android:id="@+id/event_details_date_time"
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/event_details_location_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            style="@style/event_details_field">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="fill_parent"
+                android:src="@drawable/ic_place_black_24dp"
+                android:tint="@color/material_icon_light"
+                android:contentDescription="@string/pick_a_time"
+                style="@style/material_icon"/>
+
+
+            <TextView
+                android:id="@+id/event_details_location"
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:maxLines="3"
+                android:ellipsize="end"
+                android:textStyle="italic"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/event_details_notes_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            style="@style/event_details_field">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="fill_parent"
+                android:src="@drawable/ic_event_note_black_24dp"
+                android:tint="@color/material_icon_light"
+                android:contentDescription="@string/pick_a_time"
+                style="@style/material_icon"/>
+
+            <TextView
+                android:id="@+id/event_details_notes"
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:maxLines="4"
+                android:ellipsize="end"/>
+
+        </LinearLayout>
+
+        <com.letsmeet.android.widgets.rsvp.RsvpButtonsView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/rsvp_buttons"
+            android:layout_gravity="end">
+        </com.letsmeet.android.widgets.rsvp.RsvpButtonsView>
+
+        <View style="@style/divider" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:paddingTop="15dp"
+            android:paddingBottom="10dp">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="fill_parent"
+                android:src="@drawable/ic_people_black_24dp"
+                android:tint="@color/material_icon_light"
+                android:contentDescription="@string/pick_a_time"
+                style="@style/material_icon"/>
+
+            <TextView
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="@string/guests_list_header"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/guests_list_attending_header"/>
+
+        </LinearLayout>
 
     </LinearLayout>
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/guests_list"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
         style="@style/guests_list_content"
         android:minHeight="350dp"/>
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <View style="@style/divider" />
+
+        <Button
+            android:id="@+id/send_message_button"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            style="?android:attr/borderlessButtonStyle"
+            android:text="@string/send_message_button"/>
+
+    </LinearLayout>
 
 </LinearLayout>

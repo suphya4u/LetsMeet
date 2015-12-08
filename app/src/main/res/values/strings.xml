@@ -50,5 +50,7 @@
     <string name="cancel_contact_selection_help">Cancel selection</string>
     <string name="contact_image_help">Contact image</string>
     <string name="guests_list_attending_header">attending?</string>
+    <string name="title_activity_chat">ChatActivity</string>
+    <string name="send_message_button">Send Message</string>
 
 </resources>

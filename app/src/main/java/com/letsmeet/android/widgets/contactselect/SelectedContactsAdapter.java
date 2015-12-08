@@ -34,7 +34,8 @@ public class SelectedContactsAdapter
 
   public void setSelectedContacts(List<ContactInfo> selectedContacts) {
     if (selectedContacts != null) {
-      this.selectedContacts = selectedContacts;
+      this.selectedContacts = Lists.newArrayList();
+      this.selectedContacts.addAll(selectedContacts);
       notifyDataSetChanged();
     }
   }

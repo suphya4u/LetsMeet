@@ -42,7 +42,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
 
 import javax.annotation.Nullable;
 
@@ -79,7 +78,7 @@ public class EventDetailsActivity extends AppCompatActivity {
         // Log to analytics.
       }
       if (eventId == 0) {
-        Toast.makeText(this, "Could not event id. Returning.", Toast.LENGTH_LONG).show();
+        Toast.makeText(this, "Could not find event id. Returning.", Toast.LENGTH_LONG).show();
         finish();
       }
       LocalStore localStore = LocalStore.getInstance(this);
@@ -111,6 +110,15 @@ public class EventDetailsActivity extends AppCompatActivity {
 
   private void populateEventData() {
     isOwner = eventDetails.getIsOwner();
+
+    Button sendMessageButton = (Button) findViewById(R.id.send_message_button);
+    sendMessageButton.setOnClickListener(new View.OnClickListener() {
+      @Override public void onClick(View v) {
+        Intent intent = new Intent(EventDetailsActivity.this, ChatActivity.class);
+        intent.putExtra(Constants.EVENT_ID_KEY, String.valueOf(eventDetails.getEventId()));
+        startActivity(intent);
+      }
+    });
 
     TextView eventNameView = (TextView) findViewById(R.id.event_details_name);
     eventNameView.setText(eventDetails.getName());

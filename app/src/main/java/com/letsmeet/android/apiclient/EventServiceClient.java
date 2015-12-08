@@ -49,6 +49,7 @@ public class EventServiceClient {
     EventService service = getService();
     CreateOrEditEventResponse response = service.createOrEditEvent(request).execute();
     invalidateEventListCache();
+    invalidateEventDetailsCache(response.getEventId());
     return response;
   }
 
