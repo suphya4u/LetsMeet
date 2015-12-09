@@ -29,7 +29,7 @@ public class ChatService {
 
   private static final Logger log = Logger.getLogger(EventService.class.getName());
 
-  @ApiMethod(name = "createOrEditEvent")
+  @ApiMethod(name = "sendChatMessage")
   public SendChatMessageResponse sendChatMessage(SendChatMessageRequest request) {
     List<Invites> invitesList = ofy().load().type(Invites.class)
         .filter("eventId", request.getEventId()).list();

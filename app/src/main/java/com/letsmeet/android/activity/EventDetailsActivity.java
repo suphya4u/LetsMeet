@@ -116,6 +116,7 @@ public class EventDetailsActivity extends AppCompatActivity {
       @Override public void onClick(View v) {
         Intent intent = new Intent(EventDetailsActivity.this, ChatActivity.class);
         intent.putExtra(Constants.EVENT_ID_KEY, String.valueOf(eventDetails.getEventId()));
+        intent.putExtra(Constants.EVENT_NAME_KEY, String.valueOf(eventDetails.getName()));
         startActivity(intent);
       }
     });

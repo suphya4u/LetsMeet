@@ -14,9 +14,34 @@
     tools:showIn="@layout/activity_chat"
     tools:context="com.letsmeet.android.activity.ChatActivity">
 
-    <TextView
-        android:id="@+id/test_content"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/chat_messages"
+        android:layout_width="fill_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"/>
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <EditText
+            android:id="@+id/new_chat_message"
+            android:hint="@string/chat_message_help_text"
+            android:inputType="textAutoComplete|textCapSentences|textMultiLine"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:maxLines="4"
+            android:isScrollContainer="true"/>
+
+        <Button
+            android:id="@+id/send_chat"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/send_chat"
+            android:layout_gravity="bottom"/>
+
+    </LinearLayout>
 
 </LinearLayout>

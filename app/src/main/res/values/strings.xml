@@ -52,5 +52,7 @@
     <string name="guests_list_attending_header">attending?</string>
     <string name="title_activity_chat">ChatActivity</string>
     <string name="send_message_button">Send Message</string>
+    <string name="send_chat">Send</string>
+    <string name="chat_message_help_text">Message</string>
 
 </resources>

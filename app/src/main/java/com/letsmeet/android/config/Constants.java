@@ -20,7 +20,8 @@ public class Constants {
   public static final String NOTIFICATION_EVENT_NAME_KEY = "EVENT_NAME";
   public static final String NOTIFICATION_EVENT_DETAILS_KEY = "EVENT_DETAILS";
   public static final String NOTIFICATION_EVENT_TIME_KEY = "EVENT_TIME";
-  public static final java.lang.String EVENT_ID_KEY = "EVENT_ID";
+  public static final String EVENT_ID_KEY = "EVENT_ID";
+  public static final String EVENT_NAME_KEY = "EVENT_NAME";
 
   public static final String EVENT_ID_FOR_RSVP = "EVENT_ID_FOR_RSVP";
 
