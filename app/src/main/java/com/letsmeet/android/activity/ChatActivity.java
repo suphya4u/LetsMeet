@@ -13,6 +13,8 @@ import com.letsmeet.android.R;
 import com.letsmeet.android.apiclient.ChatServiceClient;
 import com.letsmeet.android.config.Constants;
 import com.letsmeet.android.storage.LocalStore;
+import com.letsmeet.android.storage.chat.ChatStore;
+import com.letsmeet.android.storage.chat.ChatMessage;
 import com.letsmeet.server.chatService.model.SendChatMessageRequest;
 import com.letsmeet.server.chatService.model.SendChatMessageResponse;
 
@@ -57,6 +59,14 @@ public class ChatActivity extends AppCompatActivity {
   }
 
   private void sendChat(final String message) {
+    ChatMessage chatMessage = new ChatMessage()
+        .setEventId(eventId)
+        .setMessage(message)
+        .setIsMyMessage(true)
+        .markPending();
+
+    long chatId = ChatStore.insert(ChatActivity.this, chatMessage);
+
     new AsyncTask<Void, Void, SendChatMessageResponse>() {
 
       @Override protected SendChatMessageResponse doInBackground(Void... params) {
