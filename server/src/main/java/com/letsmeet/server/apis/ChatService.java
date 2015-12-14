@@ -10,6 +10,7 @@ import com.letsmeet.server.data.Invites;
 import com.letsmeet.server.data.UserRecord;
 import com.letsmeet.server.notifications.GcmNotifier;
 
+import java.util.Calendar;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -49,9 +50,12 @@ public class ChatService {
       }
     }
 
+    long timestamp = Calendar.getInstance().getTimeInMillis();
     GcmNotifier.getInstance().notifyNewChat(userRecords, request.getMessage(), phoneNumber,
-        request.getEventId());
+        request.getEventId(), timestamp);
 
-    return new SendChatMessageResponse().setSuccess(true);
+    return new SendChatMessageResponse()
+        .setSuccess(true)
+        .setTimestamp(timestamp);
   }
 }

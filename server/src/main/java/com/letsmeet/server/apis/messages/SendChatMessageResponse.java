@@ -6,6 +6,7 @@ package com.letsmeet.server.apis.messages;
 public class SendChatMessageResponse {
 
   private boolean success;
+  private long timestamp;
 
   public boolean isSuccess() {
     return success;
@@ -13,6 +14,15 @@ public class SendChatMessageResponse {
 
   public SendChatMessageResponse setSuccess(boolean success) {
     this.success = success;
+    return this;
+  }
+
+  public long getTimestamp() {
+    return timestamp;
+  }
+
+  public SendChatMessageResponse setTimestamp(long timestamp) {
+    this.timestamp = timestamp;
     return this;
   }
 }

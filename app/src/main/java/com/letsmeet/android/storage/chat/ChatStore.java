@@ -2,6 +2,7 @@ package com.letsmeet.android.storage.chat;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
 /**
@@ -10,12 +11,12 @@ import android.database.sqlite.SQLiteDatabase;
 public class ChatStore {
 
   private static final String TABLE_NAME = "ChatDb";
-  private static final String COLUMN_SENDER_PHONE = "senderPhone";
-  private static final String COLUMN_MESSAGE = "message";
-  private static final String COLUMN_TIME_SENT = "timeSent";
-  private static final String COLUMN_IS_MY_MESSAGE = "isMyMessage";
-  private static final String COLUMN_STATUS = "status";
-  private static final String NULL_COLUMN = "NULL_COLUMN";
+  public static final String COLUMN_SENDER_PHONE = "senderPhone";
+  public static final String COLUMN_MESSAGE = "message";
+  public static final String COLUMN_TIME_SENT = "timeSent";
+  public static final String COLUMN_IS_MY_MESSAGE = "isMyMessage";
+  public static final String COLUMN_STATUS = "status";
+  public static final String NULL_COLUMN = "NULL_COLUMN";
 
   private static final String TYPE_TEXT = " TEXT";
   private static final String TYPE_INT = " INTEGER";
@@ -36,13 +37,34 @@ public class ChatStore {
     ChatDbHelper dbHelper = new ChatDbHelper(context);
     SQLiteDatabase db = dbHelper.getWritableDatabase();
 
+    ContentValues values = getContentValues(chatMessage);
+    return db.insert(TABLE_NAME, NULL_COLUMN, values);
+  }
+
+  public static long update(Context context, long chatId, ChatMessage chatMessage) {
+    ChatDbHelper dbHelper = new ChatDbHelper(context);
+    SQLiteDatabase db = dbHelper.getWritableDatabase();
+
+    ContentValues values = getContentValues(chatMessage);
+    return db.update(TABLE_NAME, values, ChatMessage._ID + " = ?",
+        new String[]{String.valueOf(chatId)});
+  }
+
+  public static Cursor getCursor(Context context) {
+    ChatDbHelper dbHelper = new ChatDbHelper(context);
+    SQLiteDatabase db = dbHelper.getReadableDatabase();
+
+    return db.rawQuery("SELECT * FROM " + TABLE_NAME, null /* selectArgs */);
+  }
+
+  private static ContentValues getContentValues(ChatMessage chatMessage) {
     ContentValues values = new ContentValues();
     values.put(COLUMN_MESSAGE, chatMessage.getMessage());
     values.put(COLUMN_IS_MY_MESSAGE, chatMessage.isMyMessage());
     values.put(COLUMN_SENDER_PHONE, chatMessage.getSenderPhoneNumber());
     values.put(COLUMN_TIME_SENT, chatMessage.getTimeSent());
     values.put(COLUMN_STATUS, chatMessage.getStatusNum());
-
-    return db.insert(TABLE_NAME, NULL_COLUMN, values);
+    return values;
   }
+
 }

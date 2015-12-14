@@ -69,14 +69,14 @@ public class GcmNotifier {
   }
 
   public void notifyNewChat(List<UserRecord> users, String chatMessage, String fromPhoneNumber,
-      long eventId) {
+      long eventId, long time) {
     Message message = new Message.Builder()
         .timeToLive(24 * 60 * 60) // 1 day
         .addData(NOTIFICATION_FROM_PHONE_KEY, String.valueOf(fromPhoneNumber))
         .addData(NOTIFICATION_TYPE, NEW_CHAT_NOTIFICATION)
         .addData(NOTIFICATION_EVENT_ID_KEY, String.valueOf(eventId))
         .addData(NOTIFICATION_CHAT_TIME_KEY,
-            String.valueOf(Calendar.getInstance().getTimeInMillis()))
+            String.valueOf(time))
         .addData(NOTIFICATION_CHAT_MESSAGE, chatMessage)
         .collapseKey("Chats available")
         .build();
