@@ -26,14 +26,6 @@ import java.io.IOException;
 
 public class ChatActivity extends AppCompatActivity {
 
-  private final static String[] FROM_COLUMNS = {
-      ChatStore.COLUMN_MESSAGE
-  };
-
-  private final static int[] TO_IDS = {
-      R.id.test_chat
-  };
-
   private long eventId = 0;
 
   @Override
@@ -70,8 +62,7 @@ public class ChatActivity extends AppCompatActivity {
     });
 
     ListView chatListView = (ListView) findViewById(R.id.chat_messages);
-    chatListView.setAdapter(new SimpleCursorAdapter(this, R.layout.chat_item, ChatStore.getCursor(this),
-        FROM_COLUMNS, TO_IDS, 0 /* flags */));
+    chatListView.setAdapter(new ChatListAdapter(this));
   }
 
   private void sendChat(final String message) {
