@@ -54,7 +54,7 @@ public class CreateEventActivity extends AppCompatActivity {
 
     long eventId = 0;
     try {
-      String eventIdString = getIntent().getStringExtra(Constants.EVENT_ID_KEY);
+      String eventIdString = getIntent().getStringExtra(Constants.INTENT_EVENT_ID_KEY);
       if (!Strings.isNullOrEmpty(eventIdString)) {
         eventId = Long.parseLong(eventIdString);
       }

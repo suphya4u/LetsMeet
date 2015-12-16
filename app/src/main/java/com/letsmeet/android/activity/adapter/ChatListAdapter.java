@@ -8,9 +8,12 @@ import android.view.View;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 import com.letsmeet.android.R;
+import com.letsmeet.android.common.ContactFetcher;
 import com.letsmeet.android.storage.chat.ChatStore;
+import com.letsmeet.android.widgets.contactselect.ContactInfo;
 
 import java.util.Map;
 
@@ -25,9 +28,16 @@ public class ChatListAdapter extends SimpleCursorAdapter {
   private int nextColor;
 
   private static final String[] COLORS = {
-      "#FF0000",
-      "#00FF00",
-      "#0000FF",
+      "#AF96EA",
+      "#D56A8C",
+      "#AF9D80",
+      "#00D86F",
+      "#5D5B36",
+      "#DEB833",
+      "#4B42C2",
+      "#DA99DC",
+      "#AB296C",
+      "#2B91E0"
   };
 
   private final static String[] FROM_COLUMNS = {
@@ -56,14 +66,23 @@ public class ChatListAdapter extends SimpleCursorAdapter {
   @Override public void bindView(View view, Context context, Cursor cursor) {
     TextView chatMessageView = (TextView) view.findViewById(R.id.single_chat_message);
     String message = cursor.getString(cursor.getColumnIndex(ChatStore.COLUMN_MESSAGE));
-    String sender = "me:";
+    String senderName = "me";
     if (cursor.getInt(cursor.getColumnIndex(ChatStore.COLUMN_IS_MY_MESSAGE)) == 0) {
-      sender = cursor.getString(cursor.getColumnIndex(ChatStore.COLUMN_SENDER_PHONE)) + ":";
+      String sender = cursor.getString(cursor.getColumnIndex(ChatStore.COLUMN_SENDER_PHONE));
+      ContactInfo contactInfo = ContactFetcher.getInstance()
+          .getContactInfoByNumber(sender, context);
+      if (!Strings.isNullOrEmpty(contactInfo.getDisplayName())) {
+        senderName = contactInfo.getDisplayName();
+      } else {
+        senderName = contactInfo.getPhoneNumber();
+      }
     }
-    String color = getSenderColor(sender);
+    String senderDisplayStr = senderName + ":";
+    String color = getSenderColor(senderDisplayStr);
 
     chatMessageView.setText(Html.fromHtml(
-        "<font color=\"" + color + "\"><strong>" + sender + "</strong></font> " + message));
+        "<font color=\"" + color + "\"><strong>" + senderDisplayStr
+            + "</strong></font> " + message));
   }
 
   private String getSenderColor(String sender) {

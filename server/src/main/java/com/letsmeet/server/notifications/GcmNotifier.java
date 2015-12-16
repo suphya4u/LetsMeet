@@ -29,7 +29,7 @@ public class GcmNotifier {
   private static final String NOTIFICATION_EVENT_TIME_KEY = "EVENT_TIME";
   private static final String NEW_EVENT_NOTIFICATION = "NEW_EVENT";
   private static final String NEW_CHAT_NOTIFICATION = "NEW_CHAT";
-  private static final java.lang.String NOTIFICATION_EVENT_ID_KEY = "EVENT_ID";
+  private static final String NOTIFICATION_EVENT_ID_KEY = "EVENT_ID";
   private static final String NOTIFICATION_FROM_PHONE_KEY = "FROM_PHONE_NUMBER";
   private static final String NOTIFICATION_CHAT_TIME_KEY = "CHAT_MESSAGE_SENT_TIME";
   private static final String NOTIFICATION_CHAT_MESSAGE = "CHAT_MESSAGE";

@@ -34,8 +34,8 @@ public class ChatActivity extends AppCompatActivity {
     setContentView(R.layout.activity_chat);
 
     try {
-      String eventIdString = getIntent().getStringExtra(Constants.EVENT_ID_KEY);
-      String eventName = getIntent().getStringExtra(Constants.EVENT_NAME_KEY);
+      String eventIdString = getIntent().getStringExtra(Constants.INTENT_EVENT_ID_KEY);
+      String eventName = getIntent().getStringExtra(Constants.INTENT_EVENT_NAME_KEY);
       if (!Strings.isNullOrEmpty(eventIdString)) {
         eventId = Long.parseLong(eventIdString);
       }

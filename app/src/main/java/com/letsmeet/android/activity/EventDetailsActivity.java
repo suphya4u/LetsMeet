@@ -70,7 +70,7 @@ public class EventDetailsActivity extends AppCompatActivity {
     if (eventDetails == null) {
       long eventId = 0;
       try {
-        String eventIdString = getIntent().getStringExtra(Constants.EVENT_ID_KEY);
+        String eventIdString = getIntent().getStringExtra(Constants.INTENT_EVENT_ID_KEY);
         if (!Strings.isNullOrEmpty(eventIdString)) {
           eventId = Long.parseLong(eventIdString);
         }
@@ -100,7 +100,7 @@ public class EventDetailsActivity extends AppCompatActivity {
     if (item.getItemId() == R.id.action_edit_event) {
       if (eventDetails != null && eventDetails.getEventId() != 0) {
         Intent editEventIntent = new Intent(EventDetailsActivity.this, CreateEventActivity.class);
-        editEventIntent.putExtra(Constants.EVENT_ID_KEY,
+        editEventIntent.putExtra(Constants.INTENT_EVENT_ID_KEY,
             String.valueOf(eventDetails.getEventId()));
         startActivity(editEventIntent);
       }
@@ -115,8 +115,8 @@ public class EventDetailsActivity extends AppCompatActivity {
     sendMessageButton.setOnClickListener(new View.OnClickListener() {
       @Override public void onClick(View v) {
         Intent intent = new Intent(EventDetailsActivity.this, ChatActivity.class);
-        intent.putExtra(Constants.EVENT_ID_KEY, String.valueOf(eventDetails.getEventId()));
-        intent.putExtra(Constants.EVENT_NAME_KEY, String.valueOf(eventDetails.getName()));
+        intent.putExtra(Constants.INTENT_EVENT_ID_KEY, String.valueOf(eventDetails.getEventId()));
+        intent.putExtra(Constants.INTENT_EVENT_NAME_KEY, String.valueOf(eventDetails.getName()));
         startActivity(intent);
       }
     });

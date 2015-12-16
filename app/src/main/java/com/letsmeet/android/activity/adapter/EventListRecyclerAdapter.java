@@ -93,7 +93,7 @@ public class EventListRecyclerAdapter
 
     public void onClick(View view) {
       Intent intent = new Intent(view.getContext(), EventDetailsActivity.class);
-      intent.putExtra(Constants.EVENT_ID_KEY, String.valueOf(eventId));
+      intent.putExtra(Constants.INTENT_EVENT_ID_KEY, String.valueOf(eventId));
       view.getContext().startActivity(intent);
     }
   }

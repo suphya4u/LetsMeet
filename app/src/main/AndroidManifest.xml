@@ -67,6 +67,7 @@
         <activity
             android:name=".activity.ChatActivity"
             android:label="@string/title_activity_chat"
+            android:launchMode="singleTop"
             android:parentActivityName=".activity.EventDetailsActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
