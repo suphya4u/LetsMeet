@@ -10,6 +10,7 @@ public class Constants {
   public static final String SMS_TEXT_PREFIX = "This is your verification code for Lets Meet App : ";
 
   public static final String VERIFICATION_COMPLETE_BROADCAST = "VERIFICATION_COMPLETE";
+  public static final String NEW_CHAT_MESSAGE_BROADCAST = "NEW_CHAT_MESSAGE";
 
   public static final String RSVP_FROM_NOTIFICATION_BROADCAST =
       "com.letsmeet.android.rsvp.UPDATE_RESPONSE";

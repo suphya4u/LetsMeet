@@ -85,6 +85,10 @@ public class ChatListAdapter extends SimpleCursorAdapter {
             + "</strong></font> " + message));
   }
 
+  public void updateData() {
+    changeCursor(ChatStore.getCursor(context));
+  }
+
   private String getSenderColor(String sender) {
     if (colorMap.containsKey(sender)) {
       return colorMap.get(sender);

@@ -1,10 +1,12 @@
 package com.letsmeet.android.activity;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v4.widget.SimpleCursorAdapter;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ListView;
@@ -25,6 +27,12 @@ import com.letsmeet.server.chatService.model.SendChatMessageResponse;
 import java.io.IOException;
 
 public class ChatActivity extends AppCompatActivity {
+
+  private BroadcastReceiver newChatMessageReceiver = new BroadcastReceiver() {
+    @Override public void onReceive(Context context, Intent intent) {
+      onNewChatMessage(intent);
+    }
+  };
 
   private long eventId = 0;
 
@@ -50,8 +58,6 @@ public class ChatActivity extends AppCompatActivity {
       finish();
     }
 
-    populateChatData(eventId);
-
     final TextView chatMessageView = (TextView) findViewById(R.id.new_chat_message);
 
     Button sendChatButton = (Button) findViewById(R.id.send_chat);
@@ -65,6 +71,22 @@ public class ChatActivity extends AppCompatActivity {
     chatListView.setAdapter(new ChatListAdapter(this));
   }
 
+  @Override protected void onStart() {
+    super.onStart();
+    IntentFilter filter = new IntentFilter();
+    filter.addAction(Constants.NEW_CHAT_MESSAGE_BROADCAST);
+    registerReceiver(newChatMessageReceiver, filter);
+  }
+
+  @Override protected void onStop() {
+    try {
+      unregisterReceiver(newChatMessageReceiver);
+    } catch (IllegalArgumentException e) {
+      // Ignore. Thrown when receiver is already unregistered.
+    }
+    super.onStop();
+  }
+
   private void sendChat(final String message) {
     final ChatMessage chatMessage = new ChatMessage()
         .setEventId(eventId)
@@ -73,6 +95,7 @@ public class ChatActivity extends AppCompatActivity {
         .markPending();
 
     final long chatId = ChatStore.insert(ChatActivity.this, chatMessage);
+    updateAdapter();
 
     new AsyncTask<Void, Void, SendChatMessageResponse>() {
 
@@ -107,7 +130,14 @@ public class ChatActivity extends AppCompatActivity {
     }.execute();
   }
 
-  private void populateChatData(long eventId) {
+  private void updateAdapter() {
+    ListView chatListView = (ListView) findViewById(R.id.chat_messages);
+    if (chatListView != null) {
+      ((ChatListAdapter) chatListView.getAdapter()).updateData();
+    }
+  }
 
+  private void onNewChatMessage(Intent intent) {
+    updateAdapter();
   }
 }

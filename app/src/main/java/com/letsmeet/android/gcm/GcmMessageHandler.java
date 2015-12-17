@@ -165,6 +165,10 @@ public class GcmMessageHandler extends GcmListenerService {
         .setTimeSent(timestamp);
     ChatStore.insert(this, chatMessage);
 
+    Intent broadcast = new Intent();
+    broadcast.setAction(Constants.NEW_CHAT_MESSAGE_BROADCAST);
+    sendBroadcast(broadcast);
+
     Intent chatIntent = new Intent(this, ChatActivity.class);
     chatIntent.putExtra(Constants.INTENT_EVENT_ID_KEY, String.valueOf(eventId));
     chatIntent.putExtra(Constants.INTENT_EVENT_NAME_KEY, "Chats");
