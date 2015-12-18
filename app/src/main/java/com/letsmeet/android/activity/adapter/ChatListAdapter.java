@@ -24,6 +24,7 @@ public class ChatListAdapter extends SimpleCursorAdapter {
 
   private final Context context;
   private final Map<String, String> colorMap;
+  private final long eventId;
 
   private int nextColor;
 
@@ -48,11 +49,12 @@ public class ChatListAdapter extends SimpleCursorAdapter {
       R.id.single_chat_message
   };
 
-  public ChatListAdapter(Context context) {
-    super(context, R.layout.chat_item, ChatStore.getCursor(context), FROM_COLUMNS, TO_IDS,
+  public ChatListAdapter(Context context, long eventId) {
+    super(context, R.layout.chat_item, ChatStore.getCursor(context, eventId), FROM_COLUMNS, TO_IDS,
         0 /* flags */);
 
     this.context = context;
+    this.eventId = eventId;
     colorMap = Maps.newHashMap();
     nextColor = 0;
   }
@@ -86,7 +88,7 @@ public class ChatListAdapter extends SimpleCursorAdapter {
   }
 
   public void updateData() {
-    changeCursor(ChatStore.getCursor(context));
+    changeCursor(ChatStore.getCursor(context, eventId));
   }
 
   private String getSenderColor(String sender) {

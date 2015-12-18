@@ -1,5 +1,6 @@
 package com.letsmeet.android.activity;
 
+import android.app.NotificationManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -41,18 +42,12 @@ public class ChatActivity extends AppCompatActivity {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_chat);
 
-    try {
-      String eventIdString = getIntent().getStringExtra(Constants.INTENT_EVENT_ID_KEY);
-      String eventName = getIntent().getStringExtra(Constants.INTENT_EVENT_NAME_KEY);
-      if (!Strings.isNullOrEmpty(eventIdString)) {
-        eventId = Long.parseLong(eventIdString);
-      }
-      if (!Strings.isNullOrEmpty(eventName)) {
-        setTitle(eventName);
-      }
-    } catch (NumberFormatException e) {
-      // Log to analytics.
+    String eventName = getIntent().getStringExtra(Constants.INTENT_EVENT_NAME_KEY);
+    if (!Strings.isNullOrEmpty(eventName)) {
+      setTitle(eventName);
     }
+
+    eventId = extractEventIdFromIntent(getIntent());
     if (eventId == 0) {
       Toast.makeText(this, "Could not find event id. Returning.", Toast.LENGTH_LONG).show();
       finish();
@@ -68,7 +63,21 @@ public class ChatActivity extends AppCompatActivity {
     });
 
     ListView chatListView = (ListView) findViewById(R.id.chat_messages);
-    chatListView.setAdapter(new ChatListAdapter(this));
+    chatListView.setAdapter(new ChatListAdapter(this, eventId));
+
+    ChatStore.markAllAsRead(this, eventId);
+  }
+
+  private long extractEventIdFromIntent(Intent intent) {
+    try {
+      String eventIdString = getIntent().getStringExtra(Constants.INTENT_EVENT_ID_KEY);
+      if (!Strings.isNullOrEmpty(eventIdString)) {
+        return Long.parseLong(eventIdString);
+      }
+    } catch (NumberFormatException e) {
+      // Log to analytics.
+    }
+    return 0;
   }
 
   @Override protected void onStart() {
@@ -92,6 +101,7 @@ public class ChatActivity extends AppCompatActivity {
         .setEventId(eventId)
         .setMessage(message)
         .setIsMyMessage(true)
+        .markAsRead()
         .markPending();
 
     final long chatId = ChatStore.insert(ChatActivity.this, chatMessage);
@@ -138,6 +148,13 @@ public class ChatActivity extends AppCompatActivity {
   }
 
   private void onNewChatMessage(Intent intent) {
-    updateAdapter();
+    long newChatEventId = extractEventIdFromIntent(intent);
+    if (newChatEventId == eventId) {
+      updateAdapter();
+      NotificationManager notificationManager =
+          (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+      // TODO: Do not cancel all. Instead use ordered broadcast described in GsmMessageHandler.
+      notificationManager.cancelAll();
+    }
   }
 }

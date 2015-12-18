@@ -159,15 +159,12 @@ public class GcmMessageHandler extends GcmListenerService {
     }
 
     ChatMessage chatMessage = new ChatMessage()
+        .setEventId(eventId)
         .setMessage(message)
         .setIsMyMessage(false)
         .setSenderPhoneNumber(senderPhone)
         .setTimeSent(timestamp);
     ChatStore.insert(this, chatMessage);
-
-    Intent broadcast = new Intent();
-    broadcast.setAction(Constants.NEW_CHAT_MESSAGE_BROADCAST);
-    sendBroadcast(broadcast);
 
     Intent chatIntent = new Intent(this, ChatActivity.class);
     chatIntent.putExtra(Constants.INTENT_EVENT_ID_KEY, String.valueOf(eventId));
@@ -200,6 +197,16 @@ public class GcmMessageHandler extends GcmListenerService {
     style.addLine(content);
     notificationBuilder.setContentText(content);
     notificationBuilder.setStyle(style);
+
+    // TODO: Do not show notification if user is already in chat activity for the event.
+    // Possibly, user ordered broadcast receiver - one in activity and other that creates
+    // notifications. The one in activity will register / receive only when activity is running
+    // and abort broadcast, so notification one never gets it. If activity is not running, it will
+    // directly go to notification broadcast receiver.
+    Intent broadcast = new Intent();
+    broadcast.setAction(Constants.NEW_CHAT_MESSAGE_BROADCAST);
+    broadcast.putExtra(Constants.INTENT_EVENT_ID_KEY, String.valueOf(eventId));
+    sendBroadcast(broadcast);
 
     return notificationBuilder.build();
   }

@@ -10,10 +10,9 @@ import android.database.sqlite.SQLiteOpenHelper;
 public class ChatDbHelper extends SQLiteOpenHelper {
 
   private static final String DB_NAME = "letsMeetChats.db";
-  private static final int DB_VERSION = 1;
 
   public ChatDbHelper(Context context) {
-    super(context, DB_NAME, null /* cursorFactory */, DB_VERSION);
+    super(context, DB_NAME, null /* cursorFactory */, ChatStore.DB_VERSION);
   }
 
   @Override public void onCreate(SQLiteDatabase db) {

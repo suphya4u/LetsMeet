@@ -7,11 +7,16 @@ import android.provider.BaseColumns;
  */
 public class ChatMessage implements BaseColumns {
 
-  private enum Status {
+  private enum SendStatus {
     NA,
     SUCCESS,
     PENDING,
     FAILED
+  }
+
+  private enum ReadStatus {
+    UNREAD,
+    READ
   }
 
   private String senderPhoneNumber;
@@ -19,7 +24,8 @@ public class ChatMessage implements BaseColumns {
   private long timeSent;
   private String message;
   private boolean isMyMessage;
-  private Status status = Status.NA;
+  private SendStatus sendStatus = SendStatus.NA;
+  private ReadStatus readStatus = ReadStatus.UNREAD;
 
   public String getSenderPhoneNumber() {
     return senderPhoneNumber;
@@ -67,21 +73,30 @@ public class ChatMessage implements BaseColumns {
   }
 
   public ChatMessage markPending() {
-    status = Status.PENDING;
+    sendStatus = SendStatus.PENDING;
     return this;
   }
 
   public ChatMessage markComplete() {
-    status = Status.SUCCESS;
+    sendStatus = SendStatus.SUCCESS;
     return this;
   }
 
   public ChatMessage markFailed() {
-    status = Status.FAILED;
+    sendStatus = SendStatus.FAILED;
     return this;
   }
 
-  public int getStatusNum() {
-    return status.ordinal();
+  public int getSendStatusNum() {
+    return sendStatus.ordinal();
+  }
+
+  public int getReadStatusNum() {
+    return readStatus.ordinal();
+  }
+
+  public ChatMessage markAsRead() {
+    readStatus = ReadStatus.READ;
+    return this;
   }
 }
