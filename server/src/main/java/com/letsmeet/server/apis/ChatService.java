@@ -6,6 +6,7 @@ import com.google.api.server.spi.config.ApiNamespace;
 import com.google.common.collect.Lists;
 import com.letsmeet.server.apis.messages.SendChatMessageRequest;
 import com.letsmeet.server.apis.messages.SendChatMessageResponse;
+import com.letsmeet.server.data.EventRecord;
 import com.letsmeet.server.data.Invites;
 import com.letsmeet.server.data.UserRecord;
 import com.letsmeet.server.notifications.GcmNotifier;
@@ -32,6 +33,8 @@ public class ChatService {
 
   @ApiMethod(name = "sendChatMessage")
   public SendChatMessageResponse sendChatMessage(SendChatMessageRequest request) {
+    String eventName = ofy().load().type(EventRecord.class)
+        .id(request.getEventId()).now().getName();
     List<Invites> invitesList = ofy().load().type(Invites.class)
         .filter("eventId", request.getEventId()).list();
     List<UserRecord> userRecords = Lists.newArrayList();
@@ -52,7 +55,7 @@ public class ChatService {
 
     long timestamp = Calendar.getInstance().getTimeInMillis();
     GcmNotifier.getInstance().notifyNewChat(userRecords, request.getMessage(), phoneNumber,
-        request.getEventId(), timestamp);
+        request.getEventId(), timestamp, eventName);
 
     return new SendChatMessageResponse()
         .setSuccess(true)

@@ -26,6 +26,8 @@ import java.util.Calendar;
 
 public class GcmMessageHandler extends GcmListenerService {
 
+  private static final int CHAT_NOTIFICATION_ID = 1;
+
   public GcmMessageHandler() {
   }
 
@@ -34,27 +36,16 @@ public class GcmMessageHandler extends GcmListenerService {
     if (data == null || data.isEmpty()) {
       return;
     }
-    Notification notification = null;
     String notificationType = data.getString(Constants.NOTIFICATION_TYPE_KEY);
     if (Constants.NOTIFICATION_TYPE_NEW_EVENT.equals(notificationType)) {
-      notification = createNewEventNotification(data);
+      createNewEventNotification(data);
     } else if (Constants.NOTIFICATION_TYPE_NEW_CHAT.equals(notificationType)) {
-      notification = createChatNotification(data);
-    } else {
-      return;
+      createChatNotification(data);
     }
     // TODO: Handle other notifications.
-
-    // TODO: Merge notifications if not cleared.
-    if (notification != null) {
-      NotificationManager notificationManager =
-          (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-      int notificationId = 1;
-      notificationManager.notify(notificationId, notification);
-    }
   }
 
-  private Notification createNewEventNotification(Bundle data) {
+  private void createNewEventNotification(Bundle data) {
     long eventId = 0;
     String eventName = data.getString(Constants.NOTIFICATION_EVENT_NAME_KEY);
     if (Strings.isNullOrEmpty(eventName)) {
@@ -66,7 +57,7 @@ public class GcmMessageHandler extends GcmListenerService {
     try {
       eventId = getEventId(data);
       if (eventId == 0) {
-        return null;
+        return;
       }
 
       String eventTimeString = data.getString(Constants.NOTIFICATION_EVENT_TIME_KEY);
@@ -99,13 +90,11 @@ public class GcmMessageHandler extends GcmListenerService {
         .addAction(0, "No", rsvpNoIntent)
         .addAction(0, "Maybe", rsvpMaybeIntent);
 
-    NotificationCompat.InboxStyle style = new NotificationCompat.InboxStyle();
-    style.setBuilder(notificationBuilder);
-    style.setBigContentTitle(eventTitle);
+    NotificationCompat.InboxStyle style = new NotificationCompat.InboxStyle()
+        .setBigContentTitle(eventTitle);
     if (eventTimeMillis > 0) {
       String eventTimeLine = DateTimeUtils.getDisplayDateTime(this, eventTimeMillis);
       style.addLine(eventTimeLine);
-      notificationBuilder.setContentText(eventTimeLine);
     }
     if (!Strings.isNullOrEmpty(eventNotes)) {
       style.addLine(eventNotes);
@@ -114,7 +103,7 @@ public class GcmMessageHandler extends GcmListenerService {
 
     // New event received, invalidate event list cache.
     new EventListCache(this).invalidateAll();
-    return notificationBuilder.build();
+    showNotification(notificationBuilder.build(), (int) eventId);
   }
 
   private long getEventId(Bundle data) {
@@ -134,10 +123,11 @@ public class GcmMessageHandler extends GcmListenerService {
         PendingIntent.FLAG_CANCEL_CURRENT);
   }
 
-  private Notification createChatNotification(Bundle data) {
+  private void createChatNotification(Bundle data) {
     String senderPhone = data.getString(Constants.NOTIFICATION_FROM_PHONE_KEY);
     String message = data.getString(Constants.NOTIFICATION_CHAT_MESSAGE);
     String timestampStr = data.getString(Constants.NOTIFICATION_CHAT_TIME_KEY);
+    String eventName = data.getString(Constants.NOTIFICATION_CHAT_EVENT_NAME);
 
     long eventId = 0;
     long timestamp = 0;
@@ -151,7 +141,7 @@ public class GcmMessageHandler extends GcmListenerService {
       // Log.
     }
     if (eventId == 0) {
-      return null;
+      return;
     }
 
     if (timestamp == 0) {
@@ -168,9 +158,15 @@ public class GcmMessageHandler extends GcmListenerService {
 
     Intent chatIntent = new Intent(this, ChatActivity.class);
     chatIntent.putExtra(Constants.INTENT_EVENT_ID_KEY, String.valueOf(eventId));
-    chatIntent.putExtra(Constants.INTENT_EVENT_NAME_KEY, "Chats");
+    chatIntent.putExtra(Constants.INTENT_EVENT_NAME_KEY,
+        Strings.isNullOrEmpty(eventName) ? "Chats" : eventName);
+
+    Intent eventDetailsIntent = new Intent(this, EventDetailsActivity.class);
+    eventDetailsIntent.putExtra(Constants.INTENT_EVENT_ID_KEY, String.valueOf(eventId));
+
     TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
-    stackBuilder.addParentStack(ChatActivity.class);
+    stackBuilder.addParentStack(EventDetailsActivity.class);
+    stackBuilder.addNextIntent(eventDetailsIntent);
     stackBuilder.addNextIntent(chatIntent);
     PendingIntent chatPendingIntent = stackBuilder.getPendingIntent(
         0, PendingIntent.FLAG_UPDATE_CURRENT);
@@ -190,13 +186,14 @@ public class GcmMessageHandler extends GcmListenerService {
       senderName = contactInfo.getPhoneNumber();
     }
 
-    NotificationCompat.InboxStyle style = new NotificationCompat.InboxStyle();
-    style.setBuilder(notificationBuilder);
-    style.setBigContentTitle("New chat message");
     String content = senderName + ": " + message;
-    style.addLine(content);
-    notificationBuilder.setContentText(content);
+    NotificationCompat.InboxStyle style = new NotificationCompat.InboxStyle()
+        .setBigContentTitle("New message")
+        .addLine(content)
+        .setSummaryText(eventName);
     notificationBuilder.setStyle(style);
+
+    showNotification(notificationBuilder.build(), CHAT_NOTIFICATION_ID);
 
     // TODO: Do not show notification if user is already in chat activity for the event.
     // Possibly, user ordered broadcast receiver - one in activity and other that creates
@@ -207,7 +204,12 @@ public class GcmMessageHandler extends GcmListenerService {
     broadcast.setAction(Constants.NEW_CHAT_MESSAGE_BROADCAST);
     broadcast.putExtra(Constants.INTENT_EVENT_ID_KEY, String.valueOf(eventId));
     sendBroadcast(broadcast);
+  }
 
-    return notificationBuilder.build();
+  private void showNotification(Notification notification, int id) {
+    // TODO: Merge notifications if not cleared.
+    NotificationManager notificationManager =
+        (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+    notificationManager.notify(id, notification);
   }
 }

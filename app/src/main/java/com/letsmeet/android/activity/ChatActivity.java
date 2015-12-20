@@ -117,7 +117,7 @@ public class ChatActivity extends AppCompatActivity {
         try {
           return ChatServiceClient.getInstance(ChatActivity.this).sendChat(request);
         } catch (IOException e) {
-          // TODO: Log to analytics.yg
+          // TODO: Log to analytics.
         }
         return null;
       }

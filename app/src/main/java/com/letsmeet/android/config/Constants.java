@@ -31,6 +31,7 @@ public class Constants {
   public static final String NOTIFICATION_FROM_PHONE_KEY = "FROM_PHONE_NUMBER";
   public static final String NOTIFICATION_CHAT_TIME_KEY = "CHAT_MESSAGE_SENT_TIME";
   public static final String NOTIFICATION_CHAT_MESSAGE = "CHAT_MESSAGE";
+  public static final String NOTIFICATION_CHAT_EVENT_NAME = "EVENT_NAME";
 
   public static final String EVENT_ID_FOR_RSVP = "EVENT_ID_FOR_RSVP";
 

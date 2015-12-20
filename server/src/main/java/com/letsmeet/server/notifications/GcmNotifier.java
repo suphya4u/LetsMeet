@@ -33,6 +33,7 @@ public class GcmNotifier {
   private static final String NOTIFICATION_FROM_PHONE_KEY = "FROM_PHONE_NUMBER";
   private static final String NOTIFICATION_CHAT_TIME_KEY = "CHAT_MESSAGE_SENT_TIME";
   private static final String NOTIFICATION_CHAT_MESSAGE = "CHAT_MESSAGE";
+  public static final String NOTIFICATION_CHAT_EVENT_NAME = "EVENT_NAME";
 
   private static GcmNotifier instance;
 
@@ -69,7 +70,7 @@ public class GcmNotifier {
   }
 
   public void notifyNewChat(List<UserRecord> users, String chatMessage, String fromPhoneNumber,
-      long eventId, long time) {
+      long eventId, long time, String eventName) {
     Message message = new Message.Builder()
         .timeToLive(24 * 60 * 60) // 1 day
         .addData(NOTIFICATION_FROM_PHONE_KEY, String.valueOf(fromPhoneNumber))
@@ -78,6 +79,7 @@ public class GcmNotifier {
         .addData(NOTIFICATION_CHAT_TIME_KEY,
             String.valueOf(time))
         .addData(NOTIFICATION_CHAT_MESSAGE, chatMessage)
+        .addData(NOTIFICATION_CHAT_EVENT_NAME, eventName)
         .collapseKey("Chats available")
         .build();
     broadcast(users, message);

@@ -1,10 +1,14 @@
 package com.letsmeet.android.activity.adapter;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
+import android.content.res.Resources;
 import android.database.Cursor;
+import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.text.Html;
 import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 
@@ -78,6 +82,9 @@ public class ChatListAdapter extends SimpleCursorAdapter {
       } else {
         senderName = contactInfo.getPhoneNumber();
       }
+    } else {
+      LinearLayout chatBoxLayout = (LinearLayout) view.findViewById(R.id.single_chat_item_box);
+      updateDrawable(chatBoxLayout);
     }
     String senderDisplayStr = senderName + ":";
     String color = getSenderColor(senderDisplayStr);
@@ -99,5 +106,23 @@ public class ChatListAdapter extends SimpleCursorAdapter {
     colorMap.put(sender, color);
     nextColor = (nextColor + 1) % COLORS.length;
     return color;
+  }
+
+  private void updateDrawable(LinearLayout chatBoxLayout) {
+    int sdk = android.os.Build.VERSION.SDK_INT;
+    Drawable singleChatBox;
+    if(sdk < android.os.Build.VERSION_CODES.LOLLIPOP) {
+      singleChatBox = chatBoxLayout.getResources().getDrawable(
+          R.drawable.single_chat_box_own_message);
+    } else {
+      singleChatBox = chatBoxLayout.getResources().getDrawable(
+          R.drawable.single_chat_box_own_message, context.getTheme());
+    }
+
+    if(sdk < android.os.Build.VERSION_CODES.JELLY_BEAN) {
+      chatBoxLayout.setBackgroundDrawable(singleChatBox);
+    } else {
+      chatBoxLayout.setBackground(singleChatBox);
+    }
   }
 }
