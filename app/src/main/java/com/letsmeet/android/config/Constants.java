@@ -28,6 +28,8 @@ public class Constants {
   public static final String NOTIFICATION_EVENT_TIME_KEY = "EVENT_TIME";
   public static final String NOTIFICATION_EVENT_ID_KEY = "EVENT_ID";
 
+  public static final int CHAT_NOTIFICATION_ID = 1;
+
   public static final String NOTIFICATION_FROM_PHONE_KEY = "FROM_PHONE_NUMBER";
   public static final String NOTIFICATION_CHAT_TIME_KEY = "CHAT_MESSAGE_SENT_TIME";
   public static final String NOTIFICATION_CHAT_MESSAGE = "CHAT_MESSAGE";

@@ -7,4 +7,5 @@
     <color name="link_color">@color/accent_color</color>
 
     <color name="accent_color">#FF8A80</color>
+    <color name="own_message_background">#d6f5d6</color>
 </resources>

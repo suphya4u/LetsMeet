@@ -66,6 +66,34 @@ public class ChatStore {
         + " WHERE " + COLUMN_EVENT_ID + "=" + eventId, null /* selectArgs */);
   }
 
+  public static int getUnreadCount(Context context, long eventId) {
+    Cursor cursor = getUnread(context, eventId, false /* includeAll */);
+    return cursor.getCount();
+  }
+
+  public static int getTotalUnreadCount(Context context) {
+    Cursor cursor = getUnread(context, 0 /* eventId */, true /* includeAll */);
+    return cursor.getCount();
+  }
+
+  public static Cursor getAllUnread(Context context) {
+    return getUnread(context, 0 /* eventId */, true /* includeAll */);
+  }
+
+  private static Cursor getUnread(Context context, long eventId, boolean includeAll) {
+    ChatDbHelper dbHelper = new ChatDbHelper(context);
+    SQLiteDatabase db = dbHelper.getReadableDatabase();
+
+    String query = "SELECT * FROM " + TABLE_NAME + " WHERE "
+        + COLUMN_READ_STATUS + "=" + ChatMessage.ReadStatus.UNREAD.ordinal();
+
+    if (!includeAll) {
+      query = query + " AND " + COLUMN_EVENT_ID + "=" + eventId;
+    }
+
+    return db.rawQuery(query, null /* selectArgs */);
+  }
+
   public static void markAllAsRead(Context context, long eventId) {
     ChatDbHelper dbHelper = new ChatDbHelper(context);
     SQLiteDatabase db = dbHelper.getWritableDatabase();

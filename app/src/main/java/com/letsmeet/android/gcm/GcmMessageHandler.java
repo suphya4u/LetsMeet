@@ -6,6 +6,8 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import com.letsmeet.android.R;
+
+import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.TaskStackBuilder;
@@ -25,8 +27,6 @@ import com.letsmeet.android.widgets.contactselect.ContactInfo;
 import java.util.Calendar;
 
 public class GcmMessageHandler extends GcmListenerService {
-
-  private static final int CHAT_NOTIFICATION_ID = 1;
 
   public GcmMessageHandler() {
   }
@@ -156,18 +156,43 @@ public class GcmMessageHandler extends GcmListenerService {
         .setTimeSent(timestamp);
     ChatStore.insert(this, chatMessage);
 
-    Intent chatIntent = new Intent(this, ChatActivity.class);
-    chatIntent.putExtra(Constants.INTENT_EVENT_ID_KEY, String.valueOf(eventId));
-    chatIntent.putExtra(Constants.INTENT_EVENT_NAME_KEY,
-        Strings.isNullOrEmpty(eventName) ? "Chats" : eventName);
-
-    Intent eventDetailsIntent = new Intent(this, EventDetailsActivity.class);
-    eventDetailsIntent.putExtra(Constants.INTENT_EVENT_ID_KEY, String.valueOf(eventId));
-
     TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
     stackBuilder.addParentStack(EventDetailsActivity.class);
-    stackBuilder.addNextIntent(eventDetailsIntent);
-    stackBuilder.addNextIntent(chatIntent);
+
+    NotificationCompat.InboxStyle style = new NotificationCompat.InboxStyle()
+        .setBigContentTitle("New message");
+
+    Cursor cursor = ChatStore.getAllUnread(this);
+    int unreadMessageCount = cursor.getCount();
+    if (unreadMessageCount == 0) {
+      return;
+    }
+    style.setSummaryText("Unread messages ( " + unreadMessageCount + ")");
+
+    boolean multipleEvents = false;
+    int totalLines = 0;
+    while (cursor.moveToNext()) {
+      if (totalLines++ < 8) {
+        String content = getContent(cursor);
+        style.addLine(content);
+      }
+      long unreadEventId = cursor.getLong(cursor.getColumnIndex(ChatStore.COLUMN_EVENT_ID));
+      if (eventId != unreadEventId) {
+        multipleEvents = true;
+      }
+    }
+
+    if (!multipleEvents) {
+      Intent eventDetailsIntent = new Intent(this, EventDetailsActivity.class);
+      eventDetailsIntent.putExtra(Constants.INTENT_EVENT_ID_KEY, String.valueOf(eventId));
+      stackBuilder.addNextIntent(eventDetailsIntent);
+
+      Intent chatIntent = new Intent(this, ChatActivity.class);
+      chatIntent.putExtra(Constants.INTENT_EVENT_ID_KEY, String.valueOf(eventId));
+      chatIntent.putExtra(Constants.INTENT_EVENT_NAME_KEY,
+          Strings.isNullOrEmpty(eventName) ? "Chats" : eventName);
+      stackBuilder.addNextIntent(chatIntent);
+    }
     PendingIntent chatPendingIntent = stackBuilder.getPendingIntent(
         0, PendingIntent.FLAG_UPDATE_CURRENT);
 
@@ -175,25 +200,10 @@ public class GcmMessageHandler extends GcmListenerService {
         .setSmallIcon(R.mipmap.ic_launcher)
         .setAutoCancel(true)
         .setContentTitle("New chat message")
-        .setContentIntent(chatPendingIntent);
+        .setContentIntent(chatPendingIntent)
+        .setStyle(style);
 
-    String senderName;
-    ContactInfo contactInfo = ContactFetcher.getInstance()
-        .getContactInfoByNumber(senderPhone, this);
-    if (!Strings.isNullOrEmpty(contactInfo.getDisplayName())) {
-      senderName = contactInfo.getDisplayName();
-    } else {
-      senderName = contactInfo.getPhoneNumber();
-    }
-
-    String content = senderName + ": " + message;
-    NotificationCompat.InboxStyle style = new NotificationCompat.InboxStyle()
-        .setBigContentTitle("New message")
-        .addLine(content)
-        .setSummaryText(eventName);
-    notificationBuilder.setStyle(style);
-
-    showNotification(notificationBuilder.build(), CHAT_NOTIFICATION_ID);
+    showNotification(notificationBuilder.build(), Constants.CHAT_NOTIFICATION_ID);
 
     // TODO: Do not show notification if user is already in chat activity for the event.
     // Possibly, user ordered broadcast receiver - one in activity and other that creates
@@ -204,6 +214,21 @@ public class GcmMessageHandler extends GcmListenerService {
     broadcast.setAction(Constants.NEW_CHAT_MESSAGE_BROADCAST);
     broadcast.putExtra(Constants.INTENT_EVENT_ID_KEY, String.valueOf(eventId));
     sendBroadcast(broadcast);
+  }
+
+  private String getContent(Cursor cursor) {
+    String senderPhone = cursor.getString(cursor.getColumnIndex(ChatStore.COLUMN_SENDER_PHONE));
+    String message = cursor.getString(cursor.getColumnIndex(ChatStore.COLUMN_MESSAGE));
+    String senderName;
+    ContactInfo contactInfo = ContactFetcher.getInstance()
+        .getContactInfoByNumber(senderPhone, this);
+    if (!Strings.isNullOrEmpty(contactInfo.getDisplayName())) {
+      senderName = contactInfo.getDisplayName();
+    } else {
+      senderName = contactInfo.getPhoneNumber();
+    }
+
+    return senderName + ": " + message;
   }
 
   private void showNotification(Notification notification, int id) {

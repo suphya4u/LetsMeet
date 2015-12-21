@@ -14,7 +14,7 @@ public class ChatMessage implements BaseColumns {
     FAILED
   }
 
-  private enum ReadStatus {
+  enum ReadStatus {
     UNREAD,
     READ
   }

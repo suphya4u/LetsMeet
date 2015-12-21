@@ -73,6 +73,7 @@ public class ChatListAdapter extends SimpleCursorAdapter {
     TextView chatMessageView = (TextView) view.findViewById(R.id.single_chat_message);
     String message = cursor.getString(cursor.getColumnIndex(ChatStore.COLUMN_MESSAGE));
     String senderName = "me";
+    LinearLayout chatBoxLayout = (LinearLayout) view.findViewById(R.id.single_chat_item_box);
     if (cursor.getInt(cursor.getColumnIndex(ChatStore.COLUMN_IS_MY_MESSAGE)) == 0) {
       String sender = cursor.getString(cursor.getColumnIndex(ChatStore.COLUMN_SENDER_PHONE));
       ContactInfo contactInfo = ContactFetcher.getInstance()
@@ -82,9 +83,9 @@ public class ChatListAdapter extends SimpleCursorAdapter {
       } else {
         senderName = contactInfo.getPhoneNumber();
       }
+      updateDrawable(chatBoxLayout, R.drawable.single_chat_box);
     } else {
-      LinearLayout chatBoxLayout = (LinearLayout) view.findViewById(R.id.single_chat_item_box);
-      updateDrawable(chatBoxLayout);
+      updateDrawable(chatBoxLayout, R.drawable.single_chat_box_own_message);
     }
     String senderDisplayStr = senderName + ":";
     String color = getSenderColor(senderDisplayStr);
@@ -108,15 +109,15 @@ public class ChatListAdapter extends SimpleCursorAdapter {
     return color;
   }
 
-  private void updateDrawable(LinearLayout chatBoxLayout) {
+  private void updateDrawable(LinearLayout chatBoxLayout, int drawable) {
     int sdk = android.os.Build.VERSION.SDK_INT;
     Drawable singleChatBox;
     if(sdk < android.os.Build.VERSION_CODES.LOLLIPOP) {
       singleChatBox = chatBoxLayout.getResources().getDrawable(
-          R.drawable.single_chat_box_own_message);
+          drawable);
     } else {
       singleChatBox = chatBoxLayout.getResources().getDrawable(
-          R.drawable.single_chat_box_own_message, context.getTheme());
+          drawable, context.getTheme());
     }
 
     if(sdk < android.os.Build.VERSION_CODES.JELLY_BEAN) {

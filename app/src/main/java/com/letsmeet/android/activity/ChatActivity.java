@@ -154,7 +154,7 @@ public class ChatActivity extends AppCompatActivity {
       NotificationManager notificationManager =
           (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
       // TODO: Do not cancel all. Instead use ordered broadcast described in GsmMessageHandler.
-      notificationManager.cancelAll();
+      notificationManager.cancel(Constants.CHAT_NOTIFICATION_ID);
     }
   }
 }
