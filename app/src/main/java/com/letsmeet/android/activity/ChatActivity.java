@@ -85,6 +85,7 @@ public class ChatActivity extends AppCompatActivity {
     IntentFilter filter = new IntentFilter();
     filter.addAction(Constants.NEW_CHAT_MESSAGE_BROADCAST);
     registerReceiver(newChatMessageReceiver, filter);
+    clearNotification();
   }
 
   @Override protected void onStop() {
@@ -151,10 +152,14 @@ public class ChatActivity extends AppCompatActivity {
     long newChatEventId = extractEventIdFromIntent(intent);
     if (newChatEventId == eventId) {
       updateAdapter();
-      NotificationManager notificationManager =
-          (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-      // TODO: Do not cancel all. Instead use ordered broadcast described in GsmMessageHandler.
-      notificationManager.cancel(Constants.CHAT_NOTIFICATION_ID);
+      clearNotification();
     }
+  }
+
+  private void clearNotification() {
+    NotificationManager notificationManager =
+        (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+    // TODO: Do not cancel all. Instead use ordered broadcast described in GsmMessageHandler.
+    notificationManager.cancel(Constants.CHAT_NOTIFICATION_ID);
   }
 }

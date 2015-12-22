@@ -32,6 +32,7 @@ import com.letsmeet.android.common.GoogleApiHelper;
 import com.letsmeet.android.config.Constants;
 import com.letsmeet.android.storage.LocalStore;
 import com.letsmeet.android.common.ContactFetcher;
+import com.letsmeet.android.storage.chat.ChatStore;
 import com.letsmeet.android.widgets.contactselect.ContactInfo;
 import com.letsmeet.android.widgets.rsvp.RsvpButtonsView;
 import com.letsmeet.server.eventService.model.EventDetails;
@@ -88,6 +89,26 @@ public class EventDetailsActivity extends AppCompatActivity {
     }
   }
 
+  @Override protected void onStart() {
+    super.onStart();
+    checkUnreadChats();
+  }
+
+  private void checkUnreadChats() {
+    if (eventDetails == null) {
+      return;
+    }
+    int unreadMessageCount = ChatStore.getUnreadCount(this, eventDetails.getEventId());
+    Button sendMessageButton = (Button) findViewById(R.id.send_message_button);
+    if (unreadMessageCount > 0) {
+      sendMessageButton.setTextColor(getResources().getColor(R.color.unread_chats));
+      sendMessageButton.setText(
+          getString(R.string.send_message_button) + " (" + unreadMessageCount + ")");
+    } else {
+      sendMessageButton.setTextColor(getResources().getColor(R.color.button_material_dark));
+    }
+  }
+
   @Override
   public boolean onCreateOptionsMenu(Menu menu) {
     getMenuInflater().inflate(R.menu.menu_event_details, menu);
@@ -111,6 +132,7 @@ public class EventDetailsActivity extends AppCompatActivity {
   private void populateEventData() {
     isOwner = eventDetails.getIsOwner();
 
+    checkUnreadChats();
     Button sendMessageButton = (Button) findViewById(R.id.send_message_button);
     sendMessageButton.setOnClickListener(new View.OnClickListener() {
       @Override public void onClick(View v) {

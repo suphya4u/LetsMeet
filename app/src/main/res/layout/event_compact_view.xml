@@ -27,12 +27,42 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
 
-    <com.letsmeet.android.widgets.rsvp.RsvpButtonsView
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/rsvp_buttons"
-        android:layout_gravity="end"
-        android:gravity="end">
-    </com.letsmeet.android.widgets.rsvp.RsvpButtonsView>
+        android:orientation="horizontal">
+
+        <LinearLayout
+            android:id="@+id/unread_chats_layout"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_gravity="bottom|start"
+            android:gravity="start">
+
+            <ImageView
+                android:id="@+id/chat_icon"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:src="@drawable/ic_chat_bubble_black_24dp"/>
+
+            <TextView
+                android:id="@+id/unread_chats_count"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/unread_chats"
+                android:visibility="gone"/>
+
+        </LinearLayout>
+
+        <com.letsmeet.android.widgets.rsvp.RsvpButtonsView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/rsvp_buttons"
+            android:layout_gravity="end">
+        </com.letsmeet.android.widgets.rsvp.RsvpButtonsView>
+
+    </LinearLayout>
 
 </LinearLayout>

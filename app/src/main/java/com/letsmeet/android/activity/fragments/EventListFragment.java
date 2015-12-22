@@ -1,6 +1,9 @@
 package com.letsmeet.android.activity.fragments;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -20,6 +23,7 @@ import com.letsmeet.android.activity.adapter.EventListRecyclerAdapter;
 import com.letsmeet.android.apiclient.EventServiceClient;
 import com.letsmeet.android.common.DividerItemDecoration;
 import com.letsmeet.android.common.MainContentFragmentSelector;
+import com.letsmeet.android.config.Constants;
 import com.letsmeet.android.storage.LocalStore;
 import com.letsmeet.server.eventService.model.ListEventsForUserResponse;
 
@@ -30,16 +34,28 @@ import java.io.IOException;
  */
 public class EventListFragment extends Fragment {
 
-  private MainContentFragmentSelector mainContentFragmentSelector = MainContentFragmentSelector.UPCOMING_EVENTS;
+  private MainContentFragmentSelector mainContentFragmentSelector =
+      MainContentFragmentSelector.UPCOMING_EVENTS;
   private RecyclerView eventListView;
   private SwipeRefreshLayout swipeRefresh;
   private long userId;
 
-  public static EventListFragment newInstance(MainContentFragmentSelector mainContentFragmentSelector) {
+  public static EventListFragment newInstance(
+      MainContentFragmentSelector mainContentFragmentSelector) {
     EventListFragment fragment = new EventListFragment();
     fragment.mainContentFragmentSelector = mainContentFragmentSelector;
     return fragment;
   }
+
+  private BroadcastReceiver newChatMessageReceiver = new BroadcastReceiver() {
+    @Override public void onReceive(Context context, Intent intent) {
+      if (eventListView == null) {
+        return;
+      }
+      RecyclerView.Adapter adapter = eventListView.getAdapter();
+      adapter.notifyDataSetChanged();
+    }
+  };
 
   @Override
   public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -47,6 +63,22 @@ public class EventListFragment extends Fragment {
     View view = inflater.inflate(R.layout.fragment_events_list, container, false);
     renderEventList(view);
     return view;
+  }
+
+  @Override public void onStart() {
+    super.onStart();
+    IntentFilter filter = new IntentFilter();
+    filter.addAction(Constants.NEW_CHAT_MESSAGE_BROADCAST);
+    getActivity().registerReceiver(newChatMessageReceiver, filter);
+  }
+
+  @Override public void onStop() {
+    try {
+      getActivity().unregisterReceiver(newChatMessageReceiver);
+    } catch (IllegalArgumentException e) {
+      // Ignore. Thrown when receiver is already unregistered.
+    }
+    super.onStop();
   }
 
   @Override public void onResume() {
