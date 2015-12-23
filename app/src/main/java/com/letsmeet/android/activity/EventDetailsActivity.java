@@ -106,6 +106,7 @@ public class EventDetailsActivity extends AppCompatActivity {
           getString(R.string.send_message_button) + " (" + unreadMessageCount + ")");
     } else {
       sendMessageButton.setTextColor(getResources().getColor(R.color.button_material_dark));
+      sendMessageButton.setText(R.string.send_message_button);
     }
   }
 

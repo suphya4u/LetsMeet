@@ -61,7 +61,21 @@ public class EventDetailsGuestsListAdapter
     public void setGuest(Pair<ContactInfo, String> contactInfoWithResponse) {
       phoneNumberView.setText(contactInfoWithResponse.first.getDisplayName());
       setViewImage(thumbnailView, contactInfoWithResponse.first.getThumbnailUrl());
-      responseView.setText(contactInfoWithResponse.second);
+      responseView.setText(toDisplayString(contactInfoWithResponse.second));
+    }
+
+    private String toDisplayString(String responseEnumName) {
+      switch (responseEnumName) {
+        case "NO_RESPONSE":
+          return "Waiting";
+        case "YES":
+          return "Yes";
+        case "NO":
+          return "No";
+        case "MAYBE":
+          return "Maybe";
+      }
+      return responseEnumName;
     }
 
     // TODO: Code duplication in SelectedContactsAdapter.
