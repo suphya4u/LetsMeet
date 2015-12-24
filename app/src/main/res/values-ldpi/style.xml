@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="event_details_location">
+        <item name="android:maxLines">1</item>
+    </style>
+
+    <style name="event_details_event_notes">
+        <item name="android:maxLines">1</item>
+    </style>
+
+</resources>
