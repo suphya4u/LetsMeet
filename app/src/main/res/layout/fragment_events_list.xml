@@ -13,8 +13,12 @@
     <Button
         android:id="@+id/new_event_button"
         android:text="@string/new_event"
+        style="?android:attr/borderlessButtonStyle"
+        android:layout_gravity="end"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"/>
+
+    <View style="@style/divider" />
 
     <android.support.v4.widget.SwipeRefreshLayout
         xmlns:android="http://schemas.android.com/apk/res/android"

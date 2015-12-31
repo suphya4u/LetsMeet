@@ -29,9 +29,9 @@
     <string name="pick_a_place">Pick a place</string>
     <string name="title_activity_maps">Map</string>
     <string name="change_date_time_button">Change</string>
-    <string name="rsvp_yes">Yes</string>
-    <string name="rsvp_maybe">Maybe</string>
-    <string name="rsvp_no">No</string>
+    <string name="rsvp_yes">YES</string>
+    <string name="rsvp_maybe">MAYBE</string>
+    <string name="rsvp_no">NO</string>
     <string name="title_activity_main">MainActivity</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>

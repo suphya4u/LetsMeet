@@ -7,4 +7,6 @@
          https://developer.android.com/design/patterns/navigation-drawer.html -->
     <dimen name="navigation_drawer_width">240dp</dimen>
     <dimen name="fab_margin">16dp</dimen>
+
+    <dimen name="selected_contacts_list_max_height">120dp</dimen>
 </resources>

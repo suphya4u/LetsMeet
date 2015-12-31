@@ -13,6 +13,7 @@ import android.widget.TextView;
 
 import com.google.api.client.util.Lists;
 import com.google.common.collect.ImmutableList;
+import com.letsmeet.android.common.DynamicHeightLayoutManager;
 import com.letsmeet.android.widgets.contactselect.ContactInfo;
 import com.letsmeet.android.widgets.contactselect.SelectContactsView;
 
@@ -46,7 +47,11 @@ public class SelectContactFragment extends Fragment {
 
     final RecyclerView selectedContactsListView =
         (RecyclerView) rootView.findViewById(R.id.selected_contacts_list);
-    final LinearLayoutManager layoutManager = new LinearLayoutManager(rootView.getContext());
+    final LinearLayoutManager layoutManager =
+        new DynamicHeightLayoutManager(
+            rootView.getContext(),
+            rootView.getContext().getResources().getDimension(
+                R.dimen.selected_contacts_list_max_height));
     layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
     selectedContactsListView.setLayoutManager(layoutManager);
     selectedContactsListView.setAdapter(selectedContactAdapter);
