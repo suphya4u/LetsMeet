@@ -13,4 +13,9 @@
 
     <color name="unread_chats">@color/accent_color</color>
     <color name="no_chats">@color/disabled</color>
+
+    <color name="red">#FF0000</color>
+    
+    <color name="primary_title_bar_color_purple">#9C27B0</color>
+    <color name="primary_dark_title_bar_color_purple">#7B1FA2</color>
 </resources>

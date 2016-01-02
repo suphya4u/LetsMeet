@@ -34,6 +34,8 @@ public class GoogleApiHelper {
   }
 
   public Location getLastKnownLocation() {
+    // TODO: This doesn't work maybe use other way LocationManager -
+    // http://developer.android.com/intl/es/guide/topics/location/strategies.html
     return LocationServices.FusedLocationApi.getLastLocation(googleApiClient);
   }
 

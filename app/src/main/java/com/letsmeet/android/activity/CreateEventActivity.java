@@ -255,7 +255,8 @@ public class CreateEventActivity extends AppCompatActivity {
     List<ContactInfo> contactInfos = Lists.transform(
         invitees, new Function<Invitee, ContactInfo>() {
           @Nullable @Override public ContactInfo apply(Invitee invitee) {
-            if (invitee.getPhoneNumber().equals(ignoreNumber)) {
+            if (invitee.getPhoneNumber() == null
+                || invitee.getPhoneNumber().equals(ignoreNumber)) {
               return null;
             }
             return ContactFetcher.getInstance().getContactInfoByNumber(
