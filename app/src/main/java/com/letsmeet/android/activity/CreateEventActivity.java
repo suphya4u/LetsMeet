@@ -116,6 +116,7 @@ public class CreateEventActivity extends AppCompatActivity {
           Button selectedTimeView = (Button) findViewById(R.id.selected_time);
           selectedTimeView.setError(getString(R.string.cannot_be_past));
         }
+        eventDetails.setEventTimeMillis(selectedTime);
 
         PlaceInfo selectedPlace = placeSelectView.getSelectedPlace();
         if (Strings.isNullOrEmpty(selectedPlace.getAddress())) {
