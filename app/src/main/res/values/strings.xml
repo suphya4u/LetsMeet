@@ -54,5 +54,6 @@
     <string name="send_message_button">Send Message</string>
     <string name="send_chat">Send</string>
     <string name="chat_message_help_text">Message</string>
+    <string name="cannot_be_past">Event time can not be in past.</string>
 
 </resources>

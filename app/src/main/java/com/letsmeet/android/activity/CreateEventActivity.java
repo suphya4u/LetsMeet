@@ -39,6 +39,7 @@ import com.letsmeet.server.eventService.model.Invitee;
 import java.io.IOException;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 import javax.annotation.Nullable;
@@ -107,7 +108,14 @@ public class CreateEventActivity extends AppCompatActivity {
           contactFragment.setError(getString(R.string.must_add_guests));
         }
 
-        // TODO: Get date time. Show error if date older than today.
+        DateTimePickerView dateTimePickerView = (DateTimePickerView) getFragmentManager()
+            .findFragmentById(R.id.date_time_picker_fragment);
+        long selectedTime = dateTimePickerView.getSelectedTime();
+        if (selectedTime < new Date().getTime()) {
+          hasErrors = true;
+          Button selectedTimeView = (Button) findViewById(R.id.selected_time);
+          selectedTimeView.setError(getString(R.string.cannot_be_past));
+        }
 
         PlaceInfo selectedPlace = placeSelectView.getSelectedPlace();
         if (Strings.isNullOrEmpty(selectedPlace.getAddress())) {
@@ -222,7 +230,11 @@ public class CreateEventActivity extends AppCompatActivity {
     final Button createEventButton = (Button) findViewById(R.id.create_event_button);
     createEventButton.setText(R.string.edit_event_button);
 
-    // TODO: Populate date time.
+    DateTimePickerView dateTimePickerView = (DateTimePickerView) getFragmentManager()
+        .findFragmentById(R.id.date_time_picker_fragment);
+    Calendar eventTimeCalendar = Calendar.getInstance();
+    eventTimeCalendar.setTimeInMillis(eventDetails.getEventTimeMillis());
+    dateTimePickerView.setDateTime(eventTimeCalendar);
   }
 
   private List<ContactInfo> transformToContactInfos(final String ignoreNumber,
