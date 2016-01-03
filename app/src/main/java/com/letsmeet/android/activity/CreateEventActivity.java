@@ -27,6 +27,7 @@ import com.letsmeet.android.apiclient.EventServiceClient;
 import com.letsmeet.android.common.PhoneNumberHelper;
 import com.letsmeet.android.storage.LocalStore;
 import com.letsmeet.android.widgets.contactselect.ContactInfo;
+import com.letsmeet.android.widgets.datetime.DateTimePickerView;
 import com.letsmeet.android.widgets.placeselect.PlaceInfo;
 import com.letsmeet.android.widgets.placeselect.PlaceSelectView;
 import com.letsmeet.server.eventService.model.CreateOrEditEventRequest;
@@ -44,7 +45,6 @@ import javax.annotation.Nullable;
 
 public class CreateEventActivity extends AppCompatActivity {
 
-  private long eventTimeSelected = 0;
   private EventDetails eventDetails;
 
   @Override
@@ -70,20 +70,6 @@ public class CreateEventActivity extends AppCompatActivity {
 
     final PlaceSelectView placeSelectView = (PlaceSelectView) findViewById(R.id.place_autocomplete);
     placeSelectView.init(this);
-
-    final TextView selectedDateTime = (TextView) findViewById(R.id.selected_date_time);
-    selectedDateTime.setOnClickListener(new View.OnClickListener() {
-      @Override public void onClick(View v) {
-        DateTimePicker dateTimePicker = new DateTimePicker(
-            getFragmentManager(), "EventDateTimePicker");
-        dateTimePicker.setDateTimeSetListener(new DateTimePicker.OnDateTimeSetListener() {
-          @Override public void onDateTimeSet(Calendar timeSelected) {
-            dateTimeSelected(timeSelected.getTimeInMillis());
-          }
-        });
-        dateTimePicker.show();
-      }
-    });
 
     final Button createEventButton = (Button) findViewById(R.id.create_event_button);
     createEventButton.setOnClickListener(new View.OnClickListener() {
@@ -121,12 +107,7 @@ public class CreateEventActivity extends AppCompatActivity {
           contactFragment.setError(getString(R.string.must_add_guests));
         }
 
-        TextView selectedDateTime = (TextView) findViewById(R.id.selected_date_time);
-        eventDetails.setEventTimeMillis(eventTimeSelected);
-        if (eventTimeSelected == 0) {
-          hasErrors = true;
-          selectedDateTime.setError(getString(R.string.cannot_be_empty));
-        }
+        // TODO: Get date time. Show error if date older than today.
 
         PlaceInfo selectedPlace = placeSelectView.getSelectedPlace();
         if (Strings.isNullOrEmpty(selectedPlace.getAddress())) {
@@ -215,7 +196,7 @@ public class CreateEventActivity extends AppCompatActivity {
     EditText nameEditText = (EditText) findViewById(R.id.create_event_name);
     EditText notesEditText = (EditText) findViewById(R.id.create_event_notes);
     final PlaceSelectView placeSelectView = (PlaceSelectView) findViewById(R.id.place_autocomplete);
-    dateTimeSelected(eventDetails.getEventTimeMillis());
+
     SelectContactFragment contactFragment = (SelectContactFragment)
         getFragmentManager().findFragmentById(R.id.select_contact_fragment);
 
@@ -240,14 +221,8 @@ public class CreateEventActivity extends AppCompatActivity {
 
     final Button createEventButton = (Button) findViewById(R.id.create_event_button);
     createEventButton.setText(R.string.edit_event_button);
-  }
 
-  private void dateTimeSelected(long timeInMillis) {
-    eventTimeSelected = timeInMillis;
-    final TextView selectedDateTime = (TextView) findViewById(R.id.selected_date_time);
-    selectedDateTime.setError(null);
-    selectedDateTime.setText(DateTimeUtils.getDisplayDateTime(
-        CreateEventActivity.this, timeInMillis));
+    // TODO: Populate date time.
   }
 
   private List<ContactInfo> transformToContactInfos(final String ignoreNumber,

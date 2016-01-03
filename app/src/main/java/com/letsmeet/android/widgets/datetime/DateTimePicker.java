@@ -24,7 +24,7 @@ public class DateTimePicker implements TimePickerDialog.OnTimeSetListener,
   private int monthOfYear;
   private int dayOfMonth;
 
-  public static interface OnDateTimeSetListener {
+  public interface OnDateTimeSetListener {
     void onDateTimeSet(Calendar calendar);
   }
 

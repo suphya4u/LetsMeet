@@ -14,10 +14,16 @@ public class DateTimeUtils {
   public static String getDisplayDateTime(Context context, long timeInMillis) {
     Calendar calendar = Calendar.getInstance(TimeZone.getDefault());
     calendar.setTimeInMillis(timeInMillis);
-    String eventDateString = DateFormat.getDateFormat(
-        context).format(calendar.getTime());
-    String eventTimeString = DateFormat.getTimeFormat(
-        context).format(calendar.getTime());
+    String eventDateString = getDisplayDate(context, calendar);
+    String eventTimeString = getDisplayTime(context, calendar);
     return eventDateString + " " + eventTimeString;
+  }
+
+  public static String getDisplayDate(Context context, Calendar calendar) {
+    return DateFormat.getDateFormat(context).format(calendar.getTime());
+  }
+
+  public static String getDisplayTime(Context context, Calendar calendar) {
+    return DateFormat.getTimeFormat(context).format(calendar.getTime());
   }
 }
