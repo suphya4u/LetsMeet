@@ -99,7 +99,7 @@ public class EventListRecyclerAdapter
       }
       if (eventDetails.getEventTimeMillis() > 0) {
         eventTimeView.setText(DateTimeUtils.getDisplayDateTime(itemView.getContext(),
-            eventDetails.getEventTimeMillis()));
+            eventDetails.getEventTimeMillis(), true /* useShort */));
       }
       rsvpButtonsView.setEventId(eventId);
       rsvpButtonsView.setSelection(eventDetails.getMyResponse());
@@ -108,10 +108,12 @@ public class EventListRecyclerAdapter
       if (unreadChatCount > 0) {
         unreadChatsView.setVisibility(View.VISIBLE);
         unreadChatsView.setText("(" + unreadChatCount + ")");
+        chatIcon.setImageResource(R.drawable.ic_chat_bubble_black_24dp);
         chatIcon.setColorFilter(
             itemView.getContext().getResources().getColor(R.color.unread_chats));
       } else {
         unreadChatsView.setVisibility(View.GONE);
+        chatIcon.setImageResource(R.drawable.ic_chat_bubble_outline_black_24dp);
         chatIcon.setColorFilter(
             itemView.getContext().getResources().getColor(R.color.no_chats));
       }

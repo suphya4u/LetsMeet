@@ -79,7 +79,7 @@ public class DateTimePickerView extends Fragment implements TimePickerDialog.OnT
     if (dateButton != null) {
       Calendar calendar = Calendar.getInstance();
       calendar.set(year, monthOfYear, dayOfMonth);
-      String dateStr = DateTimeUtils.getDisplayDate(getActivity(), calendar);
+      String dateStr = DateTimeUtils.getDisplayDate(getActivity(), calendar, false /* useShort */);
       dateButton.setText(dateStr);
       clearErrors();
     }
@@ -93,7 +93,7 @@ public class DateTimePickerView extends Fragment implements TimePickerDialog.OnT
       Calendar calendar = Calendar.getInstance();
       calendar.set(Calendar.HOUR_OF_DAY, hourOfDay);
       calendar.set(Calendar.MINUTE, minute);
-      String timeStr = DateTimeUtils.getDisplayTime(getActivity(), calendar);
+      String timeStr = DateTimeUtils.getDisplayTime(getActivity(), calendar, false /* useShort */);
       timeButton.setText(timeStr);
       clearErrors();
     }

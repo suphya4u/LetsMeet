@@ -12,16 +12,13 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.letsmeet.android.activity.fragments.ShareOptionsDialogFragment;
 import com.letsmeet.android.common.ContactFetcher;
-import com.letsmeet.android.common.DateTimeUtils;
 import com.letsmeet.android.config.Constants;
-import com.letsmeet.android.widgets.datetime.DateTimePicker;
 import com.letsmeet.android.widgets.contactselect.SelectContactFragment;
 import com.letsmeet.android.apiclient.EventServiceClient;
 import com.letsmeet.android.common.PhoneNumberHelper;
